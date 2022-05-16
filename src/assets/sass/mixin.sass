@@ -1,0 +1,126 @@
+@use "sass:math"
+
+// variables
+$title-font: 'Space Mono', 'Source Code Pro', 'Noto Sans TC'
+$basic-font: 'Rubik', 'Noto Sans TC'
+$code-font: 'Source Code Pro', 'Space Mono', 'Noto Sans TC'
+
+//RWD
+@mixin rwdmax($max)
+	@media only screen and (max-width: $max + px)  
+		@content
+
+@mixin rwdmin($min)
+	@media only screen and (min-width: $min + px)  
+		@content
+
+@mixin portrait
+	@media screen and (orientation: portrait)
+		@content
+
+@mixin landscape
+	@media screen and (orientation: landscape)
+		@content
+
+//文字大小像素轉rem
+@mixin font-size($size: 16) 
+	font-size: math.div($size, 16) + rem
+
+@function px($px)
+	@return math.div($px, 16) * 1rem
+
+//文字大小像素轉vw/vh
+@function pxTovw($px)
+	@return math.div($px, 1920) * 100vw
+
+@function pxTovh($px)
+	@return math.div($px, 1080) * 100vh
+
+//IE判斷
+@mixin ie11Hack
+	@media screen and (-ms-high-contrast: active),(-ms-high-contrast: none)
+		@content
+		
+//火狐判斷
+@mixin firefoxHack
+	@-moz-document url-prefix()
+		@content
+
+//背景圖
+@mixin bg($size: cover, $pos: center, $repeat: no-repeat)
+	background-size: $size
+	background-position: $pos
+	background-repeat: $repeat
+
+//文字設定
+=fontSet($font: $JhengHei, $fw: normal, $size: px(16), $lh: 1, $color: inherit, $ls: normal)
+	font-family: $font
+	font-weight: $fw
+	font-size: $size
+	line-height: $lh
+	color: $color
+	letter-spacing: $ls
+
+//flex
+=flex($display: flex, $wrap: nowrap, $d: row, $jc: center, $ai: center)
+	display: $display
+	flex-wrap: $wrap
+	flex-direction: $d
+	justify-content: $jc
+	align-items: $ai
+
+// absolute-center
+=posCenter
+	position: absolute
+	top: 50%
+	left: 50%
+	transform: translate(-50%,-50%)
+
+// absolute-fill
+=posFill
+	position: absolute
+	top: 0
+	left: 0
+	width: 100%
+	height: 100%
+
+// 文字溢出加省略號 ...
+=ellipsis($line: 2, $lh: 32px, $height: $line * $lh)
+	display: block
+	overflow: hidden
+	display: -webkit-box
+	-webkit-box-orient: vertical
+	-webkit-line-clamp: $line
+	line-height: $lh
+	max-height: $line * $lh
+	height: $height
+
+//placeholder
+=placeholder($font: $basic, $color: black, $size: px(16))
+	&::placeholder
+		font-family: $font
+		font-size: $size
+		color: $color
+		opacity: 1
+		overflow: visible
+		@if $ls != ''
+			letter-spacing: $ls
+
+=pseudo
+	position: absolute
+	content: ''
+	display: block
+
+=fit($fit: cover, $pos: center)
+	object-fit: $fit
+	object-position: $pos
+	width: 100%
+	height: 100%
+
+=title
+	font-family: $title-font
+	font-weight: 700
+
+=code
+	font-family: $code-font
+	font-weight: 400
