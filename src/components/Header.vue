@@ -3,51 +3,11 @@ import { reactive } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useStore } from './../stores/stores'
+
 import Filter from './../components/Filter.vue'
 import Searcher from './../components/Searcher.vue'
 import UserTools from './../components/UserTools.vue'
 import LogoLarge from './../assets/image/logo-large.svg'
-
-
-const { VITE_API_URL } = import.meta.env
-const store = useStore()
-const route = useRoute()
-const { user } = storeToRefs(store)
-const { appendQuery, getPosts } = store
-
-const postUrl = `${VITE_API_URL}/api/posts`
-
-
-// filter handler
-const filterDatalist = reactive([
-  {
-    name: '最新貼文',
-    sort: undefined
-  },
-  {
-    name: '最舊貼文',
-    sort: 'timeasc'
-  },
-  {
-    name: '最熱門貼文',
-    sort: 'hot'
-  },
-])
-const selectedIndex = filterDatalist.findIndex(item => item.sort === route.query.sort)
-const filterSelected = reactive({
-  name: filterDatalist[selectedIndex].name,
-  sort: route.query.sort
-})
-
-const changeSort = async (li) => {
-  if (li.name === filterSelected.name) return;
-  Object.assign(filterSelected, li)
-  const { sort } = li
-  // push query
-  await appendQuery(route, { sort })
-  // then get data
-  getPosts(route, postUrl)
-}
 
 </script>
 
@@ -69,7 +29,8 @@ const changeSort = async (li) => {
 </template>
 
 <style lang="sass">
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/variables
+@import ./../assets/sass/base/mixin
 
 header
   position: fixed

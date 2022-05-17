@@ -66,7 +66,7 @@ const changeSelected = async (li, index) => {
 </template>
 
 <style lang="sass">
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/mixin
 
 // filter
 .filter

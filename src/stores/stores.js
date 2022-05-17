@@ -6,7 +6,6 @@ export const useStore = defineStore('main', {
   state: () => {
     return {
       isLogin: true,
-      user: {},
       posts: [],
       useModalPost: false,
       useModalLoader: false,
@@ -68,12 +67,6 @@ export const useStore = defineStore('main', {
         const secs = parseInt(diff / 1000)
         return `${secs} 秒前`
       }
-    },
-    async getUser(url, userId) {
-      const res = await axios.get(`${url}/${userId}`)
-      if (!res.data) return;
-      const { data } = res.data
-      Object.assign(this.user, data)
     },
     async getPosts(route, url) {
       const { query } = route

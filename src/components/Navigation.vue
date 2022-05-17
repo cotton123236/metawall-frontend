@@ -1,11 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useStore } from './../stores/stores'
+import { useUserStore } from './../stores/userStore'
 
 
 const store = useStore()
+const userStore = useUserStore()
 
-const { user } = storeToRefs(store)
 const { changeModalPostState, changeModalFollowsState, changeModalLikesState } = store
 
 </script>
@@ -14,9 +15,9 @@ const { changeModalPostState, changeModalFollowsState, changeModalLikesState } =
   <nav>
     <div class="user-wrap">
       <div class="user-photo">
-        <img :src="user.image" alt="user-photo">
+        <img :src="userStore.image" alt="user-photo">
       </div>
-      <div class="user-name">{{ user.name }}</div>
+      <div class="user-name">{{ userStore.name }}</div>
     </div>
     <ul class="user-tools">
       <li @click="changeModalPostState">
@@ -36,7 +37,8 @@ const { changeModalPostState, changeModalFollowsState, changeModalLikesState } =
 </template>
 
 <style lang="sass">
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/variables
+@import ./../assets/sass/base/mixin
 
 // nav
 nav

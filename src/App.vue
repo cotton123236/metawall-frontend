@@ -1,21 +1,19 @@
 <script setup>
 import './assets/sass/style.sass'
-import { inject } from 'vue-demi'
-import { storeToRefs } from 'pinia'
-import { useStore } from './stores/stores'
+import { useUserStore } from './stores/userStore'
+import { fetchUser } from './api/fetch'
 
 const { VITE_API_URL } = import.meta.env
-const store = useStore()
-const axios = inject('axios')
+const userStore = useUserStore()
 
-const { user } = storeToRefs(store)
-const { getUser } = store
+const { patchUser } = userStore
 
 const url = `${VITE_API_URL}/api/users`
 const userId = '626e91ea36674e3b1cdd704b'
 
-// get user and save
-getUser(url, userId)
+fetchUser(url, userId).then(res => {
+  patchUser(res.data)
+})
 
 </script>
 

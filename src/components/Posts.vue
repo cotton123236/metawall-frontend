@@ -45,7 +45,8 @@ const { useDateFormat } = store
 </template>
 
 <style lang="sass">
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/variables
+@import ./../assets/sass/base/mixin
 
 // each-post
 .each-post

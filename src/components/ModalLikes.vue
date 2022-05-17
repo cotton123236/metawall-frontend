@@ -1,14 +1,16 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useStore } from './../stores/stores'
+import { useUserStore } from './../stores/userStore'
+
 import Posts from './../components/Posts.vue'
 
 
 const store = useStore()
-const { user } = storeToRefs(store)
+const userStore = useUserStore()
+
 const { changeModalLikesState } = store
 
-// console.log(user.value.likes)
 </script>
 
 <template>
@@ -22,7 +24,7 @@ const { changeModalLikesState } = store
         </div>
         <div class="modal-body">
           <Posts
-            v-for="post in user.likes"
+            v-for="post in userStore.likes"
             :key="post._id"
             :post="post"
           />
@@ -33,7 +35,7 @@ const { changeModalLikesState } = store
 </template>
 
 <style lang="sass" scoped>
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/mixin
 
 // modal-post
 .modal-content

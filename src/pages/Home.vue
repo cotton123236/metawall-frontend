@@ -39,7 +39,7 @@ getPosts(route, postUrl)
 </template>
 
 <style lang="sass">
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/mixin
 
 // post-tools
 .post-tools

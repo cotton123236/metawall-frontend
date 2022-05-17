@@ -1,14 +1,15 @@
 <script setup>
 import { inject, ref } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
 import { useStore } from './../stores/stores'
+import { useUserStore } from './../stores/userStore'
 
 const { VITE_API_URL } = import.meta.env
 const axios = inject('axios')
 const route = useRoute()
 const store = useStore()
-const { user } = storeToRefs(store)
+const userStore = useUserStore()
+
 const { setPosts, changeModalPostState, changeModalLoaderState } = store
 
 const postUrl = `${VITE_API_URL}/api/posts`
@@ -29,10 +30,11 @@ const postNewPost = async () => {
   changeModalLoaderState()
   const data = {
     content: postContent.value,
-    user: user.value._id
+    user: userStore._id
   }
+  // console.log(data)
   try {
-    const res = await axios.post(postUrl, data)
+    await axios.post(postUrl, data)
     changeModalLoaderState()
     changeModalPostState()
     getPosts()
@@ -54,9 +56,9 @@ const postNewPost = async () => {
         <div class="modal-body">
           <div class="info">
             <div class="headshot">
-              <img :src="user.image" alt="user-photo">
+              <img :src="userStore.image" alt="user-photo">
             </div>
-            <div class="name">{{ user.name }}</div>
+            <div class="name">{{ userStore.name }}</div>
           </div>
           <div class="content">
             <textarea placeholder="在想些什麼呢？" v-model="postContent"></textarea>
@@ -75,7 +77,8 @@ const postNewPost = async () => {
 </template>
 
 <style lang="sass" scoped>
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/variables
+@import ./../assets/sass/base/mixin
 
 // modal-post
 .modal-content

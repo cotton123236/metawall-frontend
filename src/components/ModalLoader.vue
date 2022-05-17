@@ -18,7 +18,7 @@
 </template>
 
 <style lang="sass" scoped>
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/mixin
 
 .modal
   margin: auto

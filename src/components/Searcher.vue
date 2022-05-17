@@ -40,7 +40,8 @@ const clearInput = () => {
 </template>
 
 <style lang="sass">
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/variables
+@import ./../assets/sass/base/mixin
 
 // searcher
 .searcher

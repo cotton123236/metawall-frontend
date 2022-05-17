@@ -1,10 +1,11 @@
 <script setup>
-import { storeToRefs } from 'pinia'
 import { useStore } from './../stores/stores'
+import { useUserStore } from './../stores/userStore'
 
 
 const store = useStore()
-const { user } = storeToRefs(store)
+const userStore = useUserStore()
+
 const { useDateFormat, changeModalFollowsState } = store
 
 </script>
@@ -21,7 +22,7 @@ const { useDateFormat, changeModalFollowsState } = store
         <div class="modal-body">
           <ul>
             <li
-              v-for="follow in user.follows"
+              v-for="follow in userStore.follows"
               :key="follow._id"
             >
               <div class="info">
@@ -43,7 +44,8 @@ const { useDateFormat, changeModalFollowsState } = store
 </template>
 
 <style lang="sass" scoped>
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/variables
+@import ./../assets/sass/base/mixin
 
 // modal-post
 .modal-content

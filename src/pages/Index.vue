@@ -54,7 +54,7 @@ const { useModalPost, useModalFollows, useModalLikes, useModalLoader } = storeTo
 </template>
 
 <style lang="sass">
-@import ./../assets/sass/mixin
+@import ./../assets/sass/base/mixin
 
 // main
 main

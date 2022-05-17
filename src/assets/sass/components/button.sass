@@ -1,0 +1,63 @@
+// close-btn
+.close-btn
+  position: relative
+  width: 30px
+  height: 30px
+  border-radius: 50%
+  cursor: pointer
+  transition: background-color var(--trans-s)
+  &:hover
+    background-color: var(--dark-white)
+  &::before, &::after
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%) rotate(45deg)
+    content: ''
+    display: block
+    background-color: var(--gray)
+    transition: var(--trans-s)
+  &::before
+    width: 1px
+    height: 16px
+  &::after
+    width: 16px
+    height: 1px
+
+// rect-btn
+.rect-btn
+  position: relative
+  z-index: 1
+  width: 100%
+  padding: 15px
+  text-align: center
+  font-size: px(14)
+  line-height: 1.5
+  cursor: pointer
+  transition: background-color var(--trans-s), opacity var(--trans-s), color var(--trans-s), border var(--trans-s)
+  border: 1px solid transparent
+  // overflow: hidden
+  &:hover
+    border: 1px solid var(--primary-blue-light)
+    color: var(--primary-blue-dark)
+  &.fill
+    border: 1px solid transparent
+    color: #fff
+    &::before
+      z-index: -2
+      background-image: linear-gradient(to bottom, var(--primary-blue-light), var(--primary-blue-dark))
+      +pseudo
+      +posFill
+    &::after
+      z-index: -1
+      background-image: linear-gradient(to bottom, var(--primary-blue), #010f18)
+      opacity: 0
+      transition: opacity var(--trans-m)
+      +pseudo
+      +posFill
+    &:hover
+      &::after
+        opacity: 1
+  &.disable
+    opacity: .2
+    pointer-events: none
