@@ -11,6 +11,10 @@ const router = createRouter({
         {
           path: '',
           component: () => import('./../pages/Home.vue'),
+        },
+        {
+          path: ':id',
+          component: () => import('./../pages/Profile.vue')
         }
       ]
     },

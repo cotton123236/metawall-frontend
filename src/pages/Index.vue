@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from '@vue/runtime-core'
 import { storeToRefs } from 'pinia'
-import { useStore } from '../stores/stores'
+import { useModalStore } from '../stores/modalStore'
 import Header from './../components/Header.vue'
 import Navigation from './../components/Navigation.vue'
 import ModalPost from './../components/ModalPost.vue'
@@ -11,9 +11,9 @@ import ModalLikes from './../components/ModalLikes.vue'
 
 
 // ModalPost control
-const store = useStore()
+const modalStore = useModalStore()
 
-const { useModalPost, useModalFollows, useModalLikes, useModalLoader } = storeToRefs(store)
+const { useModalPost, useModalFollows, useModalLikes, useModalLoader } = storeToRefs(modalStore)
 
 </script>
 

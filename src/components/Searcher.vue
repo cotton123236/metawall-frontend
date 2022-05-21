@@ -50,7 +50,7 @@ const clearInput = () => {
   align-items: center
   height: 30px
   width: 200px
-  background-color: #f8f8f8
+  background-color: var(--background)
   padding: 10px 20px
   margin-right: 10px
   border-radius: 15px

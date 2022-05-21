@@ -1,21 +1,24 @@
 <script setup>
 import { useStore } from './../stores/stores'
 import { useUserStore } from './../stores/userStore'
+import { useModalStore } from '../stores/modalStore'
 
 
 const store = useStore()
 const userStore = useUserStore()
+const modalStore = useModalStore()
 
-const { useDateFormat, changeModalFollowsState } = store
+const { useDateFormat } = store
+const { closeModalFollows } = modalStore
 
 </script>
 
 <template>
   <div class="modal-wrapper modal-follows">
-    <div class="modal-bg" @click="changeModalFollowsState"></div>
+    <div class="modal-bg" @click="closeModalFollows"></div>
     <div class="modal-content">
       <div class="modal">
-        <div class="close-btn" @click="changeModalFollowsState"></div>
+        <div class="close-btn" @click="closeModalFollows"></div>
         <div class="modal-head">
           <span>追蹤名單</span>
         </div>
@@ -96,8 +99,6 @@ const { useDateFormat, changeModalFollowsState } = store
     .headshot
       width: 50px
       height: 50px
-      border-radius: 50%
-      overflow: hidden
       margin-right: 15px
       img
         +fit
