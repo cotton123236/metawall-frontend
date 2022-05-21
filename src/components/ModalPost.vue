@@ -3,14 +3,17 @@ import { inject, ref } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { useStore } from './../stores/stores'
 import { useUserStore } from './../stores/userStore'
+import { useModalStore } from '../stores/modalStore'
 
 const { VITE_API_URL } = import.meta.env
 const axios = inject('axios')
 const route = useRoute()
 const store = useStore()
 const userStore = useUserStore()
+const modalStore = useModalStore()
 
-const { setPosts, changeModalPostState, changeModalLoaderState } = store
+const { setPosts } = store
+const { closeModalPost, openModalLoader, closeModalLoader } = modalStore
 
 const postUrl = `${VITE_API_URL}/api/posts`
 
@@ -27,7 +30,7 @@ const postContent = ref('')
 
 const postNewPost = async () => {
   if (!postContent.value) return;
-  changeModalLoaderState()
+  openModalLoader()
   const data = {
     content: postContent.value,
     user: userStore._id
@@ -35,8 +38,8 @@ const postNewPost = async () => {
   // console.log(data)
   try {
     await axios.post(postUrl, data)
-    changeModalLoaderState()
-    changeModalPostState()
+    closeModalLoader()
+    closeModalPost()
     getPosts()
   }
   catch {}
@@ -46,10 +49,10 @@ const postNewPost = async () => {
 
 <template>
   <div class="modal-wrapper modal-post">
-    <div class="modal-bg" @click="changeModalPostState"></div>
+    <div class="modal-bg" @click="closeModalPost"></div>
     <div class="modal-content">
       <div class="modal">
-        <div class="close-btn" @click="changeModalPostState"></div>
+        <div class="close-btn" @click="closeModalPost"></div>
         <div class="modal-head">
           <span>新增貼文</span>
         </div>
@@ -126,8 +129,6 @@ const postNewPost = async () => {
     .headshot
       width: 50px
       height: 50px
-      border-radius: 50%
-      overflow: hidden
       margin-right: 15px
       img
         +fit

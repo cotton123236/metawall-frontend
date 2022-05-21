@@ -13,11 +13,11 @@ const { useDateFormat } = store
 <template>
   <div class="each-post">
     <div class="info">
-      <div class="headshot">
+      <router-link class="headshot" :to="post.user._id">
         <img :src="post.user.image" alt="user-photo">
-      </div>
+      </router-link>
       <div class="detail">
-        <div class="name">{{ post.user.name }}</div>
+        <router-link class="name" :to="post.user._id">{{ post.user.name }}</router-link>
         <div class="date">{{ useDateFormat(post.createdAt) }}</div>
       </div>
       <div class="more-btn">
@@ -36,10 +36,9 @@ const { useDateFormat } = store
         <i class="icon-commit"></i>
         <!-- <span class="num"></span> -->
       </div>
-      <div class="share">
+      <!-- <div class="share">
         <i class="icon-share"></i>
-        <!-- <span class="num"></span> -->
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -64,8 +63,6 @@ const { useDateFormat } = store
   .headshot
     width: 50px
     height: 50px
-    border-radius: 50%
-    overflow: hidden
     margin-right: 15px
     img
       +fit
@@ -113,7 +110,7 @@ const { useDateFormat } = store
     display: flex
     // padding: 0 20px
     > div
-      width: 33.33%
+      width: 100%
       display: flex
       justify-content: center
       align-items: center

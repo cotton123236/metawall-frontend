@@ -6,7 +6,7 @@ html
   font-size: 100%
   body
     font-family: $basic-font
-    background-color: #f8f8f8
+    background-color: var(--background)
     &::-webkit-scrollbar-track
       border-radius: 10px
       -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
@@ -35,3 +35,9 @@ html
 .mw-1200
   max-width: 1200px
   margin: auto
+
+// headshot
+.headshot
+  border-radius: 50%
+  overflow: hidden
+  animation: headshotLoading 4s infinite linear

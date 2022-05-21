@@ -1,33 +1,34 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useStore } from './../stores/stores'
 import { useUserStore } from './../stores/userStore'
+import { useModalStore } from '../stores/modalStore'
 
 import Posts from './../components/Posts.vue'
 
 
-const store = useStore()
 const userStore = useUserStore()
+const modalStore = useModalStore()
 
-const { changeModalLikesState } = store
+const { closeModalLikes } = modalStore
 
+console.log(userStore.likes)
 </script>
 
 <template>
   <div class="modal-wrapper modal-likes">
-    <div class="modal-bg" @click="changeModalLikesState"></div>
+    <div class="modal-bg" @click="closeModalLikes"></div>
     <div class="modal-content">
       <div class="modal">
-        <div class="close-btn" @click="changeModalLikesState"></div>
+        <div class="close-btn" @click="closeModalLikes"></div>
         <div class="modal-head">
           <span>收藏貼文</span>
         </div>
         <div class="modal-body">
-          <Posts
+          <!-- <Posts
             v-for="post in userStore.likes"
             :key="post._id"
             :post="post"
-          />
+          /> -->
         </div>
       </div>
     </div>

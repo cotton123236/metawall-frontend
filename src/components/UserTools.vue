@@ -29,13 +29,13 @@ onMounted(() => {
     <div class="user-dropdown">
       <ul>
         <li>
-          <router-link to="/">查看個人檔案</router-link>
+          <router-link :to="userStore._id">查看個人檔案</router-link>
         </li>
         <li>
           <router-link to="/">設定與資料</router-link>
         </li>
         <li>
-          <router-link to="/">登出</router-link>
+          <router-link to="/login">登出</router-link>
         </li>
       </ul>
     </div>
