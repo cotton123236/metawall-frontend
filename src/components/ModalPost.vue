@@ -122,8 +122,6 @@ const postNewPost = async () => {
       width: 50px
       height: 50px
       margin-right: 15px
-      img
-        +fit
     .name
       font-family: $code-font
       line-height: 1.5
