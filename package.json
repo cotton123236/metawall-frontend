@@ -12,6 +12,7 @@
     "dotenv": "^16.0.0",
     "pinia": "^2.0.14",
     "swiper": "^8.1.4",
+    "validator": "^13.7.0",
     "vue": "^3.2.25",
     "vue-axios": "^3.4.1",
     "vue-router": "^4.0.14"

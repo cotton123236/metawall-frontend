@@ -1,27 +1,56 @@
 <script setup>
-import 'swiper/css'
-import { ref } from '@vue/runtime-core'
-import { useRouter } from 'vue-router'
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import LogoLarge from './../assets/image/logo-large.svg'
-const router = useRouter()
+import "swiper/css";
+import { ref } from "@vue/runtime-core";
+import { useRouter } from "vue-router";
+import { signIn } from "./../api/fetch";
+import validator from "validator";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import LogoLarge from "./../assets/image/logo-large.svg";
+
+// 註冊表單
+const form = ref({
+  email: "",
+  password: "",
+});
+
+const errorMessage = ref();
+
+const router = useRouter();
 // login mode control
-const signupSwiperInstance = ref(null)
+const signupSwiperInstance = ref(null);
 const signupSwiperInit = (swiper) => {
-  signupSwiperInstance.value = swiper
-}
+  signupSwiperInstance.value = swiper;
+};
 const slidePrev = () => {
-  signupSwiperInstance.value.slidePrev()
-}
+  signupSwiperInstance.value.slidePrev();
+};
 const slideNext = () => {
-  signupSwiperInstance.value.slideNext()
-}
-const loginSuccess = () => {
-  router.push({ path: '/' })
-}
+  signupSwiperInstance.value.slideNext();
+};
+const login = async () => {
+  // 驗證：內容不可為空
+  if (!form.value.email || !form.value.password) {
+    errorMessage.value = "請填寫內容";
+    return;
+  }
+
+  // 驗證： Email 格式
+  if (!validator.isEmail(form.value.email)) {
+    errorMessage.value = "Email 格式錯誤";
+    return;
+  }
+
+  const { data } = await signIn(form.value);
+
+  if (data.status === "success") {
+    localStorage.setItem("token", data.token);
+  }
+
+  router.push({ path: "/" });
+};
 const signupSuccess = () => {
-  router.push({ path: '/' })
-}
+  router.push({ path: "/" });
+};
 </script>
 
 <template>
@@ -29,7 +58,7 @@ const signupSuccess = () => {
     <div class="login-wrap">
       <div class="inner">
         <div class="logo">
-          <img :src="LogoLarge" alt="">
+          <img :src="LogoLarge" alt="" />
         </div>
         <!-- login & sign-up -->
         <swiper
@@ -44,14 +73,21 @@ const signupSuccess = () => {
             <p class="brief">到元宇宙展開你的全新社交圈！</p>
             <form>
               <label data-warning>
-                <input id="email" type="text" required>
+                <input id="email" type="text" required v-model="form.email" />
                 <span>Email</span>
               </label>
               <label>
-                <input id="password" type="password" required>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  v-model="form.password"
+                />
                 <span>Password</span>
               </label>
-              <div class="rect-btn fill login-btn" @click="loginSuccess">登入</div>
+
+              <div>{{ errorMessage }}</div>
+              <div class="rect-btn fill login-btn" @click="login">登入</div>
               <div class="rect-btn signup-btn" @click="slideNext">註冊</div>
             </form>
           </swiper-slide>
@@ -60,18 +96,20 @@ const signupSuccess = () => {
             <p class="brief">註冊加入元宇宙！</p>
             <form>
               <label data-warning>
-                <input id="email" type="text" required>
+                <input id="email" type="text" required />
                 <span>Email</span>
               </label>
               <label>
-                <input id="password" type="password" required>
+                <input id="password" type="password" required />
                 <span>Password</span>
               </label>
               <label>
-                <input id="confirm-password" type="password" required>
+                <input id="confirm-password" type="password" required />
                 <span>Confirm Password</span>
               </label>
-              <div class="rect-btn signup-btn fill" @click="slideNext">註冊</div>
+              <div class="rect-btn signup-btn fill" @click="slideNext">
+                註冊
+              </div>
               <div class="rect-btn login-btn" @click="slidePrev">登入</div>
             </form>
           </swiper-slide>
@@ -80,10 +118,12 @@ const signupSuccess = () => {
             <p class="brief">建立屬於你的元宇宙名稱！</p>
             <form>
               <label data-warning>
-                <input id="name" type="text" required>
+                <input id="name" type="text" required />
                 <span>Name</span>
               </label>
-              <div class="rect-btn signup-btn fill" @click="signupSuccess">開啟元宇宙</div>
+              <div class="rect-btn signup-btn fill" @click="signupSuccess">
+                開啟元宇宙
+              </div>
               <div class="rect-btn signup-btn" @click="slidePrev">回上一步</div>
             </form>
           </swiper-slide>
