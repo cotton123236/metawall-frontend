@@ -72,12 +72,16 @@ nav
       background-color: transparent
       box-shadow: none
       border: none
+    &:hover
+      .user-name
+        color: var(--primary-pink)
   .user-photo
     width: 50px
     height: 50px
     border-radius: 50%
     overflow: hidden
     margin-right: 15px
+    box-shadow: 0 0 5px rgba(0, 0, 0, .2)
     img
       +fit
   .user-name
@@ -85,15 +89,12 @@ nav
     font-size: px(18)
     line-height: 1.5
     color: var(--gray)
+    transition: color var(--trans-s)
     +rwdmax(900)
       display: none
 
   .user-tools
     border-radius: 20px
-    // background-color: #fff
-    // border: 1px solid var(--dark-white)
-    // box-shadow: 0 0 5px rgba(0, 0, 0, .1)
-    // padding: 12px
     margin-top: 20px
     +rwdmax(900)
       display: flex
@@ -108,19 +109,18 @@ nav
       transition: var(--trans-m)
       border: 1px solid transparent
       cursor: pointer
-      // border-radius: 4px
       &:hover
-        // background-color: #fff
-        // box-shadow: 0 0 5px rgba(0, 0, 0, .1)
-        // border: 1px solid var(--dark-white)
+        i, span
+          transform: translateX(8px)
+        i
+          color: var(--primary-pink)
       &.disable
         pointer-events: none
         opacity: .2
+      i, span
+        display: inline-block
+        transition: transform var(--trans-s)
       i
-        // display: flex
-        // justify-content: center
-        // align-items: center
-        // width: 50px
         font-size: px(20)
         margin-right: 25px
       span

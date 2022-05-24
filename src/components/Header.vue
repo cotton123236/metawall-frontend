@@ -2,7 +2,6 @@
 import { reactive } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useStore } from './../stores/stores'
 
 import Filter from './../components/Filter.vue'
 import Searcher from './../components/Searcher.vue'

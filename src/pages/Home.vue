@@ -1,22 +1,25 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useStore } from './../stores/stores'
+import { usePostStore } from './../stores/postStore'
+import { getPostByRoute } from './../api/fetch'
+import { appendQuery } from './../utils/utils'
 import Posts from './../components/Posts.vue'
 
 
-const { VITE_API_URL } = import.meta.env
 const route = useRoute()
-const store = useStore()
+const postStore = usePostStore()
 
-const { posts } = storeToRefs(store)
-const { getPosts } = store
-
-const postUrl = `${VITE_API_URL}/api/posts`
+const { posts } = storeToRefs(postStore)
+const { patchPosts } = postStore
 
 
 // post handler
-getPosts(route, postUrl)
+const getAllPosts = async () => {
+  const { data } = await getPostByRoute(route)
+  patchPosts(data)
+}
+getAllPosts()
 
 </script>
 
@@ -38,7 +41,7 @@ getPosts(route, postUrl)
   </section>
 </template>
 
-<style lang="sass">
+<style lang="sass" scoped>
 @import ./../assets/sass/base/mixin
 
 // post-tools
@@ -52,14 +55,5 @@ getPosts(route, postUrl)
 
 .post-content
   padding-bottom: 40px
-  .no-post
-    font-size: px(14)
-    text-align: center
-    color: var(--light-gray)
-    border-radius: 8px
-    border: 1px solid var(--dark-white)
-    background-color: #fff
-    padding: 80px 30px
-    margin-top: 20px
 
 </style>

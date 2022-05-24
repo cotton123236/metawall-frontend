@@ -1,29 +1,19 @@
 <script setup>
 import { inject, ref } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
-import { useStore } from './../stores/stores'
 import { useUserStore } from './../stores/userStore'
-import { useModalStore } from '../stores/modalStore'
+import { useModalStore } from './../stores/modalStore'
+import { usePostStore } from './../stores/postStore'
+import { getPostByRoute, postPostByData } from './../api/fetch'
 
-const { VITE_API_URL } = import.meta.env
-const axios = inject('axios')
+
 const route = useRoute()
-const store = useStore()
 const userStore = useUserStore()
 const modalStore = useModalStore()
+const postStore = usePostStore()
 
-const { setPosts } = store
 const { closeModalPost, openModalLoader, closeModalLoader } = modalStore
-
-const postUrl = `${VITE_API_URL}/api/posts`
-
-// post handler
-const getPosts = async () => {
-  // get query
-  const { query } = route
-  // set posts
-  await setPosts(postUrl, query)
-}
+const { patchPosts } = postStore
 
 // post data handler
 const postContent = ref('')
@@ -31,18 +21,20 @@ const postContent = ref('')
 const postNewPost = async () => {
   if (!postContent.value) return;
   openModalLoader()
-  const data = {
+  const postData = {
     content: postContent.value,
     user: userStore._id
   }
-  // console.log(data)
   try {
-    await axios.post(postUrl, data)
+    await postPostByData(postData)
     closeModalLoader()
     closeModalPost()
-    getPosts()
+    const { data } = await getPostByRoute(route)
+    patchPosts(data)
   }
-  catch {}
+  catch(err) {
+    console.log(err)
+  }
 }
 
 </script>

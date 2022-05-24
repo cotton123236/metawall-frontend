@@ -1,14 +1,12 @@
 <script setup>
-import { useStore } from './../stores/stores'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from '../stores/modalStore'
+import { useDateFormat } from './../utils/utils'
 
 
-const store = useStore()
 const userStore = useUserStore()
 const modalStore = useModalStore()
 
-const { useDateFormat } = store
 const { closeModalFollows } = modalStore
 
 </script>

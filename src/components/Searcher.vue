@@ -1,15 +1,14 @@
 <script setup>
 import { ref } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
-import { useStore } from './../stores/stores'
+import { appendQuery } from '../utils/utils'
+import { getPostByRoute } from './../api/fetch'
+import { usePostStore } from '../stores/postStore'
 
 
 const route = useRoute()
-const store = useStore()
-const { VITE_API_URL } = import.meta.env
-const { appendQuery, getPosts } = store
-
-const postUrl = `${VITE_API_URL}/api/posts`
+const postStore = usePostStore()
+const { patchPosts } = postStore
 
 // search content handler
 const { content } = route.query || ''
@@ -22,7 +21,9 @@ const searchPosts = async () => {
   }
   await appendQuery(route, queries)
   // then get data
-  getPosts(route, postUrl)
+  const { data } = await getPostByRoute(route)
+  // patch data
+  patchPosts(data)
 }
 
 const clearInput = () => {

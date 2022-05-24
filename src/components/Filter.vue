@@ -2,13 +2,15 @@
 import { ref, onMounted } from '@vue/runtime-core'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
-import { useStore } from '../stores/stores'
+import { useFilterStore } from '../stores/filterStores'
+import { appendQuery } from '../utils/utils'
+import { getPostByRoute } from './../api/fetch'
+import { usePostStore } from './../stores/postStore'
 
 
-const { VITE_API_URL } = import.meta.env
 const route = useRoute()
-const store = useStore()
-const postUrl = `${VITE_API_URL}/api/posts`
+const filterStore = useFilterStore()
+const postStore = usePostStore()
 
 // open and close control
 const filterActive = ref(false)
@@ -26,8 +28,8 @@ onMounted(() => {
 })
 
 // change selected control
-const { filters: datalist } = storeToRefs(store)
-const { getPosts, appendQuery } = store
+const { filters: datalist } = storeToRefs(filterStore)
+const { patchPosts } = postStore
 const selectedIndex = ref(datalist.value.findIndex(item => item.sort === route.query.sort))
 
 const changeSelected = async (li, index) => {
@@ -37,7 +39,8 @@ const changeSelected = async (li, index) => {
   // push query
   await appendQuery(route, { sort })
   // then get data
-  getPosts(route, postUrl)
+  const { data } = await getPostByRoute(route)
+  patchPosts(data)
 }
 
 </script>

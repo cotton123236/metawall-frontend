@@ -1,12 +1,9 @@
 <script setup>
-import { useStore } from '../stores/stores'
+import { useDateFormat } from './../utils/utils'
 
 const props = defineProps({
   post: Object
 })
-
-const store = useStore()
-const { useDateFormat } = store
 
 </script>
 
