@@ -2,25 +2,19 @@
 import { ref, reactive } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useStore } from './../stores/stores'
-import { fetchUser } from './../api/fetch'
+import { usePostStore } from './../stores/postStore'
+import { getUserById } from './../api/fetch'
 import Posts from './../components/Posts.vue'
 
 
 const { VITE_API_URL } = import.meta.env
 const route = useRoute()
-const store = useStore()
+const postStore = usePostStore()
 
-const { posts } = storeToRefs(store)
-const { getPosts } = store
-
-const postUrl = `${VITE_API_URL}/api/posts`
+const { posts } = storeToRefs(postStore)
 
 
-// post handler
-getPosts(route, postUrl)
-
-
+// test
 const isFollowing = ref(false)
 
 const { id } = route.params
@@ -33,7 +27,7 @@ const user = reactive({
   likes: []
 })
 
-fetchUser(id).then(res => {
+getUserById(id).then(res => {
   if (!res.data) return;
   console.log(res.data)
   Object.assign(user, res.data)
@@ -92,21 +86,15 @@ fetchUser(id).then(res => {
   position: relative
   display: flex
   padding: 50px 40px
-  border-radius: 20px
+  border-radius: 0 100px 0 100px
   background-color: var(--white)
   box-shadow: 0 0 20px rgba(0, 0, 0, .1)
-  // padding-top: 40px
-  // padding-left: 40px
 
   .headshot
-    // position: absolute
-    // top: -10px
-    // left: -10px
     width: 130px
     height: 130px
     background-color: #f5f5f5
-    box-shadow: 0 0 20px rgba(0, 0, 0, .3)
-    // border: 10px solid var(--background)
+    box-shadow: 0 0 15px rgba(0, 0, 0, .3)
     img
       +fit
 
@@ -154,5 +142,7 @@ fetchUser(id).then(res => {
 
 .post-content
   margin-top: 20px
+  .no-post
+    padding: 60px 30px
 
 </style>
