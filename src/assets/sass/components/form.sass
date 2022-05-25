@@ -42,3 +42,48 @@ form
         transform-origin: left center
         padding: 0 2px
         pointer-events: none
+    input[type="radio"]
+      display: none
+      &:checked
+        & + .fake-radio
+          &::before
+            opacity: 1
+        & ~ span
+          color: var(--black)
+      & ~ span
+        font-family: $code-font
+        font-size: px(14)
+        line-height: 1.5
+        color: var(--light-gray)
+        margin-left: 10px
+    .fake-radio
+      position: relative
+      width: 20px
+      height: 20px
+      border-radius: 50%
+      border: 1px solid var(--dark-white)
+      box-shadow: 0 0 5px rgba(0, 0, 0, .2) inset
+      &::before
+        width: 12px
+        height: 12px
+        border-radius: 50%
+        background-color: var(--primary-blue)
+        opacity: 0
+        transition: opacity var(--trans-s)
+        +posCenter
+        +pseudo
+  .form-radio
+    display: flex
+    flex-wrap: wrap
+    align-items: center
+    p
+      width: 100%
+      font-size: px(14)
+      font-family: $code-font
+      color: var(--primary-blue)
+      transform: translateX(2px) scale(.8)
+      transform-origin: left center
+      margin-bottom: 20px
+    label
+      & + label
+        margin-left: 40px

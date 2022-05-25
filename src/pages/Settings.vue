@@ -1,8 +1,16 @@
 <script setup>
+import { reactive } from '@vue/runtime-core'
 import { useUserStore } from '../stores/userStore'
 
 
 const userStore = useUserStore()
+
+const userData = reactive({
+  name: 'Wilson',
+  gender: 2,
+  password: '12345678',
+  confirmPassword: '12345678',
+})
 
 </script>
 
@@ -20,22 +28,23 @@ const userStore = useUserStore()
         <h2>編輯個人資料</h2>
         <form>
           <label class="form-row" data-warning>
-            <input id="name" type="text" required />
+            <input id="name" type="text" required v-model="userData.name" />
             <span>使用者名稱</span>
           </label>
-          <div class="form-row">
+          <div class="form-row form-radio">
+            <p>使用者性別</p>
             <label for="male">
-              <input name="gender" id="male" type="radio">
+              <input name="gender" id="male" value="0" type="radio" v-model="userData.gender">
               <div class="fake-radio"></div>
               <span>男性</span>
             </label>
             <label for="female">
-              <input name="gender" id="female" type="radio">
+              <input name="gender" id="female" value="1" type="radio" v-model="userData.gender">
               <div class="fake-radio"></div>
               <span>女性</span>
             </label>
             <label for="unknown">
-              <input name="gender" id="unknown" type="radio">
+              <input name="gender" id="unknown" value="2" type="radio" v-model="userData.gender">
               <div class="fake-radio"></div>
               <span>未知宇宙生物</span>
             </label>
@@ -44,11 +53,11 @@ const userStore = useUserStore()
         <h2>重新設定密碼</h2>
         <form>
           <label class="form-row" data-warning>
-            <input id="password" type="password" required />
+            <input id="password" type="password" required v-model="userData.password" />
             <span>使用者密碼</span>
           </label>
           <label class="form-row" data-warning>
-            <input id="confirm-password" type="password" required />
+            <input id="confirm-password" type="password" required v-model="userData.confirmPassword" />
             <span>確認使用者密碼</span>
           </label>
         </form>
@@ -59,6 +68,9 @@ const userStore = useUserStore()
 
 <style lang="sass" scoped>
 @import ./../assets/sass/base/mixin
+
+section
+  padding-bottom: 40px
 
 .headshot-wrap
   position: relative
@@ -122,7 +134,7 @@ const userStore = useUserStore()
       margin-top: 40px
   form
     & + h2
-      margin-top: 60px
+      margin-top: 100px
     .form-row
       & + .form-row
         margin-top: 40px
@@ -140,4 +152,7 @@ const userStore = useUserStore()
           transform: translate(2px, -30px) scale(.8)
         & + span
           left: 0
+      > label
+        display: flex
+        align-items: center
 </style>
