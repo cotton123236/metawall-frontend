@@ -16,7 +16,43 @@ const userStore = useUserStore()
       <i class="icon-plus"></i>
     </div>
     <div class="content">
-
+      <div class="inner">
+        <h2>編輯個人資料</h2>
+        <form>
+          <label class="form-row" data-warning>
+            <input id="name" type="text" required />
+            <span>使用者名稱</span>
+          </label>
+          <div class="form-row">
+            <label for="male">
+              <input name="gender" id="male" type="radio">
+              <div class="fake-radio"></div>
+              <span>男性</span>
+            </label>
+            <label for="female">
+              <input name="gender" id="female" type="radio">
+              <div class="fake-radio"></div>
+              <span>女性</span>
+            </label>
+            <label for="unknown">
+              <input name="gender" id="unknown" type="radio">
+              <div class="fake-radio"></div>
+              <span>未知宇宙生物</span>
+            </label>
+          </div>
+        </form>
+        <h2>重新設定密碼</h2>
+        <form>
+          <label class="form-row" data-warning>
+            <input id="password" type="password" required />
+            <span>使用者密碼</span>
+          </label>
+          <label class="form-row" data-warning>
+            <input id="confirm-password" type="password" required />
+            <span>確認使用者密碼</span>
+          </label>
+        </form>
+      </div>
     </div>
   </section>
 </template>
@@ -36,6 +72,8 @@ const userStore = useUserStore()
   .headshot
     position: relative
     box-shadow: 0 0 10px rgba(0, 0, 0, .3)
+    width: 100%
+    height: 100%
     cursor: pointer
     &:hover
       & + i
@@ -68,8 +106,38 @@ const userStore = useUserStore()
 .content
   position: relative
   z-index: 1
-  padding: 60px 40px
+  padding: 100px 40px
   background-color: var(--white)
   border-radius: 20px
   box-shadow: 0 0 10px rgba(0, 0, 0, .1)
+  .inner
+    max-width: 500px
+    margin: auto
+  h2
+    font-size: px(16)
+    line-height: 1.5
+    font-weight: 500
+    text-align: center
+    & + form
+      margin-top: 40px
+  form
+    & + h2
+      margin-top: 60px
+    .form-row
+      & + .form-row
+        margin-top: 40px
+      input[type="text"], input[type="password"]
+        background-color: transparent
+        border: none
+        border-bottom: 1px solid var(--dark-white)
+        border-radius: 0
+        font-size: px(16)
+        padding: 10px 5px
+        &:focus, &:valid
+          box-shadow: none
+        &:focus + span, &:valid + span
+          color: var(--primary-blue)
+          transform: translate(2px, -30px) scale(.8)
+        & + span
+          left: 0
 </style>

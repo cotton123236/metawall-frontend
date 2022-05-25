@@ -1,24 +1,23 @@
 // form
 form
-  label
+  .form-row
     width: 100%
     display: block
     position: relative
-    & + label
+    & + .form-row
       margin-top: 15px
     &[data-warning]:not([data-warning=""])
       margin-bottom: 25px
       &::after
         position: absolute
         left: 0
-        bottom: -25px
+        bottom: -20px
         display: inline-block
         content: attr(data-warning)
         font-size: px(12)
         margin-left: 20px
-        margin-top: 10px
         color: var(--warning)
-    input
+    input[type="text"], input[type="password"]
       width: 100%
       border: 1px solid var(--dark-white)
       padding: 12px 20px
@@ -31,15 +30,15 @@ form
         background-color: #fff
         transform: translate(2px, -22px) scale(.8)
         color: var(--primary-pink)
-    span
-      position: absolute
-      display: inline-block
-      left: 17px
-      top: calc(50% - 7px)
-      color: var(--light-gray)
-      font-size: px(14)
-      font-family: $code-font
-      transition: transform var(--trans-s)
-      transform-origin: left center
-      padding: 0 2px
-      pointer-events: none
+      & + span
+        position: absolute
+        display: inline-block
+        left: 17px
+        top: calc(50% - 7px)
+        color: var(--light-gray)
+        font-size: px(14)
+        font-family: $code-font
+        transition: transform var(--trans-s)
+        transform-origin: left center
+        padding: 0 2px
+        pointer-events: none

@@ -30,7 +30,8 @@ const postNewPost = async () => {
     closeModalLoader()
     closeModalPost()
     const { data } = await getPostByRoute(route)
-    patchPosts(data)
+    if (data.status !== 'success') return;
+    patchPosts(data.data)
   }
   catch(err) {
     console.log(err)

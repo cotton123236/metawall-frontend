@@ -72,13 +72,13 @@ const signupSuccess = () => {
           <swiper-slide>
             <p class="brief">到元宇宙展開你的全新社交圈！</p>
             <form>
-              <label data-warning>
-                <input id="email" type="text" required v-model="form.email" />
+              <label class="form-row" data-warning>
+                <input id="login-email" type="text" required v-model="form.email" />
                 <span>Email</span>
               </label>
-              <label>
+              <label class="form-row">
                 <input
-                  id="password"
+                  id="login-password"
                   type="password"
                   required
                   v-model="form.password"
@@ -95,15 +95,15 @@ const signupSuccess = () => {
           <swiper-slide>
             <p class="brief">註冊加入元宇宙！</p>
             <form>
-              <label data-warning>
-                <input id="email" type="text" required />
+              <label class="form-row" data-warning>
+                <input id="signup-email" type="text" required />
                 <span>Email</span>
               </label>
-              <label>
-                <input id="password" type="password" required />
+              <label class="form-row">
+                <input id="signup-password" type="password" required />
                 <span>Password</span>
               </label>
-              <label>
+              <label class="form-row">
                 <input id="confirm-password" type="password" required />
                 <span>Confirm Password</span>
               </label>
@@ -117,8 +117,8 @@ const signupSuccess = () => {
           <swiper-slide>
             <p class="brief">建立屬於你的元宇宙名稱！</p>
             <form>
-              <label data-warning>
-                <input id="name" type="text" required />
+              <label class="form-row" data-warning>
+                <input id="signup-name" type="text" required />
                 <span>Name</span>
               </label>
               <div class="rect-btn signup-btn fill" @click="signupSuccess">
