@@ -40,7 +40,8 @@ const changeSelected = async (li, index) => {
   await appendQuery(route, { sort })
   // then get data
   const { data } = await getPostByRoute(route)
-  patchPosts(data)
+  if (data.status !== 'success') return;
+  patchPosts(data.data)
 }
 
 </script>

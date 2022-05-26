@@ -98,8 +98,6 @@ const { closeModalFollows } = modalStore
       width: 50px
       height: 50px
       margin-right: 15px
-      img
-        +fit
     .detail
       flex: 1
       font-family: $code-font

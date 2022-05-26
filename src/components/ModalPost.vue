@@ -30,7 +30,8 @@ const postNewPost = async () => {
     closeModalLoader()
     closeModalPost()
     const { data } = await getPostByRoute(route)
-    patchPosts(data)
+    if (data.status !== 'success') return;
+    patchPosts(data.data)
   }
   catch(err) {
     console.log(err)
@@ -122,8 +123,6 @@ const postNewPost = async () => {
       width: 50px
       height: 50px
       margin-right: 15px
-      img
-        +fit
     .name
       font-family: $code-font
       line-height: 1.5

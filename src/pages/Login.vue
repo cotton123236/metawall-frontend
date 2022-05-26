@@ -221,18 +221,18 @@ const register = async () => {
           <swiper-slide>
             <p class="brief">到元宇宙展開你的全新社交圈！</p>
             <form>
-              <label :data-warning="errorMessage.email">
+              <label class="form-row" :data-warning="errorMessage.email">
                 <input
-                  id="email"
+                  id="login-email"
                   type="text"
                   required
                   v-model="loginForm.email"
                 />
                 <span>Email</span>
               </label>
-              <label :data-warning="errorMessage.password">
+              <label class="form-row" :data-warning="errorMessage.password">
                 <input
-                  id="password"
+                  id="login-password"
                   type="password"
                   required
                   v-model="loginForm.password"
@@ -248,25 +248,26 @@ const register = async () => {
           <swiper-slide>
             <p class="brief">註冊加入元宇宙！</p>
             <form>
-              <label :data-warning="errorMessage.email">
+
+              <label class="form-row" :data-warning="errorMessage.email">
                 <input
-                  id="email"
+                  id="signup-email"
                   type="text"
                   required
                   v-model="registerForm.email"
                 />
                 <span>Email</span>
               </label>
-              <label :data-warning="errorMessage.password">
+              <label class="form-row" :data-warning="errorMessage.password">
                 <input
-                  id="password"
+                  id="signup-password"
                   type="password"
                   required
                   v-model="registerForm.password"
                 />
                 <span>Password</span>
               </label>
-              <label :data-warning="errorMessage.confirmPassword">
+              <label class="form-row" :data-warning="errorMessage.confirmPassword">
                 <input
                   id="confirm-password"
                   type="password"
@@ -285,9 +286,9 @@ const register = async () => {
           <swiper-slide>
             <p class="brief">建立屬於你的元宇宙名稱！</p>
             <form>
-              <label :data-warning="errorMessage.nickName">
+              <label class="form-row" :data-warning="errorMessage.nickName">
                 <input
-                  id="name"
+                  id="signup-name"
                   type="text"
                   required
                   v-model="registerForm.nickName"
