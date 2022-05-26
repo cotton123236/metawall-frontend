@@ -13,6 +13,24 @@ export function signIn(data) {
   })
 }
 
+// 註冊驗證
+export function signUpCheck(data) {
+  return request({
+    url: `${url.user}/sign_up_check`,
+    method: 'post',
+    data
+  })
+}
+
+// 註冊
+export function signUp(data) {
+  return request({
+    url: `${url.user}/sign_up`,
+    method: 'post',
+    data
+  })
+}
+
 // 取得個人資料（自己）
 export function getMyProfile() {
   return request({
