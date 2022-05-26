@@ -30,8 +30,9 @@ const postNewPost = async () => {
     closeModalLoader()
     closeModalPost()
     const { data } = await getPostByRoute(route)
+    // patch data
     if (data.status !== 'success') return;
-    patchPosts(data.data)
+    patchPosts(data.data.list)
   }
   catch(err) {
     console.log(err)
@@ -52,7 +53,7 @@ const postNewPost = async () => {
         <div class="modal-body">
           <div class="info">
             <div class="headshot">
-              <img :src="userStore.image" alt="user-photo">
+              <img v-if="userStore.image" :src="userStore.image" alt="user-photo">
             </div>
             <div class="name">{{ userStore.name }}</div>
           </div>

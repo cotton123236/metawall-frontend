@@ -59,6 +59,8 @@ const { useModalPost, useModalFollows, useModalLikes, useModalLoader } = storeTo
 // main
 main
   padding-top: 85px
+  +rwdmax(900)
+    padding-bottom: 50px
 
   .main-content
     display: flex

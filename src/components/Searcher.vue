@@ -17,14 +17,14 @@ const searchValue = ref(content)
 const searchPosts = async () => {
   // push query
   const queries = {
-    content: searchValue.value
+    q: searchValue.value
   }
   await appendQuery(route, queries)
   // then get data
   const { data } = await getPostByRoute(route)
   // patch data
   if (data.status !== 'success') return;
-  patchPosts(data.data)
+  patchPosts(data.data.list)
 }
 
 const clearInput = () => {

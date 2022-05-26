@@ -18,7 +18,7 @@ const { patchPosts } = postStore
 const getAllPosts = async () => {
   const { data } = await getPostByRoute(route)
   if (data.status !== 'success') return;
-  patchPosts(data.data)
+  patchPosts(data.data.list)
 }
 getAllPosts()
 

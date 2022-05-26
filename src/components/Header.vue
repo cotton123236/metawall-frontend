@@ -2,11 +2,13 @@
 import { reactive } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-
+// components
 import Filter from './../components/Filter.vue'
 import Searcher from './../components/Searcher.vue'
 import UserTools from './../components/UserTools.vue'
+// images
 import LogoLarge from './../assets/image/logo-large.svg'
+import Logo from './../assets/image/logo.svg'
 
 </script>
 
@@ -15,7 +17,10 @@ import LogoLarge from './../assets/image/logo-large.svg'
     <div class="container mw-1200">
       <!-- logo -->
       <router-link class="logo" to="/">
-        <img :src="LogoLarge" alt="">
+        <picture>
+          <source :srcset="LogoLarge" media="(min-width: 768px)">
+          <img :src="Logo" alt="">
+        </picture>
       </router-link>
       <!-- searcher -->
       <Searcher />
@@ -54,6 +59,8 @@ header
 
   .searcher
     margin-left: 20px
+    +rwdmax(767)
+      margin-left: 10px
 
   .tools
     display: flex

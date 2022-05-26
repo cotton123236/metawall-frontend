@@ -10,7 +10,7 @@ export const useFilterStore = defineStore('filterStore', {
         },
         {
           name: '最舊貼文',
-          sort: 'timeasc'
+          sort: 'asc'
         },
         {
           name: '最熱門貼文',
