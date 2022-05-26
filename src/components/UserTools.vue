@@ -1,30 +1,41 @@
 <script setup>
-import { ref, onMounted } from '@vue/runtime-core'
-import { useUserStore } from './../stores/userStore'
+import { ref, onMounted } from "@vue/runtime-core";
+import { useUserStore } from "./../stores/userStore";
 
-
-const userStore = useUserStore()
+const userStore = useUserStore();
 
 // open and close control
-const userToolsActive = ref(false)
+const userToolsActive = ref(false);
 
 const activeControl = () => {
-  userToolsActive.value = !userToolsActive.value
-}
+  userToolsActive.value = !userToolsActive.value;
+};
 
 onMounted(() => {
-  document.body.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('user-tools') && !e.target.closest('.user-tools')) {
-      userToolsActive.value = false
+  document.body.addEventListener("click", (e) => {
+    if (
+      !e.target.classList.contains("user-tools") &&
+      !e.target.closest(".user-tools")
+    ) {
+      userToolsActive.value = false;
     }
-  })
-})
+  });
+});
+
+const logout = async () => {
+  localStorage.removeItem("token");
+  userStore.$reset();
+};
 </script>
 
 <template>
-  <div class="user-tools" :class="{ active: userToolsActive }" @click="activeControl">
+  <div
+    class="user-tools"
+    :class="{ active: userToolsActive }"
+    @click="activeControl"
+  >
     <div class="user-photo">
-      <img :src="userStore.image" alt="user-photo">
+      <img :src="userStore.image" alt="user-photo" />
     </div>
     <div class="user-dropdown">
       <ul>
@@ -34,7 +45,7 @@ onMounted(() => {
         <li>
           <router-link to="/settings">設定與資料</router-link>
         </li>
-        <li>
+        <li @click="logout">
           <router-link to="/login">登出</router-link>
         </li>
       </ul>
@@ -61,7 +72,7 @@ onMounted(() => {
     cursor: pointer
     img
       +fit
-    
+
   .user-dropdown
     position: absolute
     z-index: 2
