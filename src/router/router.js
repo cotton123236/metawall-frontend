@@ -13,6 +13,10 @@ const router = createRouter({
           component: () => import('./../pages/Home.vue'),
         },
         {
+          path: 'settings',
+          component: () => import('./../pages/Settings.vue')
+        },
+        {
           path: ':id',
           component: () => import('./../pages/Profile.vue')
         }

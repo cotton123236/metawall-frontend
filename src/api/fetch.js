@@ -63,10 +63,10 @@ export function getUserById(data) {
 //   }
 // }
 
-export function getPostByRoute(data) {
+export function getPostByRoute(route) {
   let sendUrl = url.post
-  if (data) {
-    const { query } = data
+  if (route) {
+    const { query } = route
     const keys = Object.keys(query)
     keys.forEach((key, i) => {
       if (i === 0) sendUrl += `?${key}=${query[key]}`

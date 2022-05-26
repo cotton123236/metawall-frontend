@@ -32,7 +32,7 @@ onMounted(() => {
           <router-link :to="userStore._id">查看個人檔案</router-link>
         </li>
         <li>
-          <router-link to="/">設定與資料</router-link>
+          <router-link to="/settings">設定與資料</router-link>
         </li>
         <li>
           <router-link to="/login">登出</router-link>
@@ -89,15 +89,16 @@ onMounted(() => {
       background-color: #fff
       overflow: hidden
     li
-      font-size: px(14)
-      font-weight: 300
-      letter-spacing: .02em
-      color: var(--dark-gray)
-      padding: 12px 20px
-      cursor: pointer
-      transition: background-color var(--trans-m)
-      &:hover
-        background-color: var(--dark-white)
       &.active
         background-color: var(--dark-white)
+      a
+        font-size: px(14)
+        font-weight: 300
+        letter-spacing: .02em
+        color: var(--dark-gray)
+        display: block
+        padding: 12px 20px
+        transition: background-color var(--trans-m)
+        &:hover
+          background-color: var(--dark-white)
 </style>
