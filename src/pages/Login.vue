@@ -112,7 +112,7 @@ watch(
   () => registerForm.value.password,
   (newVal, oldVal) => {
     errorMessage.value.password = !validator.isLength(newVal.trim(), { min: 8 })
-      ? "密碼需大於8位數"
+      ? "密碼需大於8個字元"
       : "";
   }
 );
@@ -177,7 +177,6 @@ const register = async () => {
   }
 
   const { data } = await signUp(registerForm.value);
-  console.log(data);
 
   if (data.status === "success") {
     localStorage.setItem("token", data.token);

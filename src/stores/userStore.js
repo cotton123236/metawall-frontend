@@ -5,6 +5,7 @@ export const useUserStore = defineStore('user', {
     _id: '',
     name: '',
     image: '',
+    gender: '',
     follows: [],
     likes: []
   }),
