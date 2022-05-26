@@ -34,8 +34,8 @@ const logout = async () => {
     :class="{ active: userToolsActive }"
     @click="activeControl"
   >
-    <div class="user-photo">
-      <img :src="userStore.image" alt="user-photo" />
+    <div class="headshot">
+      <img v-if="userStore.image" :src="userStore.image" alt="user-photo" />
     </div>
     <div class="user-dropdown">
       <ul>
@@ -64,14 +64,10 @@ const logout = async () => {
       transform: translate(-50%, 0)
       pointer-events: auto
 
-  .user-photo
+  .headshot
     width: 30px
     height: 30px
-    border-radius: 50%
-    overflow: hidden
     cursor: pointer
-    img
-      +fit
 
   .user-dropdown
     position: absolute

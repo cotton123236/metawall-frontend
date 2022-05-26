@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from '@vue/runtime-core'
+import { reactive, watch } from '@vue/runtime-core'
 import { useUserStore } from '../stores/userStore'
 
 
@@ -12,6 +12,10 @@ const userData = reactive({
   confirmPassword: '12345678',
 })
 
+watch(userData, () => {
+  console.log('test');
+})
+
 </script>
 
 <template>
@@ -19,7 +23,7 @@ const userData = reactive({
     <div class="headshot-wrap">
       <label class="headshot">
         <input type="file">
-        <img :src="userStore.image" alt="">
+        <img  v-if="userStore.image" :src="userStore.image" alt="">
       </label>
       <i class="icon-plus"></i>
     </div>
@@ -27,10 +31,12 @@ const userData = reactive({
       <div class="inner">
         <h2>編輯個人資料</h2>
         <form>
+          <!-- 使用者名稱 -->
           <label class="form-row" data-warning>
             <input id="name" type="text" required v-model="userData.name" />
             <span>使用者名稱</span>
           </label>
+          <!-- 使用者性別 -->
           <div class="form-row form-radio">
             <p>使用者性別</p>
             <label for="male">
@@ -52,15 +58,18 @@ const userData = reactive({
         </form>
         <h2>重新設定密碼</h2>
         <form>
+          <!-- 使用者密碼 -->
           <label class="form-row" data-warning>
             <input id="password" type="password" required v-model="userData.password" />
             <span>使用者密碼</span>
           </label>
+          <!-- 確認使用者密碼 -->
           <label class="form-row" data-warning>
             <input id="confirm-password" type="password" required v-model="userData.confirmPassword" />
             <span>確認使用者密碼</span>
           </label>
         </form>
+        <div class="rect-btn fill submit-btn">修改個人資料</div>
       </div>
     </div>
   </section>
@@ -81,6 +90,10 @@ section
   border-radius: 50%
   border: 10px solid var(--background)
   background-color: var(--background)
+  +rwdmax(767)
+    width: 120px
+    height: 120px
+    margin: 0 auto -60px
   .headshot
     position: relative
     box-shadow: 0 0 10px rgba(0, 0, 0, .3)
@@ -122,6 +135,8 @@ section
   background-color: var(--white)
   border-radius: 20px
   box-shadow: 0 0 10px rgba(0, 0, 0, .1)
+  +rwdmax(767)
+    padding: 100px 30px
   .inner
     max-width: 500px
     margin: auto
@@ -135,9 +150,13 @@ section
   form
     & + h2
       margin-top: 100px
+      +rwdmax(767)
+        margin-top: 60px
     .form-row
       & + .form-row
         margin-top: 40px
+      & + .form-radio
+        margin-top: 30px
       input[type="text"], input[type="password"]
         background-color: transparent
         border: none
@@ -155,4 +174,8 @@ section
       > label
         display: flex
         align-items: center
+  .submit-btn
+    margin: 80px auto 0
+    +rwdmax(767)
+      margin: 60px auto 0
 </style>

@@ -42,7 +42,7 @@ getUserById(id).then(res => {
     <!-- profile -->
     <div class="profile">
       <div class="headshot">
-        <img :src="user.image" alt="">
+        <img v-if="user.image" :src="user.image" alt="">
       </div>
       <div class="content">
         <div class="head">
@@ -89,12 +89,19 @@ getUserById(id).then(res => {
   border-radius: 0 100px 0 100px
   background-color: var(--white)
   box-shadow: 0 0 20px rgba(0, 0, 0, .1)
+  +rwdmax(767)
+    display: block
+    padding: 40px 30px
+    border-radius: 0 60px 0 60px
 
   .headshot
     width: 130px
     height: 130px
     background-color: #f5f5f5
     box-shadow: 0 0 15px rgba(0, 0, 0, .3)
+    +rwdmax(767)
+      width: 100px
+      height: 100px
 
   .content
     flex: 1
@@ -102,6 +109,10 @@ getUserById(id).then(res => {
     padding-top: 10px
     padding-left: 40px
     padding-right: 20px
+    +rwdmax(767)
+      padding-left: 0
+      padding-right: 0
+      padding-top: 30px
     .head
       display: flex
       align-items: center
@@ -118,6 +129,8 @@ getUserById(id).then(res => {
       border-radius: 20px
       box-shadow: 0 0 10px rgba(0, 0, 0, .2)
       cursor: pointer
+      +rwdmax(767)
+        margin-left: 0
       &.follow
         background-image: linear-gradient(to bottom, var(--primary-blue), #010f18)
         color: var(--white)

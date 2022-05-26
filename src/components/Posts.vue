@@ -1,5 +1,6 @@
 <script setup>
 import { useDateFormat } from './../utils/utils'
+import Comment from './Comment.vue'
 
 const props = defineProps({
   post: Object
@@ -10,11 +11,11 @@ const props = defineProps({
 <template>
   <div class="each-post">
     <div class="info">
-      <router-link class="headshot" :to="post.user._id">
-        <img :src="post.user.image" alt="user-photo">
+      <router-link class="headshot" :to="post.editor._id">
+        <img v-if="post.editor.image" :src="post.editor.image" alt="user-photo">
       </router-link>
       <div class="detail">
-        <router-link class="name" :to="post.user._id">{{ post.user.name }}</router-link>
+        <router-link class="name" :to="post.editor._id">{{ post.editor.name }}</router-link>
         <div class="date">{{ useDateFormat(post.createdAt) }}</div>
       </div>
       <div class="more-btn">
@@ -37,6 +38,21 @@ const props = defineProps({
         <i class="icon-share"></i>
       </div> -->
     </div>
+    <div class="comments">
+      <div class="self-comment">
+        <div class="headshot">
+          <!-- <img src="" alt=""> -->
+        </div>
+        <div class="content">
+          <span class="name">Wilson</span>
+          <p contenteditable="true"></p>
+          <!-- <textarea></textarea> -->
+        </div>
+      </div>
+      <div class="comments-list">
+        <Comment />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -56,7 +72,7 @@ const props = defineProps({
     position: relative
     display: flex
     align-items: center
-    padding: 20px 20px 0
+    padding: 20px 30px 0
   .headshot
     width: 50px
     height: 50px
@@ -86,24 +102,24 @@ const props = defineProps({
     i
       font-size: 20px
   .text
-    position: relative
     padding: 30px
-    &::after
-      position: absolute
-      left: 20px
-      width: calc(100% - 40px)
-      height: 1px
-      bottom: 0
-      display: block
-      content: ''
-      background-color: var(--dark-white)
     p
       font-size: px(14)
       line-height: 1.5
       color: var(--dark-gray)
   .tool
+    position: relative
     display: flex
     // padding: 0 20px
+    &::after
+      position: absolute
+      left: 20px
+      width: calc(100% - 40px)
+      height: 1px
+      top: 0
+      display: block
+      content: ''
+      background-color: var(--dark-white)
     > div
       width: 100%
       display: flex
@@ -120,4 +136,44 @@ const props = defineProps({
     .num
       font-size: px(13)
       margin-left: 10px
+  .comments
+    position: relative
+    padding: 20px 30px
+    &::after
+      position: absolute
+      left: 20px
+      width: calc(100% - 40px)
+      height: 1px
+      top: 0
+      display: block
+      content: ''
+      background-color: var(--dark-white)
+    .self-comment
+      display: flex
+      align-items: flex-start
+      .headshot
+        width: 40px
+        height: 40px
+      .content
+        width: 100%
+        .name
+          font-family: $code-font
+          font-size: px(14)
+          line-height: 1.5
+        p
+          font-size: px(14)
+          line-height: 1.5
+          color: var(--gray)
+          margin-top: 3px
+          width: 100%
+          background-color: var(--background)
+          border: none
+          resize: none
+          border-radius: 20px
+          padding: 5px 20px
+    .comments-list
+      margin-top: 20px
+    .each-comment
+      & + .each-comment
+        margin-top: 15px
 </style>
