@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from '@vue/runtime-core'
 import { useDateFormat } from './../utils/utils'
 import Comment from './Comment.vue'
 
@@ -6,16 +7,18 @@ const props = defineProps({
   post: Object
 })
 
+const isCommentOpen = ref(false)
+
 </script>
 
 <template>
   <div class="each-post">
     <div class="info">
       <router-link class="headshot" :to="post.editor._id">
-        <img v-if="post.editor.image" :src="post.editor.image" alt="user-photo">
+        <img v-if="post.editor.avatar" :src="post.editor.avatar" alt="user-photo">
       </router-link>
       <div class="detail">
-        <router-link class="name" :to="post.editor._id">{{ post.editor.name }}</router-link>
+        <router-link class="name" :to="post.editor._id">{{ post.editor.nickName }}</router-link>
         <div class="date">{{ useDateFormat(post.createdAt) }}</div>
       </div>
       <div class="more-btn">
@@ -30,7 +33,7 @@ const props = defineProps({
         <i class="icon-like"></i>
         <span class="num" v-if="post.likes.length">{{ post.likes.length }}</span>
       </div>
-      <div class="commit">
+      <div class="commit" @click="isCommentOpen = true">
         <i class="icon-commit"></i>
         <!-- <span class="num"></span> -->
       </div>
@@ -38,7 +41,7 @@ const props = defineProps({
         <i class="icon-share"></i>
       </div> -->
     </div>
-    <div class="comments">
+    <div class="comments" v-if="isCommentOpen">
       <div class="self-comment">
         <div class="headshot">
           <!-- <img src="" alt=""> -->

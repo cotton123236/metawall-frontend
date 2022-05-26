@@ -39,48 +39,15 @@ export function getMyProfile() {
   })
 }
 
-
-// get user by id
-// export const getUserById = async (userId) => {
-//   try {
-//     const res = await axios.get(`${url.user}/${userId}`)
-//     if (!res.data) return;
-//     return res.data
-//   }
-//   catch (err) {
-//     console.log(err)
-//   }
-// }
-
+// 取得使用者資料 by id
 export function getUserById(data) {
   return request({
-    url: `${url.user}/${data}`,
+    url: `${url.user}/profile/${data}`,
     method: 'get'
   })
 }
 
-// get posts by route queries
-// export const getPostByRoute = async (route) => {
-//   try {
-//     let postUrl = url.post
-//     if (route) {
-//       const { query } = route
-//       const keys = Object.keys(query)
-//       keys.forEach((key, i) => {
-//         if (i === 0) postUrl += `?${key}=${query[key]}`
-//         else postUrl += `&${key}=${query[key]}`
-//       })
-//     }
-//     // axios data
-//     const res = await axios.get(postUrl)
-//     if (!res.data) return;
-//     return res.data
-//   }
-//   catch (err) {
-//     console.log(err)
-//   }
-// }
-
+// 取得所有貼文 by route query
 export function getPostByRoute(route) {
   let sendUrl = url.post
   if (route) {
@@ -97,18 +64,15 @@ export function getPostByRoute(route) {
   })
 }
 
-// post a post
-// export const postPostByData = async (data) => {
-//   try {
-//     const res = await axios.post(url.post, data)
-//     if (!res.data) return;
-//     return res.data
-//   }
-//   catch (err) {
-//     console.log(err)
-//   }
-// }
+// 取得所有貼文 by id
+export function getPostById(id) {
+  return request({
+    url: `${url.post}/${id}`,
+    method: 'get'
+  })
+}
 
+// post 貼文
 export function postPostByData(data) {
   return request({
     url: url.post,

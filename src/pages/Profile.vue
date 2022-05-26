@@ -3,11 +3,10 @@ import { ref, reactive } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
-import { getUserById } from './../api/fetch'
+import { getUserById, getPostById } from './../api/fetch'
 import Posts from './../components/Posts.vue'
 
 
-const { VITE_API_URL } = import.meta.env
 const route = useRoute()
 const postStore = usePostStore()
 
@@ -19,21 +18,35 @@ const isFollowing = ref(false)
 
 const { id } = route.params
 
-const user = reactive({
+// 取得 profile 使用者
+const profileUser = reactive({
   _id: '',
-  name: '',
-  image: '',
+  nickName: '',
+  avatar: '',
   follows: [],
   likes: []
 })
 
-getUserById(id).then(res => {
-  if (!res.data) return;
-  console.log(res.data)
-  Object.assign(user, res.data)
-}).catch((err) => {
-  console.log(err)
-})
+const getProfileUser = async () => {
+  const { data } = await getUserById(id)
+  // console.log(data)
+  if (data.status !== 'success') return;
+  Object.assign(profileUser, data.data)
+}
+
+getProfileUser()
+
+// 取得 profile 貼文
+const profilePost = reactive([])
+
+const getProfilePost = async () => {
+  const { data } = await getPostById(id)
+  // console.log(data)
+  if (data.status !== 'success') return;
+  Object.assign(profilePost, data.data.list)
+}
+
+getProfilePost()
 
 </script>
 
@@ -42,11 +55,11 @@ getUserById(id).then(res => {
     <!-- profile -->
     <div class="profile">
       <div class="headshot">
-        <img v-if="user.image" :src="user.image" alt="">
+        <img v-if="profileUser.avatar" :src="profileUser.avatar" alt="">
       </div>
       <div class="content">
         <div class="head">
-          <span class="name">{{ user.name }}</span>
+          <span class="name">{{ profileUser.nickName }}</span>
           <div
             class="follow-btn"
             :class="isFollowing ? 'unfollow' : 'follow'"
@@ -63,9 +76,9 @@ getUserById(id).then(res => {
     </div>
     <!-- post-content -->
     <div class="post-content">
-      <template v-if="posts.length">
+      <template v-if="profilePost.length">
         <Posts
-          v-for="post in posts"
+          v-for="post in profilePost"
           :key="post._id"
           :post="post"
         />
