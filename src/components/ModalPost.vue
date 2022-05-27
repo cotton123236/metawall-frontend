@@ -1,10 +1,13 @@
 <script setup>
-import { inject, ref } from '@vue/runtime-core'
+// import { onUnmounted, reactive, ref } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
-import { getPostByRoute, postPostByData } from './../api/fetch'
+import { getPostsByRoute, patchEditPost, postNewPost } from './../api/fetch'
+// components
+import RichEditor from './../components/RichEditor.vue'
 
 
 const route = useRoute()
@@ -13,30 +16,28 @@ const modalStore = useModalStore()
 const postStore = usePostStore()
 
 const { closeModalPost, openModalLoader, closeModalLoader } = modalStore
-const { patchPosts } = postStore
+const { patchPosts, patchPostingData } = postStore
+const { postingData } = storeToRefs(postStore)
 
-// post data handler
-const postContent = ref('')
+// 貼文資料處理與發送
+const isNewPost = postingData.value.content === ''
 
-const postNewPost = async () => {
-  if (!postContent.value) return;
+const submitPost = async () => {
+  if (!postingData.value.content) return;
+  // 打開 loader
   openModalLoader()
-  const postData = {
-    content: postContent.value,
-    user: userStore._id
-  }
-  try {
-    await postPostByData(postData)
-    closeModalLoader()
-    closeModalPost()
-    const { data } = await getPostByRoute(route)
-    // patch data
-    if (data.status !== 'success') return;
+  // 發送 request (新增或編輯)
+  const { data: submitData } = isNewPost ? await postNewPost(postingData.value) : await patchEditPost(postingData.value)
+  // 關閉燈箱
+  closeModalLoader()
+  closeModalPost()
+  // 若成功就重整畫面
+  if (submitData.status === 'success') {
+    const { data } = await getPostsByRoute(route)
     patchPosts(data.data.list)
   }
-  catch(err) {
-    console.log(err)
-  }
+  // 清空 postStore 資料
+  patchPostingData({ _id: '', content: '', image: [] })
 }
 
 </script>
@@ -58,14 +59,15 @@ const postNewPost = async () => {
             <div class="name">{{ userStore.name }}</div>
           </div>
           <div class="content">
-            <textarea placeholder="在想些什麼呢？" v-model="postContent"></textarea>
+            <RichEditor class="editor" v-model="postingData.content" />
+            <!-- <textarea placeholder="在想些什麼呢？" v-model="postingData.content"></textarea> -->
           </div>
         </div>
         <div class="modal-foot">
           <div
             class="rect-btn fill"
-            :class="{ disable: !postContent }"
-            @click="postNewPost"
+            :class="{ disable: !postingData.content }"
+            @click="submitPost"
           >發布貼文</div>
         </div>
       </div>
@@ -127,7 +129,7 @@ const postNewPost = async () => {
     .name
       font-family: $code-font
       line-height: 1.5
-    textarea
+    .editor
       resize: none
       width: 100%
       min-height: 18vh

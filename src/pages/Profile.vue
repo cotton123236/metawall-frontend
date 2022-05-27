@@ -3,15 +3,11 @@ import { ref, reactive } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
-import { getUserById, getPostById } from './../api/fetch'
+import { getProfileById, getPostsById } from './../api/fetch'
 import Posts from './../components/Posts.vue'
 
 
 const route = useRoute()
-const postStore = usePostStore()
-
-const { posts } = storeToRefs(postStore)
-
 
 // test
 const isFollowing = ref(false)
@@ -28,7 +24,7 @@ const profileUser = reactive({
 })
 
 const getProfileUser = async () => {
-  const { data } = await getUserById(id)
+  const { data } = await getProfileById(id)
   // console.log(data)
   if (data.status !== 'success') return;
   Object.assign(profileUser, data.data)
@@ -40,7 +36,7 @@ getProfileUser()
 const profilePost = reactive([])
 
 const getProfilePost = async () => {
-  const { data } = await getPostById(id)
+  const { data } = await getPostsById(id)
   // console.log(data)
   if (data.status !== 'success') return;
   Object.assign(profilePost, data.data.list)
