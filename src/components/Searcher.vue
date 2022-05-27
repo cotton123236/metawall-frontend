@@ -2,7 +2,7 @@
 import { ref } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { appendQuery } from '../utils/utils'
-import { getPostByRoute } from './../api/fetch'
+import { getPostsByRoute } from './../api/fetch'
 import { usePostStore } from '../stores/postStore'
 
 
@@ -21,7 +21,7 @@ const searchPosts = async () => {
   }
   await appendQuery(route, queries)
   // then get data
-  const { data } = await getPostByRoute(route)
+  const { data } = await getPostsByRoute(route)
   // patch data
   if (data.status !== 'success') return;
   patchPosts(data.data.list)

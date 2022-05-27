@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
-import { getPostByRoute } from './../api/fetch'
+import { getPostsByRoute } from './../api/fetch'
 import { appendQuery } from './../utils/utils'
 import Posts from './../components/Posts.vue'
 
@@ -16,7 +16,7 @@ const { patchPosts } = postStore
 
 // post handler
 const getAllPosts = async () => {
-  const { data } = await getPostByRoute(route)
+  const { data } = await getPostsByRoute(route)
   if (data.status !== 'success') return;
   patchPosts(data.data.list)
 }

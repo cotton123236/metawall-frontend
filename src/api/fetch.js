@@ -39,8 +39,8 @@ export function getMyProfile() {
   })
 }
 
-// 取得使用者資料 by id
-export function getUserById(data) {
+// 取得個人資料（別人） by id
+export function getProfileById(data) {
   return request({
     url: `${url.user}/profile/${data}`,
     method: 'get'
@@ -48,7 +48,7 @@ export function getUserById(data) {
 }
 
 // 取得所有貼文 by route query
-export function getPostByRoute(route) {
+export function getPostsByRoute(route) {
   let sendUrl = url.post
   if (route) {
     const { query } = route
@@ -65,18 +65,31 @@ export function getPostByRoute(route) {
 }
 
 // 取得所有貼文 by id
-export function getPostById(id) {
+export function getPostsById(id) {
   return request({
     url: `${url.post}/${id}`,
     method: 'get'
   })
 }
 
-// post 貼文
-export function postPostByData(data) {
+// 新增貼文
+export function postNewPost(data) {
   return request({
     url: url.post,
     method: 'post',
     data
+  })
+}
+
+// 修改貼文
+export function patchEditPost(data) {
+  const { _id, content, image } = data
+  return request({
+    url: `${url.post}/${_id}`,
+    method: 'patch',
+    data: {
+      content,
+      image
+    }
   })
 }

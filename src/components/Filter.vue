@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { useFilterStore } from '../stores/filterStores'
 import { appendQuery } from '../utils/utils'
-import { getPostByRoute } from './../api/fetch'
+import { getPostsByRoute } from './../api/fetch'
 import { usePostStore } from './../stores/postStore'
 
 
@@ -39,7 +39,7 @@ const changeSelected = async (li, index) => {
   // push query
   await appendQuery(route, { sort })
   // then get data
-  const { data } = await getPostByRoute(route)
+  const { data } = await getPostsByRoute(route)
   if (data.data.status !== 'success') return;
   patchPosts(data.data.list)
 }
