@@ -164,6 +164,11 @@ const changePassword = async () => {
               <span>未知宇宙生物</span>
             </label>
           </div>
+          <div class="api-error">{{ apiErrorMessageProfile }}</div>
+          <div class="api-success">{{ apiSuccessMessageProfile }}</div>
+          <div class="rect-btn fill submit-btn" @click="changeProfile">
+            修改個人資料
+          </div>
         </form>
         <h2>重新設定密碼</h2>
         <form>
@@ -196,9 +201,10 @@ const changePassword = async () => {
           </label>
           <div class="api-error">{{ apiErrorMessagePassword }}</div>
           <div class="api-success">{{ apiSuccessMessagePassword }}</div>
-          <div class="rect-btn fill" @click="changePassword">保存</div>
         </form>
-        <div class="rect-btn fill submit-btn">修改個人資料</div>
+        <div class="rect-btn fill submit-btn" @click="changePassword">
+          修改密碼
+        </div>
       </div>
     </div>
   </section>
@@ -309,16 +315,16 @@ section
       margin: 60px auto 0
   .rect-btn
     margin-top: 40px
-    .api-error
-      display: flex
-      justify-content: center
-      margin-top: 20px
-      color: var(--warning)
-      font-size: 0.875rem
-    .api-success
-      display: flex
-      justify-content: center
-      margin-top: 20px
-      color: var(--primary-blue-light)
-      font-size: 0.875rem
+  .api-error
+    display: flex
+    justify-content: center
+    margin-top: 20px
+    color: var(--warning)
+    font-size: 0.875rem
+  .api-success
+    display: flex
+    justify-content: center
+    margin-top: 20px
+    color: var(--primary-blue-light)
+    font-size: 0.875rem
 </style>
