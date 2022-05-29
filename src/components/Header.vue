@@ -1,15 +1,14 @@
 <script setup>
-import { reactive } from '@vue/runtime-core'
-import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
+import { reactive } from "@vue/runtime-core";
+import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
 // components
-import Filter from './../components/Filter.vue'
-import Searcher from './../components/Searcher.vue'
-import UserTools from './../components/UserTools.vue'
+import Filter from "./../components/Filter.vue";
+import Searcher from "./../components/Searcher.vue";
+import UserTools from "./../components/UserTools.vue";
 // images
-import LogoLarge from './../assets/image/logo-large.svg'
-import Logo from './../assets/image/logo.svg'
-
+import LogoLarge from "./../assets/image/logo-large.svg";
+import Logo from "./../assets/image/logo.svg";
 </script>
 
 <template>
@@ -18,8 +17,8 @@ import Logo from './../assets/image/logo.svg'
       <!-- logo -->
       <router-link class="logo" to="/">
         <picture>
-          <source :srcset="LogoLarge" media="(min-width: 768px)">
-          <img :src="Logo" alt="">
+          <source :srcset="LogoLarge" media="(min-width: 768px)" />
+          <img :src="Logo" alt="" />
         </picture>
       </router-link>
       <!-- searcher -->

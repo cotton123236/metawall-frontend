@@ -1,20 +1,35 @@
 <script setup>
-import { ref } from '@vue/runtime-core'
-import { storeToRefs } from 'pinia'
-import { useModalStore } from '../stores/modalStore'
-import Header from './../components/Header.vue'
-import Navigation from './../components/Navigation.vue'
-import ModalPost from './../components/ModalPost.vue'
-import ModalLoader from './../components/ModalLoader.vue'
-import ModalFollows from './../components/ModalFollows.vue'
-import ModalLikes from './../components/ModalLikes.vue'
+import { ref } from "@vue/runtime-core";
+import { storeToRefs } from "pinia";
+import { useModalStore } from "../stores/modalStore";
+import { getMyProfile } from "./../api/fetch";
+import { useUserStore } from "./../stores/userStore";
+import Header from "./../components/Header.vue";
+import Navigation from "./../components/Navigation.vue";
+import ModalPost from "./../components/ModalPost.vue";
+import ModalLoader from "./../components/ModalLoader.vue";
+import ModalFollows from "./../components/ModalFollows.vue";
+import ModalLikes from "./../components/ModalLikes.vue";
+const userStore = useUserStore();
+const { patchUser } = userStore;
+const token = localStorage.getItem("token");
 
+const { data } = await getMyProfile();
+if (data.status === "success") {
+  patchUser({
+    _id: data.data._id,
+    name: data.data.nickName,
+    image: data.data.hasOwnProperty("avatar")
+      ? data.data.avatar
+      : "/assets/image/logo-large.svg",
+  });
+}
 
 // ModalPost control
-const modalStore = useModalStore()
+const modalStore = useModalStore();
 
-const { useModalPost, useModalFollows, useModalLikes, useModalLoader } = storeToRefs(modalStore)
-
+const { useModalPost, useModalFollows, useModalLikes, useModalLoader } =
+  storeToRefs(modalStore);
 </script>
 
 <template>
@@ -103,5 +118,4 @@ main
     opacity: 1
     clip-path: polygon(0 0, 100% 0, 100% 115%, 0 100%)
     transition: opacity .6s var(--trans-s), clip-path .6s var(--trans-s)
-
 </style>
