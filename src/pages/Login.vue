@@ -19,6 +19,8 @@ const errorMessage = ref({
   confirmPassword: "",
 });
 
+const apiErrorMessage = ref(" ");
+
 const router = useRouter();
 // login mode control
 const signupSwiperInstance = ref(null);
@@ -29,6 +31,7 @@ const slidePrev = () => {
   signupSwiperInstance.value.slidePrev();
 };
 const slideNext = () => {
+  apiErrorMessage.value = "";
   signupSwiperInstance.value.slideNext();
 };
 
@@ -66,7 +69,6 @@ const login = async () => {
   }
 
   const { data } = await signIn(loginForm.value);
-
   if (data.status === "success") {
     localStorage.setItem("token", data.token);
 
@@ -85,6 +87,9 @@ const login = async () => {
       errorMessage.value.email = "";
       errorMessage.value.password = "";
     }
+  } else {
+    console.log("data", data);
+    apiErrorMessage.value = data.message;
   }
 };
 
@@ -239,7 +244,7 @@ const register = async () => {
                 />
                 <span>Password</span>
               </label>
-
+              <div class="api-error">{{ apiErrorMessage }}</div>
               <div class="rect-btn fill login-btn" @click="login">登入</div>
               <div class="rect-btn signup-btn" @click="slideNext">註冊</div>
             </form>
@@ -248,7 +253,6 @@ const register = async () => {
           <swiper-slide>
             <p class="brief">註冊加入元宇宙！</p>
             <form>
-
               <label class="form-row" :data-warning="errorMessage.email">
                 <input
                   id="signup-email"
@@ -267,7 +271,10 @@ const register = async () => {
                 />
                 <span>Password</span>
               </label>
-              <label class="form-row" :data-warning="errorMessage.confirmPassword">
+              <label
+                class="form-row"
+                :data-warning="errorMessage.confirmPassword"
+              >
                 <input
                   id="confirm-password"
                   type="password"
@@ -276,6 +283,7 @@ const register = async () => {
                 />
                 <span>Confirm Password</span>
               </label>
+              <div class="api-error">{{ apiErrorMessage }}</div>
               <div class="rect-btn signup-btn fill" @click="registerPreCheck">
                 註冊
               </div>
@@ -295,6 +303,7 @@ const register = async () => {
                 />
                 <span>Name</span>
               </label>
+              <div class="api-error">{{ apiErrorMessage }}</div>
               <div class="rect-btn signup-btn fill" @click="register">
                 開啟元宇宙
               </div>
@@ -339,6 +348,12 @@ main
     flex-direction: column
     margin-top: 40px
     width: 100%
+  .api-error
+    display: flex
+    justify-content: center
+    margin-top: 20px
+    color: var(--warning)
+    font-size: 0.875rem
   .rect-btn
     margin-top: 40px
     & + .rect-btn
