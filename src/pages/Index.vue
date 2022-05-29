@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "@vue/runtime-core";
+import { ref, onMounted } from "@vue/runtime-core";
 import { storeToRefs } from "pinia";
 import { useModalStore } from "../stores/modalStore";
 import { getMyProfile } from "./../api/fetch";
@@ -12,18 +12,31 @@ import ModalFollows from "./../components/ModalFollows.vue";
 import ModalLikes from "./../components/ModalLikes.vue";
 const userStore = useUserStore();
 const { patchUser } = userStore;
-const token = localStorage.getItem("token");
 
-const { data } = await getMyProfile();
-if (data.status === "success") {
-  patchUser({
-    _id: data.data._id,
-    name: data.data.nickName,
-    image: data.data.hasOwnProperty("avatar")
-      ? data.data.avatar
-      : "/assets/image/logo-large.svg",
-  });
+// 若沒有 token，則跳回登入頁
+const token = localStorage.getItem("token");
+if (!token) {
+  router.push({ path: "/login" });
 }
+
+// 若姓名沒資料，則打 api 取得
+onMounted(() => {
+  if (!userStore.name) {
+    gerProfile();
+  }
+});
+const gerProfile = async () => {
+  const { data } = await getMyProfile();
+  if (data.status === "success") {
+    patchUser({
+      _id: data.data._id,
+      name: data.data.nickName,
+      image: data.data.hasOwnProperty("avatar")
+        ? data.data.avatar
+        : "@/assets/image/logo.png",
+    });
+  }
+};
 
 // ModalPost control
 const modalStore = useModalStore();

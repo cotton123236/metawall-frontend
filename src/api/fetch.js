@@ -47,6 +47,15 @@ export function getProfileById(data) {
   })
 }
 
+// 修改密碼
+export function updatePassword(data) {
+  return request({
+    url: `${url.user}/updatePassword`,
+    method: 'patch',
+    data
+  })
+}
+
 // 取得所有貼文 by route query
 export function getPostsByRoute(route) {
   let sendUrl = url.post
