@@ -13,12 +13,6 @@ import ModalLikes from "./../components/ModalLikes.vue";
 const userStore = useUserStore();
 const { patchUser } = userStore;
 
-// 若沒有 token，則跳回登入頁
-const token = localStorage.getItem("token");
-if (!token) {
-  router.push({ path: "/login" });
-}
-
 // 若姓名沒資料，則打 api 取得
 onMounted(() => {
   if (!userStore.name) {
