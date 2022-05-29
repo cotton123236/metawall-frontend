@@ -93,3 +93,19 @@ export function patchEditPost(data) {
     }
   })
 }
+
+// 取得個人追蹤列表
+export function getFollowList() {
+  return request({
+    url: `${url.user}/follows`,
+    method: 'get'
+  })
+}
+
+// 取消追蹤
+export function deleteFollowByperson(id) {
+  return request({
+    url: `${url.user}/follows/${id}`,
+    method: 'delete'
+  })
+}
