@@ -36,6 +36,7 @@ const logout = async () => {
   >
     <div class="user-photo">
       <img :src="userStore.image" alt="user-photo" />
+      <img src="../assets/image/logo-large.svg" alt="user-photo" />
     </div>
     <div class="user-dropdown">
       <ul>

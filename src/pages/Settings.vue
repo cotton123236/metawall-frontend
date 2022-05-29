@@ -1,25 +1,24 @@
 <script setup>
-import { reactive } from '@vue/runtime-core'
-import { useUserStore } from '../stores/userStore'
+import { reactive } from "@vue/runtime-core";
+import { useUserStore } from "../stores/userStore";
 
-
-const userStore = useUserStore()
+const userStore = useUserStore();
 
 const userData = reactive({
-  name: 'Wilson',
+  name: "Wilson",
   gender: 2,
-  password: '12345678',
-  confirmPassword: '12345678',
-})
-
+  old_password: "",
+  password: "12345678",
+  confirmPassword: "12345678",
+});
 </script>
 
 <template>
   <section>
     <div class="headshot-wrap">
       <label class="headshot">
-        <input type="file">
-        <img :src="userStore.image" alt="">
+        <input type="file" />
+        <img :src="userStore.image" alt="" />
       </label>
       <i class="icon-plus"></i>
     </div>
@@ -34,17 +33,35 @@ const userData = reactive({
           <div class="form-row form-radio">
             <p>使用者性別</p>
             <label for="male">
-              <input name="gender" id="male" value="0" type="radio" v-model="userData.gender">
+              <input
+                name="gender"
+                id="male"
+                value="0"
+                type="radio"
+                v-model="userData.gender"
+              />
               <div class="fake-radio"></div>
               <span>男性</span>
             </label>
             <label for="female">
-              <input name="gender" id="female" value="1" type="radio" v-model="userData.gender">
+              <input
+                name="gender"
+                id="female"
+                value="1"
+                type="radio"
+                v-model="userData.gender"
+              />
               <div class="fake-radio"></div>
               <span>女性</span>
             </label>
             <label for="unknown">
-              <input name="gender" id="unknown" value="2" type="radio" v-model="userData.gender">
+              <input
+                name="gender"
+                id="unknown"
+                value="2"
+                type="radio"
+                v-model="userData.gender"
+              />
               <div class="fake-radio"></div>
               <span>未知宇宙生物</span>
             </label>
@@ -53,13 +70,35 @@ const userData = reactive({
         <h2>重新設定密碼</h2>
         <form>
           <label class="form-row" data-warning>
-            <input id="password" type="password" required v-model="userData.password" />
+            <input
+              id="password"
+              type="password"
+              required
+              v-model="userData.old_password"
+            />
+            <span>原密碼</span>
+          </label>
+          <label class="form-row" data-warning>
+            <input
+              id="password"
+              type="password"
+              required
+              v-model="userData.password"
+            />
             <span>使用者密碼</span>
           </label>
           <label class="form-row" data-warning>
-            <input id="confirm-password" type="password" required v-model="userData.confirmPassword" />
+            <input
+              id="confirm-password"
+              type="password"
+              required
+              v-model="userData.confirmPassword"
+            />
             <span>確認使用者密碼</span>
           </label>
+          <div class="rect-btn fill login-btn" @click="changePassword">
+            保存
+          </div>
         </form>
       </div>
     </div>

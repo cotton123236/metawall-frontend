@@ -79,7 +79,7 @@ const login = async () => {
         name: profileData.data.nickName,
         image: profileData.data.hasOwnProperty("avatar")
           ? profileData.data.avatar
-          : "",
+          : "/assets/image/logo-large.svg",
       });
       router.push({ path: "/" });
 
