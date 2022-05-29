@@ -39,6 +39,15 @@ export function getMyProfile() {
   })
 }
 
+// 修改密碼
+export function updatePassword(data) {
+  return request({
+    url: `${url.user}/updatePassword`,
+    method: 'patch',
+    data
+  })
+}
+
 
 // get user by id
 // export const getUserById = async (userId) => {
