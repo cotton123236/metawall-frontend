@@ -70,7 +70,7 @@ const login = async () => {
 
   const { data } = await signIn(loginForm.value);
   if (data.status === "success") {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("token", data.data.token);
 
     const { data: profileData } = await getMyProfile();
     if (profileData.status === "success") {
@@ -169,6 +169,7 @@ const registerPreCheck = async () => {
   const { data } = await signUpCheck(registerForm.value);
 
   if (data.status === "success") {
+    apiErrorMessage.value = "";
     slideNext();
   }
 };
@@ -184,7 +185,7 @@ const register = async () => {
   const { data } = await signUp(registerForm.value);
 
   if (data.status === "success") {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("token", data.data.token);
 
     const { data: profileData } = await getMyProfile();
     if (profileData.status === "success") {
