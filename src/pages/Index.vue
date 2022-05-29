@@ -33,7 +33,7 @@ const gerProfile = async () => {
       name: data.data.nickName,
       image: data.data.hasOwnProperty("avatar")
         ? data.data.avatar
-        : "@/assets/image/logo.png",
+        : "../assets/image/logo.png",
     });
   }
 };
