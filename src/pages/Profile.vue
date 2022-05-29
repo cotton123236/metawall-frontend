@@ -3,11 +3,19 @@ import { ref, reactive } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
+import { useUserStore } from './../stores/userStore'
 import { getProfileById, getPostsById } from './../api/fetch'
 import Posts from './../components/Posts.vue'
+import { 
+  getFollowList,
+  postFollowByperson,
+  deleteFollowByperson 
+} from '../api/fetch'
 
-
+const userStore = useUserStore()
 const route = useRoute()
+
+const { patchUser } = userStore;
 
 // test
 const isFollowing = ref(false)
@@ -25,7 +33,7 @@ const profileUser = reactive({
 
 const getProfileUser = async () => {
   const { data } = await getProfileById(id)
-  // console.log(data)
+  console.log(data)
   if (data.status !== 'success') return;
   Object.assign(profileUser, data.data)
 }
@@ -37,12 +45,47 @@ const profilePost = reactive([])
 
 const getProfilePost = async () => {
   const { data } = await getPostsById(id)
-  // console.log(data)
+  console.log(data)
   if (data.status !== 'success') return;
   Object.assign(profilePost, data.data.list)
 }
 
 getProfilePost()
+
+// 判斷否有追蹤
+const getFollow = async () => {
+  const { data } =  await getFollowList();
+  if (data.status !== 'success') return
+  if (data.data.length === 0 )return
+  for (let list of data.data.list) {
+    for(let followId of list.following){
+      if(followId._id === id) {
+        isFollowing.value = true
+      } else {
+        isFollowing.value = false
+      }
+    }
+  }
+  patchUser({
+    follows: data.data.list
+  })
+}
+
+getFollow()
+
+// 追蹤
+const whetherToFollow = async () => {
+  if (isFollowing.value) {
+    const { data } = await deleteFollowByperson(id);
+    if (data.status !== 'success') return;
+    isFollowing.value = false;
+  } else {
+    const { data } = await postFollowByperson(id)
+    console.log('data', data);
+    if (data.status !== 'success') return;
+    isFollowing.value = true;
+  }
+}
 
 </script>
 
@@ -59,6 +102,7 @@ getProfilePost()
           <div
             class="follow-btn"
             :class="isFollowing ? 'unfollow' : 'follow'"
+            @click="whetherToFollow"
           >
             {{ isFollowing ? '取消追蹤' : '追蹤' }}
           </div>

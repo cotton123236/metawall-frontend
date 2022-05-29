@@ -120,6 +120,14 @@ export function getFollowList() {
   })
 }
 
+// 追蹤
+export function postFollowByperson(id) {
+  return request({
+    url: `${url.user}/follows/${id}`,
+    method: 'post'
+  })
+}
+
 // 取消追蹤
 export function deleteFollowByperson(id) {
   return request({
@@ -127,7 +135,6 @@ export function deleteFollowByperson(id) {
     method: 'delete'
   })
 }
-
 
 // 上傳頭像
 export function uploadAvatar(data) {
@@ -138,5 +145,21 @@ export function uploadAvatar(data) {
       'Content-Type': 'multipart/form-data'
     },
     data
+  })
+}
+
+// 取得個人收藏列表
+export function getLikeList() {
+  return request({
+    url: `${url.post}/likes`,
+    method: 'get'
+  })
+}
+
+// 新增按讚
+export function putLike(id) {
+  return request({
+    url: `${url.post}/likes/${id}`,
+    method: 'put'
   })
 }

@@ -1,7 +1,9 @@
 <script setup>
+import { ref } from '@vue/runtime-core'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from '../stores/modalStore'
+import { getLikeList } from '../api/fetch'
 
 import Posts from './../components/Posts.vue'
 
@@ -9,9 +11,24 @@ import Posts from './../components/Posts.vue'
 const userStore = useUserStore()
 const modalStore = useModalStore()
 
+const { patchUser } = userStore;
 const { closeModalLikes } = modalStore
+let errorMessage = ref('');
 
-console.log(userStore.likes)
+const getLike = async () => {
+  const { data } = await getLikeList();
+  if (data.status !== 'success') return
+  if(data.data.list.length === 0) {
+    errorMessage.value =  '無收藏貼文'
+    return
+  }
+  patchUser({
+    likes: data.data.list
+  })
+}
+
+getLike()
+
 </script>
 
 <template>
@@ -24,11 +41,11 @@ console.log(userStore.likes)
           <span>收藏貼文</span>
         </div>
         <div class="modal-body">
-          <!-- <Posts
+          <Posts
             v-for="post in userStore.likes"
             :key="post._id"
             :post="post"
-          /> -->
+          />
         </div>
       </div>
     </div>

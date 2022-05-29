@@ -28,11 +28,7 @@ const getFollow = async () => {
 // 取消追蹤
 const deleteFollow = async (id) => {
   const { data } = await deleteFollowByperson(id);
-  console.log('data', data)
   if (data.status !== 'success') return;
-  patchUser({
-    follows: data
-  })
   getFollow()
 }
 
@@ -55,16 +51,18 @@ getFollow()
               v-for="follow in userStore.follows"
               :key="follow._id"
             >
-              <div class="info">
-                <div class="headshot">
-                  <img :src="follow.image" alt="user-photo">
+              <template v-if="follow?.following">
+                <div class="info" v-for="following in follow.following">
+                  <div class="headshot">
+                    <img :src="follow.image" alt="user-photo">
+                  </div>
+                  <div class="detail">
+                    <div class="name">{{ following?.nickName }}</div>
+                    <div class="date">追蹤於 - {{ useDateFormat('2022-05-10T09:23:26.413Z') }}</div>
+                  </div>
+                  <div class="unfollow-btn" @click="deleteFollow(following._id)">取消追蹤</div>
                 </div>
-                <div class="detail">
-                  <div class="name">{{ follow.following[0].nickName }}</div>
-                  <div class="date">追蹤於 - {{ useDateFormat('2022-05-10T09:23:26.413Z') }}</div>
-                </div>
-                <div class="unfollow-btn" @click="deleteFollow(follow.following[0]._id)">取消追蹤</div>
-              </div>
+              </template>              
             </li>
           </ul>
         </div>
