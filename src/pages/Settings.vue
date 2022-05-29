@@ -1,29 +1,120 @@
 <script setup>
-import { reactive, watch } from '@vue/runtime-core'
-import { useUserStore } from '../stores/userStore'
+import { reactive, ref } from "@vue/runtime-core";
+import { watch } from "vue";
+import { useUserStore } from "../stores/userStore";
+import { updatePassword } from "../api/fetch";
+import validator from "validator";
 
+const userStore = useUserStore();
 
-const userStore = useUserStore()
+// 錯誤訊息
+const errorMessage = ref({
+  nickName: "",
+  email: "",
+  old_password: "",
+  password: "",
+  confirm_password: "",
+});
+
+const apiErrorMessagePassword = ref(" ");
+const apiSuccessMessagePassword = ref(" ");
 
 const userData = reactive({
-  name: 'Wilson',
+  name: "Wilson",
   gender: 2,
-  password: '12345678',
-  confirmPassword: '12345678',
-})
+  old_password: "",
+  password: "12345678",
+  confirm_password: "12345678",
+});
 
-watch(userData, () => {
-  console.log('test');
-})
+const passwordForm = ref({
+  old_password: "",
+  password: "",
+  confirm_password: "",
+});
 
+// 監看 old_password 格式
+watch(
+  () => passwordForm.value.old_password,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      apiSuccessMessagePassword.value = "";
+    }
+
+    errorMessage.value.old_password = !newVal.trim() ? "請填寫內容" : "";
+  }
+);
+
+// 監看 password 格式
+watch(
+  () => passwordForm.value.password,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      apiSuccessMessagePassword.value = "";
+    }
+    errorMessage.value.password = !validator.isLength(newVal.trim(), { min: 8 })
+      ? "密碼少於8個字元"
+      : "";
+  }
+);
+
+// 監看 confirm_password 格式
+watch(
+  () => passwordForm.value.confirm_password,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      apiSuccessMessagePassword.value = "";
+    }
+    errorMessage.value.confirm_password =
+      passwordForm.value.password.trim() !== newVal.trim() ? "密碼不一致" : "";
+  }
+);
+const changePassword = async () => {
+  // 驗證：內容不可為空
+  if (
+    !passwordForm.value.old_password.trim() ||
+    !passwordForm.value.password.trim() ||
+    !passwordForm.value.confirm_password.trim()
+  ) {
+    errorMessage.value.old_password = "請填寫內容";
+    errorMessage.value.password = "請填寫內容";
+    errorMessage.value.confirm_password = "請填寫內容";
+    return;
+  }
+
+  // 驗證： 密碼不一致
+  if (
+    passwordForm.value.password.trim() !==
+    passwordForm.value.confirm_password.trim()
+  ) {
+    errorMessage.value.confirm_password = "密碼不一致";
+    return;
+  }
+
+  // 驗證： 密碼少於8個字元
+  if (!validator.isLength(passwordForm.value.password.trim(), { min: 8 })) {
+    errorMessage.value.confirm_password = "密碼少於8個字元";
+    return;
+  }
+
+  const { data } = await updatePassword(passwordForm.value);
+
+  if (data.status === "success") {
+    apiSuccessMessagePassword.value = data.message;
+    apiErrorMessagePassword.value = "";
+  } else {
+    console.log("data", data);
+    apiErrorMessagePassword.value = data.message;
+  }
+};
 </script>
 
 <template>
   <section>
     <div class="headshot-wrap">
       <label class="headshot">
-        <input type="file">
-        <img  v-if="userStore.image" :src="userStore.image" alt="">
+        <input type="file" />
+        <img v-if="userStore.image" :src="userStore.image" alt="" />
       </label>
       <i class="icon-plus"></i>
     </div>
@@ -40,36 +131,80 @@ watch(userData, () => {
           <div class="form-row form-radio">
             <p>使用者性別</p>
             <label for="male">
-              <input name="gender" id="male" value="0" type="radio" v-model="userData.gender">
+              <input
+                name="gender"
+                id="male"
+                value="0"
+                type="radio"
+                v-model="userData.gender"
+              />
               <div class="fake-radio"></div>
               <span>男性</span>
             </label>
             <label for="female">
-              <input name="gender" id="female" value="1" type="radio" v-model="userData.gender">
+              <input
+                name="gender"
+                id="female"
+                value="1"
+                type="radio"
+                v-model="userData.gender"
+              />
               <div class="fake-radio"></div>
               <span>女性</span>
             </label>
             <label for="unknown">
-              <input name="gender" id="unknown" value="2" type="radio" v-model="userData.gender">
+              <input
+                name="gender"
+                id="unknown"
+                value="2"
+                type="radio"
+                v-model="userData.gender"
+              />
               <div class="fake-radio"></div>
               <span>未知宇宙生物</span>
             </label>
           </div>
+          <div class="api-error">{{ apiErrorMessageProfile }}</div>
+          <div class="api-success">{{ apiSuccessMessageProfile }}</div>
+          <div class="rect-btn fill submit-btn" @click="changeProfile">
+            修改個人資料
+          </div>
         </form>
         <h2>重新設定密碼</h2>
         <form>
-          <!-- 使用者密碼 -->
-          <label class="form-row" data-warning>
-            <input id="password" type="password" required v-model="userData.password" />
+          <label class="form-row" :data-warning="errorMessage.old_password">
+            <input
+              id="password"
+              type="password"
+              required
+              v-model="passwordForm.old_password"
+            />
+            <span>原密碼</span>
+          </label>
+          <label class="form-row" :data-warning="errorMessage.password">
+            <input
+              id="password"
+              type="password"
+              required
+              v-model="passwordForm.password"
+            />
             <span>使用者密碼</span>
           </label>
-          <!-- 確認使用者密碼 -->
-          <label class="form-row" data-warning>
-            <input id="confirm-password" type="password" required v-model="userData.confirmPassword" />
+          <label class="form-row" :data-warning="errorMessage.confirm_password">
+            <input
+              id="confirm-password"
+              type="password"
+              required
+              v-model="passwordForm.confirm_password"
+            />
             <span>確認使用者密碼</span>
           </label>
+          <div class="api-error">{{ apiErrorMessagePassword }}</div>
+          <div class="api-success">{{ apiSuccessMessagePassword }}</div>
         </form>
-        <div class="rect-btn fill submit-btn">修改個人資料</div>
+        <div class="rect-btn fill submit-btn" @click="changePassword">
+          修改密碼
+        </div>
       </div>
     </div>
   </section>
@@ -178,4 +313,18 @@ section
     margin: 80px auto 0
     +rwdmax(767)
       margin: 60px auto 0
+  .rect-btn
+    margin-top: 40px
+  .api-error
+    display: flex
+    justify-content: center
+    margin-top: 20px
+    color: var(--warning)
+    font-size: 0.875rem
+  .api-success
+    display: flex
+    justify-content: center
+    margin-top: 20px
+    color: var(--primary-blue-light)
+    font-size: 0.875rem
 </style>
