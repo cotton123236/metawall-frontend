@@ -47,6 +47,15 @@ export function getProfileById(data) {
   })
 }
 
+// 更新個人資料
+export function updateProfile(data) {
+  return request({
+    url: `${url.user}/profile/${data.id}`,
+    method: 'patch',
+    data: data.data
+  })
+}
+
 // 修改密碼
 export function updatePassword(data) {
   return request({
@@ -116,5 +125,18 @@ export function deleteFollowByperson(id) {
   return request({
     url: `${url.user}/follows/${id}`,
     method: 'delete'
+  })
+}
+
+
+// 上傳頭像
+export function uploadAvatar(data) {
+  return request({
+    url: `${url.user}/avatar`,
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data
   })
 }

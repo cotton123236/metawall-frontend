@@ -1,31 +1,130 @@
 <script setup>
-import { reactive, ref } from "@vue/runtime-core";
-import { watch } from "vue";
 import { useUserStore } from "../stores/userStore";
-import { updatePassword } from "../api/fetch";
+import { storeToRefs } from "pinia";
+import { reactive, ref, onMounted } from "@vue/runtime-core";
+import { watch } from "vue";
+import {
+  updatePassword,
+  uploadAvatar,
+  getMyProfile,
+  updateProfile,
+} from "../api/fetch";
 import validator from "validator";
 
+// let userStore = "";
+// onMounted(() => {
 const userStore = useUserStore();
-
+const { patchUser } = userStore;
+let { name, gender, image, _id, follows } = storeToRefs(userStore);
+// console.log("userStore", name.value);
+// });
 // 錯誤訊息
 const errorMessage = ref({
-  nickName: "",
-  email: "",
+  name: "",
+  gender: 0,
+  image: "",
   old_password: "",
   password: "",
   confirm_password: "",
 });
 
-const apiErrorMessagePassword = ref(" ");
-const apiSuccessMessagePassword = ref(" ");
+const apiErrorMessagePassword = ref(null);
+const apiSuccessMessagePassword = ref(null);
+const apiErrorMessageAvatar = ref(null);
+const apiErrorMessageProfile = ref(null);
+const apiSuccessMessageProfile = ref(null);
 
-const userData = reactive({
-  name: "Wilson",
-  gender: 2,
-  old_password: "",
-  password: "12345678",
-  confirm_password: "12345678",
+/* 修改個人資料 */
+const profileForm = ref({
+  image: "",
+  nickName: "",
+  gender: "",
 });
+
+// 取得個人資料
+const getProfile = async () => {
+  const { data } = await getMyProfile();
+
+  if (data.status === "success") {
+    profileForm.value.nickName = data.data.nickName;
+    profileForm.value.gender = data.data.gender;
+    profileForm.value.image = data.data.avatar;
+  }
+};
+
+getProfile();
+
+// 上傳圖片
+const fileInput = ref();
+const uploadFile = async () => {
+  console.log("upload");
+  const uploadedFile = fileInput.value.files[0];
+  console.dir(uploadedFile);
+
+  const formData = new FormData();
+  formData.append("file-to-upload", uploadedFile);
+
+  const { data } = await uploadAvatar(formData);
+
+  if (data.status === "success") {
+    profileForm.value.image = data.data.upload;
+  } else {
+    apiErrorMessageProfile.value = data.message;
+  }
+};
+
+// 監看 nickName 格式
+watch(
+  () => profileForm.value.nickName,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      apiSuccessMessageProfile.value = "";
+    }
+
+    errorMessage.value.nickName = !newVal ? "請填寫內容" : "";
+  }
+);
+
+// 監看 gender 格式
+watch(
+  () => profileForm.value.gender,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      apiSuccessMessageProfile.value = "";
+    }
+
+    errorMessage.value.gender = !newVal ? "請選擇內容" : "";
+  }
+);
+
+// 更新個人資料
+const changeProfile = async () => {
+  // 驗證：內容不可為空
+  if (!profileForm.value.nickName.trim()) {
+    errorMessage.value.nickName = "請填寫內容";
+    return;
+  }
+
+  const { data } = await updateProfile({
+    id: _id.value,
+    data: profileForm.value,
+  });
+
+  if (data.status === "success") {
+    apiSuccessMessageProfile.value = "修改成功";
+    apiErrorMessageProfile.value = "";
+    patchUser({
+      name: data.data.nickName,
+      gender: data.data.gender,
+      image: data.data.hasOwnProperty("avatar")
+        ? data.data.avatar
+        : "../assets/image/logo.png",
+    });
+  } else {
+    apiErrorMessageProfile.value = data.message;
+  }
+  console.log("id", _id.value);
+};
 
 const passwordForm = ref({
   old_password: "",
@@ -113,18 +212,24 @@ const changePassword = async () => {
   <section>
     <div class="headshot-wrap">
       <label class="headshot">
-        <input type="file" />
+        <input type="file" @change="uploadFile" ref="fileInput" />
         <img v-if="userStore.image" :src="userStore.image" alt="" />
       </label>
       <i class="icon-plus"></i>
+      <div class="api-error">{{ apiErrorMessageAvatar }}</div>
     </div>
     <div class="content">
       <div class="inner">
         <h2>編輯個人資料</h2>
         <form>
           <!-- 使用者名稱 -->
-          <label class="form-row" data-warning>
-            <input id="name" type="text" required v-model="userData.name" />
+          <label class="form-row" :data-warning="errorMessage.nickName">
+            <input
+              id="name"
+              type="text"
+              required
+              v-model="profileForm.nickName"
+            />
             <span>使用者名稱</span>
           </label>
           <!-- 使用者性別 -->
@@ -136,7 +241,7 @@ const changePassword = async () => {
                 id="male"
                 value="0"
                 type="radio"
-                v-model="userData.gender"
+                v-model="profileForm.gender"
               />
               <div class="fake-radio"></div>
               <span>男性</span>
@@ -147,7 +252,7 @@ const changePassword = async () => {
                 id="female"
                 value="1"
                 type="radio"
-                v-model="userData.gender"
+                v-model="profileForm.gender"
               />
               <div class="fake-radio"></div>
               <span>女性</span>
@@ -158,7 +263,7 @@ const changePassword = async () => {
                 id="unknown"
                 value="2"
                 type="radio"
-                v-model="userData.gender"
+                v-model="profileForm.gender"
               />
               <div class="fake-radio"></div>
               <span>未知宇宙生物</span>
