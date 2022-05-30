@@ -1,5 +1,7 @@
 <script setup>
-// import { onUnmounted, reactive, ref } from '@vue/runtime-core'
+import { onUnmounted } from '@vue/runtime-core'
+import { useEditor, EditorContent } from '@tiptap/vue-3'
+import StarterKit from '@tiptap/starter-kit'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from './../stores/userStore'
@@ -7,8 +9,7 @@ import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
 import { getPostsByRoute, patchEditPost, postNewPost } from './../api/fetch'
 // components
-import RichEditor from './../components/RichEditor.vue'
-
+// import RichEditor from './../components/RichEditor.vue'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -36,9 +37,24 @@ const submitPost = async () => {
     const { data } = await getPostsByRoute(route)
     patchPosts(data.data.list)
   }
-  // 清空 postStore 資料
-  patchPostingData({ _id: '', content: '', image: [] })
+  // // 清空 postStore 資料
+  // patchPostingData({ _id: '', content: '', image: [] })
 }
+
+const editor = useEditor({
+  content: postingData.value.content,
+  extensions: [
+    StarterKit,
+  ],
+  onUpdate: ({ editor }) => {
+    postingData.value.content = editor.getHTML()
+    console.log(postingData.value.content)
+  }
+})
+
+onUnmounted(() => {
+  patchPostingData({ _id: '', content: '', image: [] })
+})
 
 </script>
 
@@ -58,15 +74,36 @@ const submitPost = async () => {
             </div>
             <div class="name">{{ userStore.name }}</div>
           </div>
-          <div class="content">
-            <RichEditor class="editor" v-model="postingData.content" />
+          <div class="content" v-if="editor">
+            <div class="editor-tools">
+              <div class="editor-btn" @click="editor.chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">
+                <i class="icon-bold"></i>
+              </div>
+              <div class="editor-btn" @click="editor.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">
+                <i class="icon-italic"></i>
+              </div>
+              <div class="editor-btn" @click="editor.chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">
+                <i class="icon-strike"></i>
+              </div>
+              <div class="editor-btn" @click="editor.chain().focus().toggleHeading({ level: 1 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
+                <i class="icon-title"></i>
+              </div>
+              <div class="editor-btn" @click="editor.chain().focus().toggleBulletList().run()" :class="{ 'is-active': editor.isActive('bulletList') }">
+                <i class="icon-ul"></i>
+              </div>
+              <div class="editor-btn" @click="editor.chain().focus().toggleOrderedList().run()" :class="{ 'is-active': editor.isActive('orderedList') }">
+                <i class="icon-ol"></i>
+              </div>
+            </div>
+            <editor-content class="editor-content" :editor="editor" />
+            <!-- <RichEditor class="editor" v-model="postingData.content" /> -->
             <!-- <textarea placeholder="在想些什麼呢？" v-model="postingData.content"></textarea> -->
           </div>
         </div>
         <div class="modal-foot">
           <div
             class="rect-btn fill"
-            :class="{ disable: !postingData.content }"
+            :class="{ disable: !postingData.content || postingData.content === '<p></p>' }"
             @click="submitPost"
           >發布貼文</div>
         </div>
@@ -129,21 +166,36 @@ const submitPost = async () => {
     .name
       font-family: $code-font
       line-height: 1.5
-    .editor
-      resize: none
-      width: 100%
-      min-height: 18vh
-      font-family: $basic-font
-      font-size: px(14)
-      line-height: 1.5
-      letter-spacing: .02em
-      font-weight: 300
-      color: var(--gray)
-      border: none
+    .content
       padding: 20px 0
   .modal-foot
     padding: 20px
     +rwdmax(767)
       padding: 10px
-  
+
+// editor
+.editor-tools
+  display: flex
+  .editor-btn
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 32px
+    height: 32px
+    cursor: pointer
+    border-radius: 5px
+    transition: var(--trans-s)
+    & + .editor-btn
+      margin-left: 5px
+    &:hover
+      background-color: var(--background)
+    &.is-active
+      background-color: var(--dark-gray)
+      color: var(--white)
+.editor-content
+  width: 100%
+  height: 20vh
+  overflow: auto
+  padding: 10px
+
 </style>

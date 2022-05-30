@@ -1,5 +1,6 @@
 <script setup>
 import './assets/sass/style.sass'
+import router from './router/router'
 // import { useUserStore } from './stores/userStore'
 // import { getProfileById } from './api/fetch'
 

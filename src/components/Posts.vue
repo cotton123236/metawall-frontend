@@ -75,7 +75,7 @@ onMounted(() => {
     </div>
     <!-- text -->
     <div class="text">
-      <p v-html="post.content"></p>
+      <div class="ProseMirror" v-html="post.content"></div>
     </div>
     <!-- tool -->
     <div class="tool">
@@ -146,6 +146,7 @@ onMounted(() => {
     position: relative
     &.active
       .more-list
+        z-index: 2
         opacity: 1
         pointer-events: auto
         transform: translate(-50%, 0)
@@ -195,10 +196,6 @@ onMounted(() => {
           color: var(--primary-blue)
   .text
     padding: 30px
-    p
-      font-size: px(14)
-      line-height: 1.5
-      color: var(--dark-gray)
   .tool
     position: relative
     display: flex
