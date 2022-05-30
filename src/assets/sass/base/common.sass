@@ -57,3 +57,48 @@ html
   border: 1px solid var(--dark-white)
   background-color: #fff
   padding: 80px 30px
+
+.editor-content
+  .ProseMirror
+    height: 100%
+
+.ProseMirror
+  font-family: $basic-font
+  font-size: px(14)
+  line-height: 1.6
+  letter-spacing: .02em
+  font-weight: 300
+  color: var(--dark-gray)
+  p
+    min-height: 22px
+  h1
+    font-size: px(16)
+    font-weight: 400
+  strong
+    font-weight: 500
+  em
+    font-style: italic
+  ul
+    li
+      display: flex
+      align-items: flex-start
+      &::before
+        content: ''
+        display: inline-block
+        width: 4px
+        height: 4px
+        border-radius: 50%
+        background-color: var(--gray)
+        margin: 9px 5px 9px 5px
+  ol
+    counter-reset: num
+    li
+      display: flex
+      align-items: flex-start
+      &::before
+        content: counters(num, '.', decimal-leading-zero) '.'
+        counter-increment: num
+        font-size: px(12)
+        margin-top: 2px
+        color: var(--gray)
+        margin-right: 5px
