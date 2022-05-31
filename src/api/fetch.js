@@ -49,6 +49,7 @@ export function getProfileById(data) {
 
 // 更新個人資料
 export function updateProfile(data) {
+  console.log('data', data)
   return request({
     url: `${url.user}/profile/${data.id}`,
     method: 'patch',

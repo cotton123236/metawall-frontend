@@ -105,10 +105,17 @@ const changeProfile = async () => {
     return;
   }
 
-  const { data } = await updateProfile({
+  const param = {
     id: _id.value,
-    data: profileForm.value,
-  });
+    data: {
+      nickName: profileForm.value.nickName.trim(),
+      gender: profileForm.value.gender,
+    },
+  };
+
+  if (profileForm.value.image) param.data.avatar = profileForm.value.image;
+
+  const { data } = await updateProfile(param);
 
   if (data.status === "success") {
     apiSuccessMessageProfile.value = "修改成功";
@@ -116,14 +123,11 @@ const changeProfile = async () => {
     patchUser({
       name: data.data.nickName,
       gender: data.data.gender,
-      image: data.data.hasOwnProperty("avatar")
-        ? data.data.avatar
-        : "../assets/image/logo.png",
+      image: data.data.avatar,
     });
   } else {
     apiErrorMessageProfile.value = data.message;
   }
-  console.log("id", _id.value);
 };
 
 const passwordForm = ref({
@@ -213,7 +217,7 @@ const changePassword = async () => {
     <div class="headshot-wrap">
       <label class="headshot">
         <input type="file" @change="uploadFile" ref="fileInput" />
-        <img v-if="userStore.image" :src="userStore.image" alt="" />
+        <img v-if="profileForm.image" :src="profileForm.image" alt="" />
       </label>
       <i class="icon-plus"></i>
       <div class="api-error">{{ apiErrorMessageAvatar }}</div>
