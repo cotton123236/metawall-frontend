@@ -10,7 +10,10 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import LogoLarge from "./../assets/image/logo-large.svg";
 const userStore = useUserStore();
 const { patchUser } = userStore;
+const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env
 
+// oauth Login URL
+const googleOAuthLoginURL = VITE_GOOGLE_OAUTH_LOGIN_URL
 // 錯誤訊息
 const errorMessage = ref({
   nickName: "",

@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted } from "@vue/runtime-core";
+// 引入第三方登入
+import { execThirdPartyLogout } from '../utils/auth-third-party'
 import { useUserStore } from "./../stores/userStore";
 
 const userStore = useUserStore();
@@ -24,6 +26,7 @@ onMounted(() => {
 
 const logout = async () => {
   localStorage.removeItem("token");
+  execThirdPartyLogout();
   userStore.$reset();
 };
 </script>
