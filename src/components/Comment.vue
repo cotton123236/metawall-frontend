@@ -22,6 +22,7 @@
   display: flex
   align-items: flex-start
   .headshot
+    flex-shrink: 0
     width: 40px
     height: 40px
   .content

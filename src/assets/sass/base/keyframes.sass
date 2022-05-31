@@ -1,7 +1,58 @@
 @keyframes headshotLoading
   0%
     background-position: 0 0
-  // 50%
-  //   background-position: 0 0
   100%
     background-position: 0 200%
+
+// svg animation
+@keyframes animateCircle
+  40%
+    transform: scale(10)
+    opacity: 1
+    fill: #ffa9a9
+  55%
+    transform: scale(11)
+    opacity: 1
+    fill: #ee7373
+  65%
+    transform: scale(12)
+    opacity: 1
+    fill: #da3333
+  75%
+    transform: scale(13)
+    opacity: 1
+    fill: transparent
+    stroke: #da3333
+    stroke-width: .5
+  85%
+    transform: scale(17)
+    opacity: 1
+    fill: transparent
+    stroke: #da3333
+    stroke-width: .2
+  95%
+    transform: scale(18)
+    opacity: 1
+    fill: transparent
+    stroke: #da3333
+    stroke-width: .1
+  100%
+    transform: scale(19)
+    opacity: 1
+    fill: transparent
+    stroke: #da3333
+    stroke-width: 0
+
+@keyframes animateHeart
+  0%
+    transform: scale(.2)
+  40%
+    transform: scale(1.1)
+  100%
+    transform: scale(1)
+
+@keyframes animateHeartOut
+  0%
+    transform: scale(1.4)
+  100%
+    transform: scale(1)

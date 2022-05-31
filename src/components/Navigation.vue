@@ -56,7 +56,7 @@ nav
     width: 100%
     display: flex
     align-items: center
-    background-color: #fff
+    background-color: var(--white)
     border-top-left-radius: 10px
     border-top-right-radius: 10px
     padding: 0 30px
@@ -68,7 +68,7 @@ nav
     display: flex
     align-items: center
     padding: 12px
-    background-color: #fff
+    background-color: var(--white)
     border-radius: 40px
     border: 1px solid var(--dark-white)
     box-shadow: 0 0 5px rgba(0, 0, 0, .1)
