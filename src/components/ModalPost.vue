@@ -48,7 +48,6 @@ const editor = useEditor({
   ],
   onUpdate: ({ editor }) => {
     postingData.value.content = editor.getHTML()
-    console.log(postingData.value.content)
   }
 })
 
