@@ -8,6 +8,7 @@ import validator from "validator";
 import { useUserStore } from "./../stores/userStore";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import LogoLarge from "./../assets/image/logo-large.svg";
+import googleLogo from "./../assets/image/google-logo.png";
 const userStore = useUserStore();
 const { patchUser } = userStore;
 const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env
@@ -36,6 +37,9 @@ const slidePrev = () => {
 const slideNext = () => {
   apiErrorMessage.value = "";
   signupSwiperInstance.value.slideNext();
+};
+const slideUpdate = () => {
+  setTimeout(() => { signupSwiperInstance.value.update() }, 100);
 };
 
 /* ---登入功能--- */
@@ -133,6 +137,21 @@ watch(
       registerForm.value.password.trim() !== newVal.trim() ? "密碼不一致" : "";
   }
 );
+
+watch(
+  errorMessage.value,
+  () => {
+    slideUpdate()
+  }
+)
+
+watch(
+  apiErrorMessage,
+  () => {
+    console.log('apiErr')
+    slideUpdate()
+  }
+)
 
 // 註冊檢查
 const registerPreCheck = async () => {
@@ -245,12 +264,18 @@ const register = async () => {
                   type="password"
                   required
                   v-model="loginForm.password"
+                  @keyup.enter="login"
                 />
                 <span>Password</span>
               </label>
               <div class="api-error">{{ apiErrorMessage }}</div>
               <div class="rect-btn fill login-btn" @click="login">登入</div>
               <div class="rect-btn signup-btn" @click="slideNext">註冊</div>
+              <div class="line" data-text="or"></div>
+              <div class="rect-btn">
+                <img class="google-logo" :src="googleLogo" alt="">
+                Login with Google
+              </div>
             </form>
           </swiper-slide>
           <!-- sign-up email & password -->
@@ -284,6 +309,7 @@ const register = async () => {
                   type="password"
                   required
                   v-model="registerForm.confirmPassword"
+                  @keyup.enter="registerPreCheck"
                 />
                 <span>Confirm Password</span>
               </label>
@@ -292,6 +318,11 @@ const register = async () => {
                 註冊
               </div>
               <div class="rect-btn login-btn" @click="slidePrev">登入</div>
+              <div class="line" data-text="or"></div>
+              <div class="rect-btn">
+                <img class="google-logo" :src="googleLogo" alt="">
+                Sign up with Google
+              </div>
             </form>
           </swiper-slide>
           <!-- sign-up name -->
@@ -321,7 +352,9 @@ const register = async () => {
 </template>
 
 <style lang="sass" scoped>
+@import ./../assets/sass/base/variables
 @import ./../assets/sass/base/mixin
+
 main
   display: flex
   flex-direction: column
@@ -332,7 +365,7 @@ main
   margin: auto
   width: 100%
   max-width: 400px
-  padding: 60px 40px
+  padding: 50px 40px
   border: 1px solid var(--dark-white)
   border-radius: 12px
   background-color: #fff
@@ -350,16 +383,35 @@ main
   form
     display: flex
     flex-direction: column
-    margin-top: 40px
+    margin-top: 20px
     width: 100%
   .api-error
     display: flex
     justify-content: center
     margin-top: 20px
+    font-size: px(12)
+    line-height: 1.5
     color: var(--warning)
     font-size: 0.875rem
   .rect-btn
-    margin-top: 40px
+    margin-top: 20px
     & + .rect-btn
       margin-top: 10px
+  .line
+    position: relative
+    width: 100%
+    height: 1px
+    background-color: #eee
+    margin: 20px 0
+    & + .rect-btn
+      margin-top: 0
+    &::before
+      display: block
+      content: attr(data-text)
+      font-size: px(14)
+      font-family: $code-font
+      color: var(--light-gray)
+      padding: 0 10px
+      background-color: #fff
+      +posCenter
 </style>

@@ -27,15 +27,20 @@
 // rect-btn
 .rect-btn
   position: relative
+  display: flex
+  justify-content: center
+  align-items: center
   z-index: 1
   width: 100%
-  padding: 15px
+  font-family: $code-font
   text-align: center
   font-size: px(14)
   line-height: 1.5
+  padding: 15px
   cursor: pointer
   transition: background-color var(--trans-s), opacity var(--trans-s), color var(--trans-s), border var(--trans-s)
   border: 1px solid transparent
+  color: var(--primary-blue)
   // overflow: hidden
   &:hover
     border: 1px solid var(--primary-blue-light)
@@ -61,6 +66,9 @@
   &.disable
     opacity: .2
     pointer-events: none
+  .google-logo
+    width: 22px
+    margin-right: 15px
 
 // like-btn
 .like-btn
