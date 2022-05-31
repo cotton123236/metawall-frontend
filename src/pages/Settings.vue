@@ -4,22 +4,24 @@ import { storeToRefs } from "pinia";
 import { reactive, ref, onMounted } from "@vue/runtime-core";
 import { watch } from "vue";
 import {
+  isNotEmpty,
+  isValidPassword,
+  isSamePassword,
+  isRepeatPassword,
+} from "../utils/validate";
+import {
   updatePassword,
   uploadAvatar,
   getMyProfile,
   updateProfile,
 } from "../api/fetch";
-import validator from "validator";
 
-// let userStore = "";
-// onMounted(() => {
 const userStore = useUserStore();
 const { patchUser } = userStore;
-let { name, gender, image, _id, follows } = storeToRefs(userStore);
-// console.log("userStore", name.value);
-// });
+let { name, gender, image, _id } = storeToRefs(userStore);
+
 // 錯誤訊息
-const errorMessage = ref({
+const errorMessage = reactive({
   name: "",
   gender: 0,
   image: "",
@@ -28,17 +30,18 @@ const errorMessage = ref({
   confirm_password: "",
 });
 
+// 來自 API 回傳訊息
 const apiErrorMessagePassword = ref(null);
 const apiSuccessMessagePassword = ref(null);
 const apiErrorMessageAvatar = ref(null);
 const apiErrorMessageProfile = ref(null);
 const apiSuccessMessageProfile = ref(null);
 
-/* 修改個人資料 */
-const profileForm = ref({
-  image: "",
-  nickName: "",
-  gender: "",
+/* 修改個人表單 */
+const profileForm = reactive({
+  image: image.value,
+  nickName: name.value,
+  gender: gender ? gender.value : 2,
 });
 
 // 取得個人資料
@@ -46,13 +49,18 @@ const getProfile = async () => {
   const { data } = await getMyProfile();
 
   if (data.status === "success") {
-    profileForm.value.nickName = data.data.nickName;
-    profileForm.value.gender = data.data.gender;
-    profileForm.value.image = data.data.avatar;
+    profileForm.nickName = data.data.nickName;
+    profileForm.gender = data.data.gender;
+    profileForm.image = data.data.avatar;
   }
 };
 
-getProfile();
+onMounted(() => {
+  // 若來自 store 的 name 沒有資料，則重新打一次 API 取得
+  if (!name) {
+    getProfile();
+  }
+});
 
 // 上傳圖片
 const fileInput = ref();
@@ -67,53 +75,40 @@ const uploadFile = async () => {
   const { data } = await uploadAvatar(formData);
 
   if (data.status === "success") {
-    profileForm.value.image = data.data.upload;
+    profileForm.image = data.data.upload;
   } else {
-    apiErrorMessageProfile.value = data.message;
+    apiErrorMessageAvatar.value = data.message;
   }
 };
 
-// 監看 nickName 格式
+// 監看 profileForm 內容
 watch(
-  () => profileForm.value.nickName,
+  profileForm,
   (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      apiSuccessMessageProfile.value = "";
-    }
+    if (newVal) apiSuccessMessageProfile.value = "";
 
-    errorMessage.value.nickName = !newVal ? "請填寫內容" : "";
-  }
-);
-
-// 監看 gender 格式
-watch(
-  () => profileForm.value.gender,
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      apiSuccessMessageProfile.value = "";
-    }
-
-    errorMessage.value.gender = !newVal ? "請選擇內容" : "";
-  }
+    errorMessage.nickName = isNotEmpty(newVal.nickName);
+    errorMessage.gender = isNotEmpty(newVal.gender);
+  },
+  { deep: true }
 );
 
 // 更新個人資料
 const changeProfile = async () => {
   // 驗證：內容不可為空
-  if (!profileForm.value.nickName.trim()) {
-    errorMessage.value.nickName = "請填寫內容";
-    return;
-  }
+  errorMessage.nickName = isNotEmpty(profileForm.nickName);
+  if (errorMessage.nickName) return;
 
+  // 送出的參數
   const param = {
     id: _id.value,
     data: {
-      nickName: profileForm.value.nickName.trim(),
-      gender: profileForm.value.gender,
+      nickName: profileForm.nickName.trim(),
+      gender: profileForm.gender,
     },
   };
 
-  if (profileForm.value.image) param.data.avatar = profileForm.value.image;
+  if (profileForm.image) param.data.avatar = profileForm.image;
 
   const { data } = await updateProfile(param);
 
@@ -130,83 +125,83 @@ const changeProfile = async () => {
   }
 };
 
-const passwordForm = ref({
+// 修改密碼表單
+const passwordForm = reactive({
   old_password: "",
   password: "",
   confirm_password: "",
 });
 
-// 監看 old_password 格式
+// 監看 passwordForm 內容
 watch(
-  () => passwordForm.value.old_password,
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      apiSuccessMessagePassword.value = "";
-    }
+  passwordForm,
+  (newVal) => {
+    if (newVal) apiSuccessMessagePassword.value = "";
 
-    errorMessage.value.old_password = !newVal.trim() ? "請填寫內容" : "";
+    // 內容不可為空
+    errorMessage.old_password = isNotEmpty(newVal.old_password);
+
+    // 密碼不一致
+    errorMessage.confirm_password = isSamePassword(
+      newVal.password,
+      newVal.confirm_password
+    );
+  },
+  { deep: true }
+);
+
+watch(
+  () => passwordForm.password,
+  (newVal) => {
+    // 密碼需大於8個字元
+    if (isValidPassword(newVal)) {
+      return (errorMessage.password = isValidPassword(newVal));
+    }
+    // 不可與原密碼相同
+    return (errorMessage.password = isRepeatPassword(
+      newVal,
+      passwordForm.old_password
+    ));
   }
 );
 
-// 監看 password 格式
-watch(
-  () => passwordForm.value.password,
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      apiSuccessMessagePassword.value = "";
-    }
-    errorMessage.value.password = !validator.isLength(newVal.trim(), { min: 8 })
-      ? "密碼少於8個字元"
-      : "";
-  }
-);
-
-// 監看 confirm_password 格式
-watch(
-  () => passwordForm.value.confirm_password,
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      apiSuccessMessagePassword.value = "";
-    }
-    errorMessage.value.confirm_password =
-      passwordForm.value.password.trim() !== newVal.trim() ? "密碼不一致" : "";
-  }
-);
 const changePassword = async () => {
   // 驗證：內容不可為空
+  errorMessage.old_password = isNotEmpty(passwordForm.old_password);
+  errorMessage.password = isNotEmpty(passwordForm.password);
+  errorMessage.confirm_password = isNotEmpty(passwordForm.confirm_password);
+
   if (
-    !passwordForm.value.old_password.trim() ||
-    !passwordForm.value.password.trim() ||
-    !passwordForm.value.confirm_password.trim()
-  ) {
-    errorMessage.value.old_password = "請填寫內容";
-    errorMessage.value.password = "請填寫內容";
-    errorMessage.value.confirm_password = "請填寫內容";
+    errorMessage.old_password ||
+    errorMessage.password ||
+    errorMessage.confirm_password
+  )
     return;
-  }
 
   // 驗證： 密碼不一致
-  if (
-    passwordForm.value.password.trim() !==
-    passwordForm.value.confirm_password.trim()
-  ) {
-    errorMessage.value.confirm_password = "密碼不一致";
-    return;
-  }
+  errorMessage.confirm_password = isSamePassword(
+    passwordForm.password,
+    passwordForm.confirm_password
+  );
+  if (errorMessage.confirm_password) return;
 
   // 驗證： 密碼少於8個字元
-  if (!validator.isLength(passwordForm.value.password.trim(), { min: 8 })) {
-    errorMessage.value.confirm_password = "密碼少於8個字元";
-    return;
-  }
+  errorMessage.confirm_password = isValidPassword(passwordForm.password);
+  if (errorMessage.confirm_password) return;
 
-  const { data } = await updatePassword(passwordForm.value);
+  // 驗證： 新密碼不可與原密碼相同
+  errorMessage.password = isRepeatPassword(
+    passwordForm.password,
+    passwordForm.old_password
+  );
+  if (errorMessage.password) return;
+
+  const { data } = await updatePassword(passwordForm);
 
   if (data.status === "success") {
     apiSuccessMessagePassword.value = data.message;
     apiErrorMessagePassword.value = "";
   } else {
-    console.log("data", data);
     apiErrorMessagePassword.value = data.message;
   }
 };
@@ -283,10 +278,10 @@ const changePassword = async () => {
         <form>
           <label class="form-row" :data-warning="errorMessage.old_password">
             <input
-              id="password"
+              id="old-password"
               type="password"
               required
-              v-model="passwordForm.old_password"
+              v-model.trim="passwordForm.old_password"
             />
             <span>原密碼</span>
           </label>
@@ -295,7 +290,7 @@ const changePassword = async () => {
               id="password"
               type="password"
               required
-              v-model="passwordForm.password"
+              v-model.trim="passwordForm.password"
             />
             <span>使用者密碼</span>
           </label>
@@ -304,7 +299,7 @@ const changePassword = async () => {
               id="confirm-password"
               type="password"
               required
-              v-model="passwordForm.confirm_password"
+              v-model.trim="passwordForm.confirm_password"
             />
             <span>確認使用者密碼</span>
           </label>
