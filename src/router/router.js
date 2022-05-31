@@ -1,4 +1,6 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
+// 引入第三方登入
+import { checkThirdPartyLogin } from '../utils/auth-third-party'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -28,6 +30,13 @@ const router = createRouter({
       component: () => import('./../pages/Login.vue')
     }
   ]
+})
+
+router.beforeEach(async (to) => {
+  await checkThirdPartyLogin.google()
+  if (to.name !== 'Login' && !localStorage.getItem("token")) {
+    return { name: 'Login', replace: true }
+  }
 })
 
 export default router
