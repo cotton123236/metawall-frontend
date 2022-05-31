@@ -69,6 +69,12 @@ onMounted(() => {
             >
               <a href="javascript:;" @click="editPostHandler(post)">編輯貼文</a>
             </li>
+            <li
+              v-if="userStore._id === post.editor._id"
+              @click.stop="changeMoreOpenStatus"
+            >
+              <a href="javascript:;">刪除貼文</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -177,6 +183,7 @@ onMounted(() => {
       background-color: var(--white)
       overflow: hidden
       border-radius: 5px
+      padding: 5px 0
       &::before
         position: absolute
         content: ''
@@ -191,7 +198,7 @@ onMounted(() => {
         font-size: px(12)
         line-height: 1.5
         text-align: center
-        padding: 8px 10px
+        padding: 5px 10px
         &:hover
           color: var(--primary-blue)
   .text
