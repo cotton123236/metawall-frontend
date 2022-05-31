@@ -93,7 +93,6 @@ const changeSelected = async (li, index) => {
     font-weight: 300
     color: var(--dark-gray)
     margin: 0 20px
-    background-color: #fff
     cursor: pointer
     transition: box-shadow var(--trans-m)
     .inner
@@ -115,6 +114,8 @@ const changeSelected = async (li, index) => {
     pointer-events: none
     transition: opacity var(--trans-m), transform var(--trans-m), box-shadow var(--trans-m)
     filter: drop-shadow(5px 5px 8px rgba(0, 0, 0, .2))
+    +rwdmax(767)
+      width: 100px
     &::before
       position: absolute
       content: ''
@@ -124,6 +125,9 @@ const changeSelected = async (li, index) => {
       border-width: 0 10px 10px 10px
       border-style: solid
       border-color: transparent transparent #fff transparent
+      +rwdmax(767)
+        top: -8px
+        border-width: 0 8px 8px 8px
     ul
       padding: 5px 0
       border-top: none
@@ -138,6 +142,9 @@ const changeSelected = async (li, index) => {
       padding: 12px 20px
       cursor: pointer
       transition: background-color var(--trans-m)
+      +rwdmax(767)
+        font-size: px(13)
+        padding: 10px
       &:hover
         background-color: var(--dark-white)
       &.active

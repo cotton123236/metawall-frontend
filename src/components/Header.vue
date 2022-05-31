@@ -44,7 +44,8 @@ header
   padding-top: 10px
   padding-bottom: 10px
   box-shadow: 0 0 15px rgba(0, 0, 0, .2)
-  background-color: #fff
+  background-color: rgba(255, 255, 255, .4)
+  backdrop-filter: blur(10px)
 
   .container
     display: flex
