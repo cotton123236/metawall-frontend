@@ -262,10 +262,10 @@ const register = async () => {
               </div>
               <div class="rect-btn signup-btn" @click="slideNext">註冊</div>
               <div class="line" data-text="or"></div>
-              <div class="rect-btn">
-                <img class="google-logo" :src="googleLogo" alt="" />
-                Login with Google
-              </div>
+              <a class="rect-btn" :href="googleOAuthLoginURL">
+                  <img class="google-logo" :src="googleLogo" alt="">
+                  Login with Google
+              </a>
             </form>
           </swiper-slide>
           <!-- sign-up email & password -->
@@ -310,10 +310,10 @@ const register = async () => {
               </div>
               <div class="rect-btn login-btn" @click="slidePrev">登入</div>
               <div class="line" data-text="or"></div>
-              <div class="rect-btn">
-                <img class="google-logo" :src="googleLogo" alt="" />
+              <a class="rect-btn" :href="googleOAuthLoginURL">
+                <img class="google-logo" :src="googleLogo" alt="">
                 Sign up with Google
-              </div>
+              </a>
             </form>
           </swiper-slide>
           <!-- sign-up name -->
