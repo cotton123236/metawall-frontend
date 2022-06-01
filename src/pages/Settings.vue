@@ -2,7 +2,10 @@
 import { useUserStore } from "../stores/userStore";
 import { storeToRefs } from "pinia";
 import { reactive, ref, onMounted } from "@vue/runtime-core";
+import { execThirdPartyLogout } from "../utils/auth-third-party";
 import { watch } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 import {
   isNotEmpty,
   isValidPassword,
@@ -201,10 +204,28 @@ const changePassword = async () => {
   if (data.status === "success") {
     apiSuccessMessagePassword.value = data.message;
     apiErrorMessagePassword.value = "";
+
+    countdown();
   } else {
     apiErrorMessagePassword.value = data.message;
   }
 };
+
+let timer = null;
+let count = ref(3);
+
+function countdown() {
+  timer = setInterval(() => {
+    count.value = count.value - 1;
+    if (count.value <= 0) {
+      clearInterval(timer);
+      timer = null;
+      execThirdPartyLogout();
+      userStore.$reset();
+      router.push({ path: "/login" });
+    }
+  }, 1000);
+}
 </script>
 
 <template>
@@ -303,8 +324,13 @@ const changePassword = async () => {
             />
             <span>確認使用者密碼</span>
           </label>
-          <div class="api-error">{{ apiErrorMessagePassword }}</div>
-          <div class="api-success">{{ apiSuccessMessagePassword }}</div>
+          <div class="api-error">
+            {{ apiErrorMessagePassword }}
+          </div>
+          <div class="api-success" v-if="apiSuccessMessagePassword">
+            {{ apiSuccessMessagePassword }}，請重新登入
+            {{ count }} 秒後將返回登入頁
+          </div>
         </form>
         <div class="rect-btn fill submit-btn" @click="changePassword">
           修改密碼
