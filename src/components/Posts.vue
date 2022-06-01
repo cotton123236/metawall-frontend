@@ -2,8 +2,10 @@
 import { onMounted, ref } from '@vue/runtime-core'
 import { useDateFormat } from './../utils/utils'
 import { useUserStore } from './../stores/userStore'
-import { useModalStore } from '../stores/modalStore'
-import { usePostStore } from '../stores/postStore'
+import { useModalStore } from './../stores/modalStore'
+import { usePostStore } from './../stores/postStore'
+import { deletePost } from './../api/fetch'
+// components
 import contenteditable from 'vue-contenteditable'
 import Comment from './Comment.vue'
 
@@ -17,11 +19,22 @@ const modalStore = useModalStore()
 const { patchPostingData } = postStore
 const { openModalPost } = modalStore
 
-// 編輯貼文按鈕
+// 編輯貼文
 const editPostHandler = (post) => {
   const { _id, content, image } = post
   patchPostingData({ _id, content, image })
   openModalPost()
+}
+
+// 刪除貼文
+const deletePostHandler = async (post) => {
+  const { _id } = post
+  // const { data } = await deletePost(_id)
+  // // 刪除成功
+  // if (data.status === 'success') {
+
+  // }
+  // // 錯誤
 }
 
 // 子元件操控
@@ -78,7 +91,7 @@ onMounted(() => {
               v-if="userStore._id === post.editor._id"
               @click.stop="changeMoreOpenStatus"
             >
-              <a href="javascript:;">刪除貼文</a>
+              <a href="javascript:;" @click="deletePostHandler(post)">刪除貼文</a>
             </li>
           </ul>
         </div>

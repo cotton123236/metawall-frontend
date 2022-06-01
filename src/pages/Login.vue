@@ -1,22 +1,29 @@
 <script setup>
 import "swiper/css";
 import { watch } from "vue";
-import { ref } from "@vue/runtime-core";
+import { reactive, ref } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 import { signIn, getMyProfile, signUpCheck, signUp } from "./../api/fetch";
-import validator from "validator";
+
+import {
+  isNotEmpty,
+  isValidEmail,
+  isValidPassword,
+  isSamePassword,
+} from "../utils/validate";
 import { useUserStore } from "./../stores/userStore";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import LogoLarge from "./../assets/image/logo-large.svg";
 import googleLogo from "./../assets/image/google-logo.png";
+const router = useRouter();
 const userStore = useUserStore();
 const { patchUser } = userStore;
-const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env
+const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env;
 
 // oauth Login URL
-const googleOAuthLoginURL = VITE_GOOGLE_OAUTH_LOGIN_URL
+const googleOAuthLoginURL = VITE_GOOGLE_OAUTH_LOGIN_URL;
 // 錯誤訊息
-const errorMessage = ref({
+const errorMessage = reactive({
   nickName: "",
   email: "",
   password: "",
@@ -25,7 +32,6 @@ const errorMessage = ref({
 
 const apiErrorMessage = ref(" ");
 
-const router = useRouter();
 // login mode control
 const signupSwiperInstance = ref(null);
 const signupSwiperInit = (swiper) => {
@@ -39,43 +45,41 @@ const slideNext = () => {
   signupSwiperInstance.value.slideNext();
 };
 const slideUpdate = () => {
-  setTimeout(() => { signupSwiperInstance.value.update() }, 100);
+  setTimeout(() => {
+    signupSwiperInstance.value.update();
+  }, 100);
 };
 
 /* ---登入功能--- */
 
 // 登入表單
-const loginForm = ref({
+const loginForm = reactive({
   email: "",
   password: "",
 });
 
-// 監看 email 格式
+// 監看 loginForm 內容
 watch(
-  () => loginForm.value.email,
-  (newVal, oldVal) => {
-    errorMessage.value.email = !validator.isEmail(newVal.trim())
-      ? "Email 格式錯誤"
-      : "";
-  }
+  loginForm,
+  (newVal) => {
+    // 驗證 email 格式
+    errorMessage.email = isValidEmail(newVal.email);
+  },
+  { deep: true }
 );
 
 // 登入功能
 const login = async () => {
   // 驗證：內容不可為空
-  if (!loginForm.value.email.trim() || !loginForm.value.password.trim()) {
-    errorMessage.value.email = "請填寫內容";
-    errorMessage.value.password = "請填寫內容";
-    return;
-  }
+  errorMessage.email = isNotEmpty(loginForm.email);
+  errorMessage.password = isNotEmpty(loginForm.password);
+  if (errorMessage.email || errorMessage.password) return;
 
   // 驗證： Email 格式
-  if (!validator.isEmail(loginForm.value.email.trim())) {
-    errorMessage.value.email = "Email 格式錯誤";
-    return;
-  }
+  errorMessage.email = isValidEmail(loginForm.email);
+  if (errorMessage.email) return;
 
-  const { data } = await signIn(loginForm.value);
+  const { data } = await signIn(loginForm);
   if (data.status === "success") {
     localStorage.setItem("token", data.data.token);
 
@@ -84,15 +88,13 @@ const login = async () => {
       patchUser({
         _id: profileData.data._id,
         name: profileData.data.nickName,
-        image: profileData.data.hasOwnProperty("avatar")
-          ? profileData.data.avatar
-          : "../assets/image/logo.png",
+        image: profileData.data.avatar,
       });
       router.push({ path: "/" });
 
       // 清空錯誤訊息
-      errorMessage.value.email = "";
-      errorMessage.value.password = "";
+      errorMessage.email = "";
+      errorMessage.password = "";
     }
   } else {
     console.log("data", data);
@@ -102,109 +104,93 @@ const login = async () => {
 
 /* ---註冊功能--- */
 // 註冊表單
-const registerForm = ref({
+const registerForm = reactive({
   nickName: "",
   email: "",
   password: "",
   confirmPassword: "",
 });
 
-// 監看 email 格式
+// 監看 registerForm 內容
 watch(
-  () => registerForm.value.email,
-  (newVal, oldVal) => {
-    errorMessage.value.email = !validator.isEmail(newVal.trim())
-      ? "Email 格式錯誤"
-      : "";
-  }
-);
+  registerForm,
+  (newVal) => {
+    // 驗證 Email 格式
+    errorMessage.email = isValidEmail(newVal.email);
 
-// 監看 password 格式
-watch(
-  () => registerForm.value.password,
-  (newVal, oldVal) => {
-    errorMessage.value.password = !validator.isLength(newVal.trim(), { min: 8 })
-      ? "密碼需大於8個字元"
-      : "";
-  }
-);
+    // 驗證密碼格式
+    errorMessage.password = isValidPassword(newVal.password);
 
-// 監看 confirmPassword 格式
-watch(
-  () => registerForm.value.confirmPassword,
-  (newVal, oldVal) => {
-    errorMessage.value.confirmPassword =
-      registerForm.value.password.trim() !== newVal.trim() ? "密碼不一致" : "";
-  }
+    // 確認密碼是否一致
+    errorMessage.confirmPassword = isSamePassword(
+      newVal.password,
+      newVal.confirmPassword
+    );
+  },
+  { deep: true }
 );
 
 watch(
-  errorMessage.value,
-  () => {
-    slideUpdate()
+  () => registerForm.nickName,
+  (newVal, oldVal) => {
+    errorMessage.nickName = isNotEmpty(newVal);
   }
-)
+);
 
-watch(
-  apiErrorMessage,
-  () => {
-    console.log('apiErr')
-    slideUpdate()
-  }
-)
+watch(errorMessage.value, () => {
+  slideUpdate();
+});
+
+watch(apiErrorMessage, () => {
+  console.log("apiErr");
+  slideUpdate();
+});
 
 // 註冊檢查
 const registerPreCheck = async () => {
   // 驗證：內容不可為空
+  errorMessage.email = isNotEmpty(registerForm.email);
+  errorMessage.password = isNotEmpty(registerForm.password);
+  errorMessage.confirmPassword = isNotEmpty(registerForm.confirmPassword);
   if (
-    !registerForm.value.email.trim() ||
-    !registerForm.value.password.trim() ||
-    !registerForm.value.confirmPassword.trim()
-  ) {
-    errorMessage.value.email = "請填寫內容";
-    errorMessage.value.password = "請填寫內容";
-    errorMessage.value.confirmPassword = "請填寫內容";
+    errorMessage.email ||
+    errorMessage.password ||
+    errorMessage.confirmPassword
+  )
     return;
-  }
 
   // 驗證： Email 格式
-  if (!validator.isEmail(registerForm.value.email.trim())) {
-    errorMessage.value.email = "Email 格式錯誤";
-    return;
-  }
+  errorMessage.email = isValidEmail(registerForm.email);
+  if (errorMessage.email) return;
 
   // 驗證： 密碼不一致
-  if (
-    registerForm.value.password.trim() !==
-    registerForm.value.confirmPassword.trim()
-  ) {
-    errorMessage.value.confirmPassword = "密碼不一致";
-    return;
-  }
+  errorMessage.confirmPassword = isSamePassword(
+    registerForm.password,
+    registerForm.confirmPassword
+  );
+  if (errorMessage.confirmPassword) return;
 
   // 驗證： 密碼少於8個字元
-  if (!validator.isLength(registerForm.value.password.trim(), { min: 8 })) {
-    errorMessage.value.confirmPassword = "密碼少於8個字元";
-    return;
-  }
+  errorMessage.password = isValidPassword(registerForm.password);
+  if (errorMessage.password) return;
 
-  const { data } = await signUpCheck(registerForm.value);
+  const { data } = await signUpCheck(registerForm);
 
   if (data.status === "success") {
     apiErrorMessage.value = "";
     slideNext();
+  } else {
+    apiErrorMessage.value = data.message;
   }
 };
 
 // 註冊
 const register = async () => {
   // 驗證：內容不可為空
-  if (!registerForm.value.nickName.trim()) {
-    errorMessage.value.nickName = "請填寫內容";
-    return;
-  }
+  errorMessage.nickName = isNotEmpty(registerForm.nickName);
+  if (errorMessage.nickName) return;
 
-  const { data } = await signUp(registerForm.value);
+  const { data } = await signUp(registerForm);
 
   if (data.status === "success") {
     localStorage.setItem("token", data.data.token);
@@ -214,17 +200,14 @@ const register = async () => {
       patchUser({
         _id: profileData.data._id,
         name: profileData.data.nickName,
-        image: profileData.data.hasOwnProperty("avatar")
-          ? profileData.data.avatar
-          : "",
       });
       router.push({ path: "/" });
 
       // 清空錯誤訊息
-      errorMessage.value.nickName = "";
-      errorMessage.value.email = "";
-      errorMessage.value.password = "";
-      errorMessage.value.confirmPassword = "";
+      errorMessage.nickName = "";
+      errorMessage.email = "";
+      errorMessage.password = "";
+      errorMessage.confirmPassword = "";
     }
   }
 };
@@ -254,7 +237,7 @@ const register = async () => {
                   id="login-email"
                   type="text"
                   required
-                  v-model="loginForm.email"
+                  v-model.trim="loginForm.email"
                 />
                 <span>Email</span>
               </label>
@@ -263,13 +246,20 @@ const register = async () => {
                   id="login-password"
                   type="password"
                   required
-                  v-model="loginForm.password"
                   @keyup.enter="login"
+                  @keydown.tab.prevent
+                  v-model.trim="loginForm.password"
                 />
                 <span>Password</span>
               </label>
               <div class="api-error">{{ apiErrorMessage }}</div>
-              <div class="rect-btn fill login-btn" @click="login">登入</div>
+              <div
+                class="rect-btn fill login-btn"
+                @keyup.enter="login"
+                @click="login"
+              >
+                登入
+              </div>
               <div class="rect-btn signup-btn" @click="slideNext">註冊</div>
               <div class="line" data-text="or"></div>
               <a class="rect-btn" :href="googleOAuthLoginURL">
@@ -287,7 +277,7 @@ const register = async () => {
                   id="signup-email"
                   type="text"
                   required
-                  v-model="registerForm.email"
+                  v-model.trim="registerForm.email"
                 />
                 <span>Email</span>
               </label>
@@ -296,7 +286,7 @@ const register = async () => {
                   id="signup-password"
                   type="password"
                   required
-                  v-model="registerForm.password"
+                  v-model.trim="registerForm.password"
                 />
                 <span>Password</span>
               </label>
@@ -308,7 +298,8 @@ const register = async () => {
                   id="confirm-password"
                   type="password"
                   required
-                  v-model="registerForm.confirmPassword"
+                  v-model.trim="registerForm.confirmPassword"
+                  @keydown.tab.prevent
                   @keyup.enter="registerPreCheck"
                 />
                 <span>Confirm Password</span>
@@ -334,7 +325,8 @@ const register = async () => {
                   id="signup-name"
                   type="text"
                   required
-                  v-model="registerForm.nickName"
+                  @keydown.tab.prevent
+                  v-model.trim="registerForm.nickName"
                 />
                 <span>Name</span>
               </label>
