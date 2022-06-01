@@ -45,3 +45,14 @@ export function isRepeatPassword(pw, oldPw) {
     ? "不可與原密碼相同"
     : ''
 }
+
+/**
+ * 驗證 email 格式
+ * @param {String} val 
+ * @returns {String}
+ */
+export function isValidEmail(val) {
+  return validator.isEmail(val)
+    ? ''
+    : "Email 格式錯誤"
+}
