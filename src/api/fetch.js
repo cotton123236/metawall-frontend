@@ -100,6 +100,14 @@ export function postNewPost(data) {
   })
 }
 
+// 刪除貼文
+export function deletePost(id) {
+  return request({
+    url: `${url.post}/${id}`,
+    method: 'delete'
+  })
+}
+
 // 修改貼文
 export function patchEditPost(data) {
   const { _id, content, image } = data
