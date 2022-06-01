@@ -37,14 +37,6 @@ const deletePostHandler = async (post) => {
   // // 錯誤
 }
 
-// 確認自己有沒有按讚
-const checkIsLike = () => {
-  if (props.post.likes.findIndex(item => item === userStore._id) >= 0) {
-    isLike.value = true
-  }
-}
-checkIsLike()
-
 // 新增留言
 const addComment = async () => {
   if (!commentValue.value || commentValue.value.trim().length === 0) return
@@ -63,6 +55,14 @@ const commentValue = ref('')
 const changeMoreOpenStatus = () => {
   isMoreOpen.value = !isMoreOpen.value
 }
+
+// 確認自己有沒有按讚
+const checkIsLike = () => {
+  if (props.post.likes.findIndex(item => item === userStore._id) >= 0) {
+    isLike.value = true
+  }
+}
+checkIsLike()
 
 onMounted(() => {
   document.body.addEventListener('click', () => {
