@@ -1,13 +1,14 @@
 <script setup>
-import { reactive } from '@vue/runtime-core'
-import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
-
-import Filter from './../components/Filter.vue'
-import Searcher from './../components/Searcher.vue'
-import UserTools from './../components/UserTools.vue'
-import LogoLarge from './../assets/image/logo-large.svg'
-
+import { reactive } from "@vue/runtime-core";
+import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
+// components
+import Filter from "./../components/Filter.vue";
+import Searcher from "./../components/Searcher.vue";
+import UserTools from "./../components/UserTools.vue";
+// images
+import LogoLarge from "./../assets/image/logo-large.svg";
+import Logo from "./../assets/image/logo.svg";
 </script>
 
 <template>
@@ -15,7 +16,10 @@ import LogoLarge from './../assets/image/logo-large.svg'
     <div class="container mw-1200">
       <!-- logo -->
       <router-link class="logo" to="/">
-        <img :src="LogoLarge" alt="">
+        <picture>
+          <source :srcset="LogoLarge" media="(min-width: 768px)" />
+          <img :src="Logo" alt="" />
+        </picture>
       </router-link>
       <!-- searcher -->
       <Searcher />
@@ -40,7 +44,8 @@ header
   padding-top: 10px
   padding-bottom: 10px
   box-shadow: 0 0 15px rgba(0, 0, 0, .2)
-  background-color: #fff
+  background-color: rgba(255, 255, 255, .4)
+  backdrop-filter: blur(10px)
 
   .container
     display: flex
@@ -54,6 +59,8 @@ header
 
   .searcher
     margin-left: 20px
+    +rwdmax(767)
+      margin-left: 10px
 
   .tools
     display: flex

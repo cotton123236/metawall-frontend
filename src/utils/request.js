@@ -41,6 +41,7 @@ server.interceptors.response.use(
       // router.push({ name: 'Error404' })
       return
     }
+    return error.response
     return Promise.reject(error)
   }
 )

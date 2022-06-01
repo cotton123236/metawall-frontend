@@ -13,6 +13,24 @@ export function signIn(data) {
   })
 }
 
+// 註冊驗證
+export function signUpCheck(data) {
+  return request({
+    url: `${url.user}/sign_up_check`,
+    method: 'post',
+    data
+  })
+}
+
+// 註冊
+export function signUp(data) {
+  return request({
+    url: `${url.user}/sign_up`,
+    method: 'post',
+    data
+  })
+}
+
 // 取得個人資料（自己）
 export function getMyProfile() {
   return request({
@@ -21,49 +39,35 @@ export function getMyProfile() {
   })
 }
 
-
-// get user by id
-// export const getUserById = async (userId) => {
-//   try {
-//     const res = await axios.get(`${url.user}/${userId}`)
-//     if (!res.data) return;
-//     return res.data
-//   }
-//   catch (err) {
-//     console.log(err)
-//   }
-// }
-
-export function getUserById(data) {
+// 取得個人資料（別人） by id
+export function getProfileById(data) {
   return request({
-    url: `${url.user}/${data}`,
+    url: `${url.user}/profile/${data}`,
     method: 'get'
   })
 }
 
-// get posts by route queries
-// export const getPostByRoute = async (route) => {
-//   try {
-//     let postUrl = url.post
-//     if (route) {
-//       const { query } = route
-//       const keys = Object.keys(query)
-//       keys.forEach((key, i) => {
-//         if (i === 0) postUrl += `?${key}=${query[key]}`
-//         else postUrl += `&${key}=${query[key]}`
-//       })
-//     }
-//     // axios data
-//     const res = await axios.get(postUrl)
-//     if (!res.data) return;
-//     return res.data
-//   }
-//   catch (err) {
-//     console.log(err)
-//   }
-// }
+// 更新個人資料
+export function updateProfile(data) {
+  console.log('data', data)
+  return request({
+    url: `${url.user}/profile/${data.id}`,
+    method: 'patch',
+    data: data.data
+  })
+}
 
-export function getPostByRoute(route) {
+// 修改密碼
+export function updatePassword(data) {
+  return request({
+    url: `${url.user}/updatePassword`,
+    method: 'patch',
+    data
+  })
+}
+
+// 取得所有貼文 by route query
+export function getPostsByRoute(route) {
   let sendUrl = url.post
   if (route) {
     const { query } = route
@@ -79,22 +83,84 @@ export function getPostByRoute(route) {
   })
 }
 
-// post a post
-// export const postPostByData = async (data) => {
-//   try {
-//     const res = await axios.post(url.post, data)
-//     if (!res.data) return;
-//     return res.data
-//   }
-//   catch (err) {
-//     console.log(err)
-//   }
-// }
+// 取得所有貼文 by id
+export function getPostsById(id) {
+  return request({
+    url: `${url.post}/${id}`,
+    method: 'get'
+  })
+}
 
-export function postPostByData(data) {
+// 新增貼文
+export function postNewPost(data) {
   return request({
     url: url.post,
     method: 'post',
     data
+  })
+}
+
+// 修改貼文
+export function patchEditPost(data) {
+  const { _id, content, image } = data
+  return request({
+    url: `${url.post}/${_id}`,
+    method: 'patch',
+    data: {
+      content,
+      image
+    }
+  })
+}
+
+// 取得個人追蹤列表
+export function getFollowList() {
+  return request({
+    url: `${url.user}/follows`,
+    method: 'get'
+  })
+}
+
+// 追蹤
+export function postFollowByperson(id) {
+  return request({
+    url: `${url.user}/follows/${id}`,
+    method: 'post'
+  })
+}
+
+// 取消追蹤
+export function deleteFollowByperson(id) {
+  return request({
+    url: `${url.user}/follows/${id}`,
+    method: 'delete'
+  })
+}
+
+// 上傳頭像
+export function uploadAvatar(data) {
+  return request({
+    url: `${url.user}/avatar`,
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data
+  })
+}
+
+// 取得個人收藏列表
+export function getLikeList() {
+  return request({
+    url: `${url.post}/likes`,
+    method: 'get'
+  })
+}
+
+// 新增按讚
+export function putLike(id) {
+  return request({
+    url: `${url.post}/likes/${id}`,
+    method: 'put'
   })
 }

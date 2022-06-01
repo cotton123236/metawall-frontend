@@ -2,7 +2,7 @@
 import { ref } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { appendQuery } from '../utils/utils'
-import { getPostByRoute } from './../api/fetch'
+import { getPostsByRoute } from './../api/fetch'
 import { usePostStore } from '../stores/postStore'
 
 
@@ -17,14 +17,14 @@ const searchValue = ref(content)
 const searchPosts = async () => {
   // push query
   const queries = {
-    content: searchValue.value
+    q: searchValue.value
   }
   await appendQuery(route, queries)
   // then get data
-  const { data } = await getPostByRoute(route)
+  const { data } = await getPostsByRoute(route)
   // patch data
   if (data.status !== 'success') return;
-  patchPosts(data.data)
+  patchPosts(data.data.list)
 }
 
 const clearInput = () => {
@@ -52,7 +52,7 @@ const clearInput = () => {
   align-items: center
   height: 30px
   width: 200px
-  background-color: var(--background)
+  background-color: #f5f5f5
   padding: 10px 20px
   margin-right: 10px
   border-radius: 15px

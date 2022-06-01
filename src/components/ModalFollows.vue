@@ -1,13 +1,38 @@
 <script setup>
+import { ref } from '@vue/runtime-core'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from '../stores/modalStore'
 import { useDateFormat } from './../utils/utils'
-
+import { getFollowList, deleteFollowByperson } from '../api/fetch'
 
 const userStore = useUserStore()
 const modalStore = useModalStore()
 
 const { closeModalFollows } = modalStore
+const { patchUser } = userStore;
+
+const errorMessage = ref('');
+
+// 取得追蹤列表
+const getFollow = async () => {
+  const { data } =  await getFollowList();
+  if (data.status !== 'success') return
+  if (data.data.list.length === 0) {
+    errorMessage.value = '未追蹤任何人'
+  }
+  patchUser({
+    follows: data.data.list
+  })
+}
+
+// 取消追蹤
+const deleteFollow = async (id) => {
+  const { data } = await deleteFollowByperson(id);
+  if (data.status !== 'success') return;
+  getFollow()
+}
+
+getFollow()
 
 </script>
 
@@ -26,16 +51,18 @@ const { closeModalFollows } = modalStore
               v-for="follow in userStore.follows"
               :key="follow._id"
             >
-              <div class="info">
-                <div class="headshot">
-                  <img :src="follow.image" alt="user-photo">
+              <template v-if="follow?.following">
+                <div class="info" v-for="following in follow.following">
+                  <div class="headshot">
+                    <img :src="follow.image" alt="user-photo">
+                  </div>
+                  <div class="detail">
+                    <div class="name">{{ following?.nickName }}</div>
+                    <div class="date">追蹤於 - {{ useDateFormat('2022-05-10T09:23:26.413Z') }}</div>
+                  </div>
+                  <div class="unfollow-btn" @click="deleteFollow(following._id)">取消追蹤</div>
                 </div>
-                <div class="detail">
-                  <div class="name">{{ follow.name }}</div>
-                  <div class="date">追蹤於 - {{ useDateFormat('2022-05-10T09:23:26.413Z') }}</div>
-                </div>
-                <div class="unfollow-btn">取消追蹤</div>
-              </div>
+              </template>              
             </li>
           </ul>
         </div>
