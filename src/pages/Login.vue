@@ -137,7 +137,7 @@ watch(
   }
 );
 
-watch(errorMessage.value, () => {
+watch(errorMessage, () => {
   slideUpdate();
 });
 

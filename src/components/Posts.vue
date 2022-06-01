@@ -55,7 +55,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="each-post">
+  <div class="each-post" data-aos="fade-up">
     <!-- info -->
     <div class="info">
       <router-link class="wrap" :to="post.editor._id">
