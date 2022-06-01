@@ -14,11 +14,8 @@ import {
 import { useUserStore } from "./../stores/userStore";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import LogoLarge from "./../assets/image/logo-large.svg";
-<<<<<<< HEAD
 import googleLogo from "./../assets/image/google-logo.png";
-=======
 const router = useRouter();
->>>>>>> 232108e (refact: login 程式邏輯整理)
 const userStore = useUserStore();
 const { patchUser } = userStore;
 const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env;
@@ -297,11 +294,14 @@ const register = async () => {
                 class="form-row"
                 :data-warning="errorMessage.confirmPassword"
               >
-                <input id="confirm-password" type="password" required <<<<<<<
-                HEAD v-model.trim="registerForm.confirmPassword"
-                @keyup.enter="registerPreCheck" ======= @keydown.tab.prevent
-                v-model="registerForm.confirmPassword" >>>>>>> 232108e (refact:
-                login 程式邏輯整理) />
+                <input
+                  id="confirm-password"
+                  type="password"
+                  required
+                  v-model.trim="registerForm.confirmPassword"
+                  @keydown.tab.prevent
+                  @keyup.enter="registerPreCheck"
+                />
                 <span>Confirm Password</span>
               </label>
               <div class="api-error">{{ apiErrorMessage }}</div>
