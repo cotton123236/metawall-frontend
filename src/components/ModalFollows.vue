@@ -54,11 +54,11 @@ getFollow()
               <template v-if="follow?.following">
                 <div class="info" v-for="following in follow.following">
                   <div class="headshot">
-                    <img :src="follow.image" alt="user-photo">
+                    <img v-if="following.avatar" :src="following.avatar" alt="user-photo">
                   </div>
                   <div class="detail">
                     <div class="name">{{ following?.nickName }}</div>
-                    <div class="date">追蹤於 - {{ useDateFormat('2022-05-10T09:23:26.413Z') }}</div>
+                    <div class="date">追蹤於 - {{ useDateFormat(follow.createdAt) }}</div>
                   </div>
                   <div class="unfollow-btn" @click="deleteFollow(following._id)">取消追蹤</div>
                 </div>

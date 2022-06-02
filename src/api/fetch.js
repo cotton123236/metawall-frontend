@@ -172,3 +172,14 @@ export function putLike(id) {
     method: 'put'
   })
 }
+
+// 新增留言
+export function postComment(id, comment) {
+  return request({
+    url: `${url.post}/comment/${id}`,
+    method: 'post',
+    data: {
+      comment
+    }
+  })
+}

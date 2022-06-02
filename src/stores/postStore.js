@@ -18,6 +18,10 @@ export const usePostStore = defineStore('postStore', {
       Object.assign(this.posts, data)
       console.log(this.posts)
     },
+    async patchPostComment(id, data){
+      const index = this.posts.findIndex(item => item._id === id);
+      this.posts[index].comments.splice(0, 0, data)
+    },
     patchPostingData(data) {
       Object.assign(this.postingData, data)
     }
