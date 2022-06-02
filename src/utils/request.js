@@ -30,7 +30,12 @@ server.interceptors.request.use(
 server.interceptors.response.use(
   response => {
     console.log('interceptor:', response)
-    return response
+    const result = {
+      ...response,
+      target: response?.data?.data || {
+      }
+    }
+    return result
   },
   error => {
     const statusCode = error.response.status
