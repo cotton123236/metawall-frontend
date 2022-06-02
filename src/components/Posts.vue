@@ -61,12 +61,18 @@ const changeMoreOpenStatus = () => {
 const checkIsLike = () => {
   if (props.post.likes.findIndex(item => item === userStore._id) >= 0) {
     isLike.value = true
+  }else{
+    isLike.value = false
   }
 }
 checkIsLike()
 
 // 避免 async 問題，監聽
 watch(()=> userStore._id, (newVal)=>{
+  checkIsLike()
+},{deep:true})
+
+watch(()=> postStore.posts, (newVal)=>{
   checkIsLike()
 },{deep:true})
 
