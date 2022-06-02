@@ -1,10 +1,11 @@
 <script setup>
+import { watch } from "vue";
 import { onMounted, ref } from '@vue/runtime-core'
 import { useDateFormat } from './../utils/utils'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
-import { deletePost, postComment } from './../api/fetch'
+import { deletePost, putLike, delPostLike, postComment } from './../api/fetch'
 // components
 import contenteditable from 'vue-contenteditable'
 import Comment from './Comment.vue'
@@ -56,13 +57,34 @@ const changeMoreOpenStatus = () => {
   isMoreOpen.value = !isMoreOpen.value
 }
 
-// 確認自己有沒有按讚
+// 載入時確認自己有沒有按讚
 const checkIsLike = () => {
   if (props.post.likes.findIndex(item => item === userStore._id) >= 0) {
     isLike.value = true
   }
 }
 checkIsLike()
+
+// 避免 async 問題，監聽
+watch(()=> userStore._id, (newVal)=>{
+  checkIsLike()
+},{deep:true})
+
+// 點擊按讚 button
+const triggerLikeBtn = async() => {
+  try{
+    isLike.value = !isLike.value
+    if(isLike.value){
+      const { target: putLikeResult } = await putLike(props.post._id)
+      props.post.likes = putLikeResult.likes
+    }else{
+      const { target: delLikeResult } = await delPostLike(props.post._id)
+      props.post.likes = delLikeResult.likes
+    }
+  }catch(err){
+    console.log(err)
+  }
+}
 
 onMounted(() => {
   document.body.addEventListener('click', () => {
@@ -121,7 +143,7 @@ onMounted(() => {
     <!-- tool -->
     <div class="tool">
       <!-- like-btn -->
-      <div class="like like-btn" :class="{active: isLike}" @click="isLike = !isLike">
+      <div class="like like-btn" :class="{active: isLike}" @click="triggerLikeBtn">
         <div class="icon">
           <i class="icon-like"></i>
           <i class="icon-heart"></i>
