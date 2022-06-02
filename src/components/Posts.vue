@@ -64,6 +64,18 @@ const checkIsLike = () => {
 }
 checkIsLike()
 
+// 點擊按讚 button
+const triggerLikeBtn = () => {
+  console.log('before', isLike.value)
+  isLike.value = !isLike.value
+  console.log('after', isLike.value)
+  if(isLike.value){
+    console.log('add')
+  }else{
+    console.log('minus')
+  }
+}
+
 onMounted(() => {
   document.body.addEventListener('click', () => {
     isMoreOpen.value = false
@@ -121,7 +133,7 @@ onMounted(() => {
     <!-- tool -->
     <div class="tool">
       <!-- like-btn -->
-      <div class="like like-btn" :class="{active: isLike}" @click="isLike = !isLike">
+      <div class="like like-btn" :class="{active: isLike}" @click="triggerLikeBtn">
         <div class="icon">
           <i class="icon-like"></i>
           <i class="icon-heart"></i>
