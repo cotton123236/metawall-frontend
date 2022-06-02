@@ -72,7 +72,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="each-post" data-aos="fade-up">
+  <div class="each-post" data-aos="clip-left">
     <!-- info -->
     <div class="info">
       <router-link class="wrap" :to="post.editor._id">
@@ -191,7 +191,7 @@ onMounted(() => {
         <template v-if="post.comments.length">
           <Comment 
             v-for="comment in post.comments"
-            :key="post.comments._id"
+            :key="comment._id"
             :comment="comment"
           />
         </template>
@@ -207,7 +207,7 @@ onMounted(() => {
 // each-post
 .each-post
   border: 1px solid var(--dark-white)
-  border-radius: 8px
+  border-radius: 10px
   background-color: var(--white)
   box-shadow: 0 0 5px rgba(0, 0, 0, .1)
   &:not(:first-child)

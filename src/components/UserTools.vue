@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted } from "@vue/runtime-core";
+import { useRouter } from 'vue-router'
 // 引入第三方登入
 import { execThirdPartyLogout } from "../utils/auth-third-party";
 import { useUserStore } from "./../stores/userStore";
 
+const router = useRouter()
 const userStore = useUserStore();
 
 // open and close control

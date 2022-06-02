@@ -1,3 +1,15 @@
 body
-  [data-aos=fade-up]
+  [data-aos="fade-up"]
     transform: translate3d(0, 30px, 0)
+  [data-aos="clip-left"]
+    opacity: 0
+    clip-path: polygon(-20px -20px, -20px -20px, -20px calc(100% + 20px), -20px calc(100% + 20px))
+    &.aos-animate
+      opacity: 1
+      clip-path: polygon(-20px -20px, calc(110% + 20px) -20px, calc(100% + 20px) calc(100% + 20px), -20px calc(100% + 20px))
+  [data-aos="clip-down"]
+    opacity: 0
+    clip-path: polygon(-20px -20px, calc(100% + 20px) -20px, calc(100% + 20px) -20px, -20px -20px)
+    &.aos-animate
+      opacity: 1
+      clip-path: polygon(-20px -20px, calc(100% + 20px) -20px, calc(100% + 20px) calc(115% + 20px), -20px calc(100% + 20px))
