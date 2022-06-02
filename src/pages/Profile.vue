@@ -91,20 +91,22 @@ const whetherToFollow = async () => {
 <template>
   <section>
     <!-- profile -->
-    <div class="profile">
+    <div class="profile" data-aos="clip-left" data-aos-duration="1000">
       <div class="headshot">
         <img v-if="profileUser.avatar" :src="profileUser.avatar" alt="">
       </div>
       <div class="content">
         <div class="head">
           <span class="name">{{ profileUser.nickName }}</span>
-          <div
-            class="follow-btn"
-            :class="isFollowing ? 'unfollow' : 'follow'"
-            @click="whetherToFollow"
-          >
-            {{ isFollowing ? '取消追蹤' : '追蹤' }}
-          </div>
+          <template v-if="userStore._id !== id">
+            <div
+              class="follow-btn"
+              :class="isFollowing ? 'unfollow' : 'follow'"
+              @click="whetherToFollow"
+            >
+              {{ isFollowing ? '取消追蹤' : '追蹤' }}
+            </div>
+          </template>
         </div>
         <div class="created">2022/04/04 加入元宇宙</div>
         <div class="detail">
@@ -138,9 +140,9 @@ const whetherToFollow = async () => {
   position: relative
   display: flex
   padding: 50px 40px
-  border-radius: 0 100px 0 100px
+  border-radius: 10px 100px 10px 100px
   background-color: var(--white)
-  box-shadow: 0 0 20px rgba(0, 0, 0, .1)
+  box-shadow: 0 0 10px rgba(0, 0, 0, .1)
   +rwdmax(767)
     display: block
     padding: 40px 30px

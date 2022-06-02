@@ -1,15 +1,19 @@
 <script setup>
-import { ref, onMounted } from "@vue/runtime-core";
+import { onMounted } from "@vue/runtime-core";
 import { storeToRefs } from "pinia";
 import { useModalStore } from "../stores/modalStore";
 import { getMyProfile } from "./../api/fetch";
 import { useUserStore } from "./../stores/userStore";
+import { useRoute } from "vue-router";
+// components
 import Header from "./../components/Header.vue";
 import Navigation from "./../components/Navigation.vue";
 import ModalPost from "./../components/ModalPost.vue";
 import ModalLoader from "./../components/ModalLoader.vue";
 import ModalFollows from "./../components/ModalFollows.vue";
 import ModalLikes from "./../components/ModalLikes.vue";
+
+const route = useRoute()
 const userStore = useUserStore();
 const { patchUser } = userStore;
 
@@ -52,7 +56,7 @@ const { useModalPost, useModalFollows, useModalLikes, useModalLoader } =
         </div>
         <!-- view -->
         <div class="main-view">
-          <router-view></router-view>
+          <router-view :key="route.path"></router-view>
         </div>
       </div>
       <!-- modal -->
