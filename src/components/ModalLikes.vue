@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from '../stores/modalStore'
 import { getLikeList } from '../api/fetch'
-
+import { cloneDeep } from 'lodash-es'
 import Posts from './../components/Posts.vue'
 
 
@@ -22,9 +22,9 @@ const getLike = async () => {
     errorMessage.value =  '無收藏貼文'
     return
   }
-  patchUser({
+  patchUser(cloneDeep({
     likes: data.data.list
-  })
+  }))
 }
 
 getLike()
