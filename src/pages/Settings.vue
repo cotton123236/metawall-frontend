@@ -28,9 +28,9 @@ const errorMessage = reactive({
   name: "",
   gender: 0,
   image: "",
-  old_password: "",
+  oldPassword: "",
   password: "",
-  confirm_password: "",
+  confirmPassword: "",
 });
 
 // 來自 API 回傳訊息
@@ -130,9 +130,9 @@ const changeProfile = async () => {
 
 // 修改密碼表單
 const passwordForm = reactive({
-  old_password: "",
+  oldPassword: "",
   password: "",
-  confirm_password: "",
+  confirmPassword: "",
 });
 
 // 監看 passwordForm 內容
@@ -142,12 +142,12 @@ watch(
     if (newVal) apiSuccessMessagePassword.value = "";
 
     // 內容不可為空
-    errorMessage.old_password = isNotEmpty(newVal.old_password);
+    errorMessage.oldPassword = isNotEmpty(newVal.oldPassword);
 
     // 密碼不一致
-    errorMessage.confirm_password = isSamePassword(
+    errorMessage.confirmPassword = isSamePassword(
       newVal.password,
-      newVal.confirm_password
+      newVal.confirmPassword
     );
   },
   { deep: true }
@@ -163,39 +163,39 @@ watch(
     // 不可與原密碼相同
     return (errorMessage.password = isRepeatPassword(
       newVal,
-      passwordForm.old_password
+      passwordForm.oldPassword
     ));
   }
 );
 
 const changePassword = async () => {
   // 驗證：內容不可為空
-  errorMessage.old_password = isNotEmpty(passwordForm.old_password);
+  errorMessage.oldPassword = isNotEmpty(passwordForm.oldPassword);
   errorMessage.password = isNotEmpty(passwordForm.password);
-  errorMessage.confirm_password = isNotEmpty(passwordForm.confirm_password);
+  errorMessage.confirmPassword = isNotEmpty(passwordForm.confirmPassword);
 
   if (
-    errorMessage.old_password ||
+    errorMessage.oldPassword ||
     errorMessage.password ||
-    errorMessage.confirm_password
+    errorMessage.confirmPassword
   )
     return;
 
   // 驗證： 密碼不一致
-  errorMessage.confirm_password = isSamePassword(
+  errorMessage.confirmPassword = isSamePassword(
     passwordForm.password,
-    passwordForm.confirm_password
+    passwordForm.confirmPassword
   );
-  if (errorMessage.confirm_password) return;
+  if (errorMessage.confirmPassword) return;
 
   // 驗證： 密碼少於8個字元
-  errorMessage.confirm_password = isValidPassword(passwordForm.password);
-  if (errorMessage.confirm_password) return;
+  errorMessage.confirmPassword = isValidPassword(passwordForm.password);
+  if (errorMessage.confirmPassword) return;
 
   // 驗證： 新密碼不可與原密碼相同
   errorMessage.password = isRepeatPassword(
     passwordForm.password,
-    passwordForm.old_password
+    passwordForm.oldPassword
   );
   if (errorMessage.password) return;
 
@@ -297,12 +297,12 @@ function countdown() {
         </form>
         <h2>重新設定密碼</h2>
         <form>
-          <label class="form-row" :data-warning="errorMessage.old_password">
+          <label class="form-row" :data-warning="errorMessage.oldPassword">
             <input
               id="old-password"
               type="password"
               required
-              v-model.trim="passwordForm.old_password"
+              v-model.trim="passwordForm.oldPassword"
             />
             <span>原密碼</span>
           </label>
@@ -315,12 +315,12 @@ function countdown() {
             />
             <span>使用者密碼</span>
           </label>
-          <label class="form-row" :data-warning="errorMessage.confirm_password">
+          <label class="form-row" :data-warning="errorMessage.confirmPassword">
             <input
               id="confirm-password"
               type="password"
               required
-              v-model.trim="passwordForm.confirm_password"
+              v-model.trim="passwordForm.confirmPassword"
             />
             <span>確認使用者密碼</span>
           </label>
