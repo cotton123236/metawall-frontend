@@ -5,7 +5,7 @@ import { useDateFormat } from './../utils/utils'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
-import { deletePost, putLike, delPostLike, postComment } from './../api/fetch'
+import { putLike, delPostLike, postComment } from './../api/fetch'
 // components
 import contenteditable from 'vue-contenteditable'
 import Comment from './Comment.vue'
@@ -18,7 +18,7 @@ const userStore = useUserStore()
 const postStore = usePostStore()
 const modalStore = useModalStore()
 const { patchPostComment, patchPostingData } = postStore
-const { openModalPost } = modalStore
+const { openModalPost, openModalDeletePost } = modalStore
 
 // 編輯貼文
 const editPostHandler = (post) => {
@@ -30,12 +30,7 @@ const editPostHandler = (post) => {
 // 刪除貼文
 const deletePostHandler = async (post) => {
   const { _id } = post
-  // const { data } = await deletePost(_id)
-  // // 刪除成功
-  // if (data.status === 'success') {
-
-  // }
-  // // 錯誤
+  openModalDeletePost(_id)
 }
 
 // 新增留言

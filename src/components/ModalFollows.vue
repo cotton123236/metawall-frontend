@@ -52,7 +52,7 @@ getFollow()
               :key="follow._id"
             >
               <template v-if="follow?.following">
-                <div class="info" v-for="following in follow.following">
+                <div class="info" v-for="following in follow.following" :key="following._id">
                   <div class="headshot">
                     <img v-if="following.avatar" :src="following.avatar" alt="user-photo">
                   </div>
