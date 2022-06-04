@@ -15,12 +15,11 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 // img
 import LogoLarge from "./../assets/image/logo-large.svg";
 import googleLogo from "./../assets/image/google-logo.png";
-import loginBg from './../assets/image/login-bg.png'
-import rock_01 from './../assets/image/rock-01.svg'
-import rock_02 from './../assets/image/rock-02.svg'
-import rock_03 from './../assets/image/rock-03.svg'
-import rock_04 from './../assets/image/rock-04.svg'
-
+import loginBg from "./../assets/image/login-bg.png";
+import rock_01 from "./../assets/image/rock-01.svg";
+import rock_02 from "./../assets/image/rock-02.svg";
+import rock_03 from "./../assets/image/rock-03.svg";
+import rock_04 from "./../assets/image/rock-04.svg";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -104,8 +103,7 @@ const login = async () => {
       errorMessage.password = "";
     }
   } else {
-    console.log("data", data);
-    apiErrorMessage.value = data.message;
+    // apiErrorMessage.value = data.message;
   }
 };
 
@@ -223,13 +221,18 @@ const register = async () => {
 <template>
   <main class="space-lr">
     <div class="bg-wrap" data-aos="fade" data-aos-duration="800">
-      <img class="bg" :src="loginBg" alt="">
-      <img class="rock rock-01" :src="rock_01" alt="">
-      <img class="rock rock-02" :src="rock_02" alt="">
-      <img class="rock rock-03" :src="rock_03" alt="">
-      <img class="rock rock-04" :src="rock_04" alt="">
+      <img class="bg" :src="loginBg" alt="" />
+      <img class="rock rock-01" :src="rock_01" alt="" />
+      <img class="rock rock-02" :src="rock_02" alt="" />
+      <img class="rock rock-03" :src="rock_03" alt="" />
+      <img class="rock rock-04" :src="rock_04" alt="" />
     </div>
-    <div class="login-wrap" data-aos="clip-down" data-aos-duration="1000" data-aos-delay="500">
+    <div
+      class="login-wrap"
+      data-aos="clip-down"
+      data-aos-duration="1000"
+      data-aos-delay="500"
+    >
       <div class="inner">
         <div class="logo">
           <img :src="LogoLarge" alt="" />
@@ -277,8 +280,8 @@ const register = async () => {
               <div class="rect-btn signup-btn" @click="slideNext">註冊</div>
               <div class="line">or</div>
               <a class="rect-btn" :href="googleOAuthLoginURL">
-                  <img class="google-logo" :src="googleLogo" alt="">
-                  Login with Google
+                <img class="google-logo" :src="googleLogo" alt="" />
+                Login with Google
               </a>
             </form>
           </swiper-slide>
@@ -325,7 +328,7 @@ const register = async () => {
               <div class="rect-btn login-btn" @click="slidePrev">登入</div>
               <div class="line">or</div>
               <a class="rect-btn" :href="googleOAuthLoginURL">
-                <img class="google-logo" :src="googleLogo" alt="">
+                <img class="google-logo" :src="googleLogo" alt="" />
                 Sign up with Google
               </a>
             </form>

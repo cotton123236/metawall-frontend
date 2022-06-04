@@ -26,4 +26,5 @@ div
   border-radius: 5px
   right: 20px
   top: 20px
+  z-index: 999
 </style>

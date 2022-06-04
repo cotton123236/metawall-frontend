@@ -16,7 +16,7 @@ const server = axios.create({
   [請求超時設置]
 */
 // timeout 請求時限
-axios.defaults.timeout = 500
+axios.defaults.timeout = 1000
 // retry 請求次數
 axios.defaults.retry = 4
 // retryDelay 請求間隙
@@ -44,7 +44,7 @@ server.interceptors.request.use(
 
 server.interceptors.response.use(
   response => {
-    console.log('interceptor:', response)
+    if (isDev) console.log('interceptor:', response)
 
     const result = {
       ...response,
@@ -59,13 +59,65 @@ server.interceptors.response.use(
 
     if (error.response) {
       const { status } = error.response
+      // 後端自定義代碼
+      const { name } = error.response.data.error
+
+      // 後端自定義訊息
+      const { message } = error.response.data
 
       switch (status) {
         case 400:
           // 各種錯誤
           useModalAlert.value = true
-          useModalAlertText.value = error.response.data.message
+          let msg = ''
+
+          switch (name) {
+            case '40001':
+              msg = `，${message}`
+              useModalAlertText.value = `格式錯誤${msg}`
+              break;
+
+            case '40002':
+              msg = `，${message}`
+              if (message.includes('您的密碼不正確')) msg = "，帳號或密碼錯誤"
+              if (message.includes('已註冊此用戶')) msg = "，此 Email 已被註冊"
+              if (message.includes('您的舊密碼不正確')) msg = "，您的原密碼不正確"
+              useModalAlertText.value = `內容錯誤${msg}`
+              break;
+
+            case '40003':
+              useModalAlertText.value = "你尚未登入"
+              router.push({ name: 'login' })
+              break;
+
+            case '40004':
+              msg = `，${message}`
+              useModalAlertText.value = `操作錯誤${msg}`
+              break;
+
+            case '40005':
+              if (message.includes('File too large')) msg = "，檔案超過 2MB 限制，請重新上傳"
+              useModalAlertText.value = `錯誤${msg}`
+              break;
+
+            case '40010':
+              msg = `，${message}`
+              useModalAlertText.value = `ID 錯誤${msg}`
+              break;
+
+            case '40011':
+              useModalAlertText.value = "Mongoose 存在重複的 _id"
+              break;
+
+            default:
+              useModalAlertText.value = "格式錯誤"
+              break;
+          }
           break
+
+        case 401:
+          useModalAlert.value = true
+          useModalAlertText.value = "身份驗證錯誤"
 
         case 404:
           // 查無此頁面
@@ -74,10 +126,24 @@ server.interceptors.response.use(
           // router.push({ name: 'Error404' })
           break
 
+        case 500:
+          useModalAlert.value = true
+          switch (name) {
+            case '50001':
+              useModalAlertText.value = '上傳發生錯誤，請重新上傳'
+              break;
+
+            default:
+              useModalAlertText.value = `${status}: 系統錯誤，請洽系統管理員`
+              // router.push({ name: 'Error500' })
+              break;
+          }
+          break
+
         default:
           // 各種錯誤
           useModalAlert.value = true
-          useModalAlertText.value = error.response.data.message
+          useModalAlertText.value = `${status}: 系統錯誤，請洽系統管理員`
           break
       }
     }
@@ -115,13 +181,16 @@ server.interceptors.response.use(
           // hideLoading()
         })
         .catch(error => {
+          useModalAlert.value = true
+          useModalAlertText.value = '系統錯誤，請洽系統管理員'
+          // router.push({ name: 'Error500' })
           console.error(error)
           // hideLoading()
         })
     }
 
-    // return error.response
-    return Promise.reject(error)
+    return error.response
+    // return Promise.reject(error)
   }
 )
 
