@@ -36,7 +36,6 @@ const errorMessage = reactive({
 // 來自 API 回傳訊息
 const apiErrorMessagePassword = ref(null);
 const apiSuccessMessagePassword = ref(null);
-const apiErrorMessageAvatar = ref(null);
 const apiErrorMessageProfile = ref(null);
 const apiSuccessMessageProfile = ref(null);
 
@@ -80,7 +79,7 @@ const uploadFile = async () => {
   if (data.status === "success") {
     profileForm.image = data.data.upload;
   } else {
-    apiErrorMessageAvatar.value = data.message;
+    apiErrorMessageProfile.value = data.message;
   }
 };
 
@@ -236,7 +235,6 @@ function countdown() {
         <img v-if="profileForm.image" :src="profileForm.image" alt="" />
       </label>
       <i class="icon-plus"></i>
-      <div class="api-error">{{ apiErrorMessageAvatar }}</div>
     </div>
     <div class="content">
       <div class="inner">
