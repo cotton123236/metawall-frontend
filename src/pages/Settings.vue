@@ -1,5 +1,6 @@
 <script setup>
 import { useUserStore } from "../stores/userStore";
+import { useModalStore } from "../stores/modalStore";
 import { storeToRefs } from "pinia";
 import { reactive, ref, onMounted } from "@vue/runtime-core";
 import { execThirdPartyLogout } from "../utils/auth-third-party";
@@ -23,6 +24,9 @@ const userStore = useUserStore();
 const { patchUser } = userStore;
 let { name, gender, image, _id } = storeToRefs(userStore);
 
+const modalStore = useModalStore();
+const { useModalAlert, useModalAlertText } = storeToRefs(modalStore);
+
 // 錯誤訊息
 const errorMessage = reactive({
   name: "",
@@ -36,7 +40,6 @@ const errorMessage = reactive({
 // 來自 API 回傳訊息
 const apiErrorMessagePassword = ref(null);
 const apiSuccessMessagePassword = ref(null);
-const apiErrorMessageAvatar = ref(null);
 const apiErrorMessageProfile = ref(null);
 const apiSuccessMessageProfile = ref(null);
 
@@ -60,7 +63,7 @@ const getProfile = async () => {
 
 onMounted(() => {
   // 若來自 store 的 name 沒有資料，則重新打一次 API 取得
-  if (!name) {
+  if (!name.value) {
     getProfile();
   }
 });
@@ -79,8 +82,10 @@ const uploadFile = async () => {
 
   if (data.status === "success") {
     profileForm.image = data.data.upload;
+    useModalAlert.value = true;
+    useModalAlertText.value = `上傳成功`;
   } else {
-    apiErrorMessageAvatar.value = data.message;
+    apiErrorMessageProfile.value = data.message;
   }
 };
 
@@ -116,8 +121,10 @@ const changeProfile = async () => {
   const { data } = await updateProfile(param);
 
   if (data.status === "success") {
-    apiSuccessMessageProfile.value = "修改成功";
-    apiErrorMessageProfile.value = "";
+    // apiSuccessMessageProfile.value = "修改成功";
+    // apiErrorMessageProfile.value = "";
+    useModalAlert.value = true;
+    useModalAlertText.value = `修改成功`;
     patchUser({
       name: data.data.nickName,
       gender: data.data.gender,
@@ -139,7 +146,10 @@ const passwordForm = reactive({
 watch(
   passwordForm,
   (newVal) => {
-    if (newVal) apiSuccessMessagePassword.value = "";
+    if (newVal) {
+      apiSuccessMessagePassword.value = "";
+      apiErrorMessagePassword.value = "";
+    }
 
     // 內容不可為空
     errorMessage.oldPassword = isNotEmpty(newVal.oldPassword);
@@ -199,14 +209,19 @@ const changePassword = async () => {
   );
   if (errorMessage.password) return;
 
-  const { data } = await updatePassword(passwordForm);
+  const { data, error } = await updatePassword(passwordForm);
 
   if (data.status === "success") {
-    apiSuccessMessagePassword.value = data.message;
-    apiErrorMessagePassword.value = "";
+    // apiSuccessMessagePassword.value = data.message;
+    // apiErrorMessagePassword.value = "";
+    useModalAlert.value = true;
+    useModalAlertText.value = `${data.message}，將返回登入頁，請重新登入`;
 
     countdown();
   } else {
+    if (data.message.includes("您的舊密碼不正確")) {
+      errorMessage.oldPassword = "密碼不正確";
+    }
     apiErrorMessagePassword.value = data.message;
   }
 };
@@ -236,7 +251,6 @@ function countdown() {
         <img v-if="profileForm.image" :src="profileForm.image" alt="" />
       </label>
       <i class="icon-plus"></i>
-      <div class="api-error">{{ apiErrorMessageAvatar }}</div>
     </div>
     <div class="content">
       <div class="inner">
@@ -289,7 +303,7 @@ function countdown() {
               <span>未知宇宙生物</span>
             </label>
           </div>
-          <div class="api-error">{{ apiErrorMessageProfile }}</div>
+          <!-- <div class="api-error">{{ apiErrorMessageProfile }}</div> -->
           <div class="api-success">{{ apiSuccessMessageProfile }}</div>
           <div class="rect-btn fill submit-btn" @click="changeProfile">
             修改個人資料
@@ -324,9 +338,9 @@ function countdown() {
             />
             <span>確認使用者密碼</span>
           </label>
-          <div class="api-error">
+          <!-- <div class="api-error">
             {{ apiErrorMessagePassword }}
-          </div>
+          </div> -->
           <div class="api-success" v-if="apiSuccessMessagePassword">
             {{ apiSuccessMessagePassword }}，請重新登入
             {{ count }} 秒後將返回登入頁

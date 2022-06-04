@@ -6,7 +6,9 @@ export const useModalStore = defineStore('modal', {
       useModalPost: false,
       useModalLoader: false,
       useModalFollows: false,
-      useModalLikes: false
+      useModalLikes: false,
+      useModalAlert: false,
+      useModalAlertText: ''
     }
   },
   actions: {
@@ -33,6 +35,14 @@ export const useModalStore = defineStore('modal', {
     },
     closeModalLikes() {
       this.useModalLikes = false
+    },
+    openModalAlert(val) {
+      this.useModalAlert = true
+      this.useModalAlertText = val
+    },
+    closeModalAlert() {
+      this.useModalAlert = false
+      this.useModalAlertText = ''
     }
   }
 })
