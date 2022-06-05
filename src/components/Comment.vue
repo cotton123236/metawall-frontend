@@ -1,9 +1,32 @@
 <script setup>
-  import { useDateFormat } from '../utils/utils'
+import { ref } from 'vue-demi'
+import { useDateFormat } from '../utils/utils'
+import { useUserStore } from './../stores/userStore'
+import { useModalStore } from './../stores/modalStore'
+// components
+import contenteditable from 'vue-contenteditable'
 
-  const props = defineProps({
-    comment: Object
-  })
+const props = defineProps({
+  comment: Object,
+  postId: String
+})
+
+const userStore = useUserStore()
+const modalStore = useModalStore()
+const { openModalDeleteComment } = modalStore
+
+// 編輯留言
+const isEditing = ref(false)
+const editCommentHandler = () => {
+  isEditing.value = !isEditing.value
+}
+
+// 刪除留言
+const deleteCommentHandler = (comment) => {
+  const { _id } = comment
+  openModalDeleteComment(`${props.postId}/${_id}`)
+}
+
 </script>
 
 <template>
@@ -12,9 +35,35 @@
       <img v-if="comment.editor.avatar" :src="comment.editor.avatar" alt="user-photo">
     </div>
     <div class="content">
-      <span class="name">{{comment.editor.nickName}}</span>
-      <span class="date">{{useDateFormat(comment.createdAt)}}</span>
-      <p>{{comment.comment}}</p>
+      <div class="head">
+        <span class="name">{{ comment.editor.nickName }}</span>
+        <span class="date">{{ useDateFormat(comment.createdAt) }}</span>
+        <span
+          class="edit-btn"
+          v-if="userStore._id === comment.editor._id"
+          @click="editCommentHandler"
+        >
+          {{ isEditing ? '取消' : '編輯' }}
+        </span>
+        <span
+          class="delete-btn"
+          v-if="userStore._id === comment.editor._id"
+          @click="deleteCommentHandler(comment)"
+        >
+          刪除
+        </span>
+      </div>
+      <div class="textarea">
+        <contenteditable tag="p" :contenteditable="isEditing" v-model="comment.comment" />
+        <div
+          v-if="isEditing"
+          class="submit-btn"
+          :class="{disable: !comment.comment}"
+          @click="addComment"
+        >
+          發佈
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -26,12 +75,20 @@
 .each-comment
   display: flex
   align-items: flex-start
+  &:hover
+    .content
+      .edit-btn, .delete-btn
+        opacity: .4
   .headshot
     flex-shrink: 0
     width: 40px
     height: 40px
   .content
     width: 100%
+    .head
+      display: flex
+      align-items: center
+      padding-right: 10px
     .name
       font-family: $code-font
       font-size: px(14)
@@ -42,9 +99,46 @@
       font-weight: 300
       line-height: 1.5
       margin-left: 20px
-    p
-      font-size: px(14)
+    .edit-btn, .delete-btn
+      display: inline-block
+      color: var(--primary-blue-light)
+      font-size: px(12)
       line-height: 1.5
+      cursor: pointer
+      opacity: 0
+      transition: var(--trans-s)
+      &:hover
+        opacity: .8
+    .edit-btn
+      color: var(--primary-blue-light)
+      margin-left: auto
+    .delete-btn
       color: var(--gray)
-      margin-top: 3px
+      margin-left: 10px
+    .textarea
+      position: relative
+      p
+        font-size: px(14)
+        line-height: 1.5
+        color: var(--gray)
+        margin-top: 3px
+        width: 100%
+        &[contenteditable="true"]
+          background-color: var(--background)
+          border-radius: 20px
+          padding: 5px 40px 5px 20px
+      .submit-btn
+        position: absolute
+        bottom: 4px
+        right: 15px
+        font-size: px(12)
+        padding: 5px
+        cursor: pointer
+        color: var(--primary-blue-light)
+        opacity: .7
+        transition: opacity var(--trans-s)
+        &:hover
+          opacity: 1
+        &.disable
+          opacity: .2
 </style>

@@ -202,3 +202,11 @@ export function updateComment(postId, commentId, comment) {
     }
   })
 }
+
+// 刪除留言
+export function deleteComment(potIdAndCommentId) {
+  return request({
+    url: `${url.post}/comment/${potIdAndCommentId}`,
+    method: 'delete'
+  })
+}
