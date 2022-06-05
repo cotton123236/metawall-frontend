@@ -11,6 +11,7 @@ import {
   isSamePassword,
 } from "../utils/validate";
 import { useUserStore } from "./../stores/userStore";
+import { useModalStore } from './../stores/modalStore'
 import { Swiper, SwiperSlide } from "swiper/vue";
 // img
 import LogoLarge from "./../assets/image/logo-large.svg";
@@ -23,7 +24,9 @@ import rock_04 from "./../assets/image/rock-04.svg";
 
 const router = useRouter();
 const userStore = useUserStore();
+const modalStore = useModalStore();
 const { patchUser } = userStore;
+const { openModalLoader, closeModalLoader } = modalStore
 const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env;
 
 // oauth Login URL
@@ -85,6 +88,8 @@ const login = async () => {
   errorMessage.email = isValidEmail(loginForm.email);
   if (errorMessage.email) return;
 
+  // 通過前端驗證
+  openModalLoader()
   const { data } = await signIn(loginForm);
   if (data.status === "success") {
     localStorage.setItem("token", data.data.token);
@@ -105,6 +110,8 @@ const login = async () => {
   } else {
     // apiErrorMessage.value = data.message;
   }
+  // 關閉 loader
+  closeModalLoader()
 };
 
 /* ---註冊功能--- */

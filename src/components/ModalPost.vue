@@ -16,7 +16,7 @@ const userStore = useUserStore()
 const modalStore = useModalStore()
 const postStore = usePostStore()
 
-const { closeModalPost, openModalLoader, closeModalLoader } = modalStore
+const { closeModalPost, openModalLoader, closeModalLoader, openModalAlert } = modalStore
 const { patchPosts, patchPostingData } = postStore
 const { postingData } = storeToRefs(postStore)
 
@@ -26,7 +26,7 @@ const isNewPost = postingData.value.content === ''
 const submitPost = async () => {
   if (!postingData.value.content) return;
   // 打開 loader
-  openModalLoader()
+  openModalLoader('發佈中')
   // 發送 request (新增或編輯)
   const { data: submitData } = isNewPost ? await postNewPost(postingData.value) : await patchEditPost(postingData.value)
   // 關閉燈箱
@@ -37,8 +37,10 @@ const submitPost = async () => {
     const { data } = await getPostsByRoute(route)
     patchPosts(data.data.list)
   }
-  // // 清空 postStore 資料
-  // patchPostingData({ _id: '', content: '', image: [] })
+  // 若失敗則顯示錯誤訊息
+  else {
+    openModalAlert(submitData.message)
+  }
 }
 
 const editor = useEditor({
@@ -64,7 +66,7 @@ onUnmounted(() => {
       <div class="modal">
         <div class="close-btn" @click="closeModalPost"></div>
         <div class="modal-head">
-          <span>新增貼文</span>
+          <span>{{ isNewPost ? '新增貼文' : '編輯貼文' }}</span>
         </div>
         <div class="modal-body">
           <div class="info">
