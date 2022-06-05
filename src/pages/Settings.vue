@@ -25,7 +25,7 @@ const { patchUser } = userStore;
 let { name, gender, image, _id } = storeToRefs(userStore);
 
 const modalStore = useModalStore();
-const { useModalAlert, useModalAlertText } = storeToRefs(modalStore);
+const { openModalLoader, closeModalLoader, openModalAlert } = modalStore
 
 // 錯誤訊息
 const errorMessage = reactive({
@@ -71,6 +71,7 @@ onMounted(() => {
 // 上傳圖片
 const fileInput = ref();
 const uploadFile = async () => {
+  openModalLoader('上傳中')
   const uploadedFile = fileInput.value.files[0];
   console.dir(uploadedFile);
 
@@ -81,11 +82,12 @@ const uploadFile = async () => {
 
   if (data.status === "success") {
     profileForm.image = data.data.upload;
-    useModalAlert.value = true;
-    useModalAlertText.value = `上傳成功`;
-  } else {
-    apiErrorMessageProfile.value = data.message;
   }
+  else {
+    openModalAlert(data.message)
+    // apiErrorMessageProfile.value = data.message;
+  }
+  closeModalLoader()
 };
 
 // 監看 profileForm 內容
@@ -120,17 +122,19 @@ const changeProfile = async () => {
   const { data } = await updateProfile(param);
 
   if (data.status === "success") {
-    // apiSuccessMessageProfile.value = "修改成功";
-    // apiErrorMessageProfile.value = "";
-    useModalAlert.value = true;
-    useModalAlertText.value = `修改成功`;
+    apiSuccessMessageProfile.value = "修改成功";
+    apiErrorMessageProfile.value = "";
+    openModalAlert('修改成功')
+    // useModalAlert.value = true;
+    // useModalAlertText.value = `修改成功`;
     patchUser({
       name: data.data.nickName,
       gender: data.data.gender,
       image: data.data.avatar,
     });
   } else {
-    apiErrorMessageProfile.value = data.message;
+    openModalAlert(data.message)
+    // apiErrorMessageProfile.value = data.message;
   }
 };
 
