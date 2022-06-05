@@ -34,6 +34,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   await checkThirdPartyLogin.google()
+  window.location.search = ''
   if (to.name !== 'Login' && !localStorage.getItem("token")) {
     return { name: 'Login', replace: true }
   }
