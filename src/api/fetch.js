@@ -172,3 +172,22 @@ export function putLike(id) {
     method: 'put'
   })
 }
+
+// 刪除按讚
+export function delPostLike(id) {
+  return request({
+    url: `${url.post}/likes/${id}`,
+    method: 'delete'
+  })
+}
+
+// 新增留言
+export function postComment(id, comment) {
+  return request({
+    url: `${url.post}/comment/${id}`,
+    method: 'post',
+    data: {
+      comment
+    }
+  })
+}

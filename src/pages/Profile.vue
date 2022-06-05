@@ -53,17 +53,15 @@ const getProfilePost = async () => {
 getProfilePost()
 
 // 判斷否有追蹤
-const getFollow = async () => {
+const checkIsLike = async () => {
+  const checkFollows = []
   const { data } =  await getFollowList();
   if (data.status !== 'success') return
   if (data.data.length === 0 )return
   for (let list of data.data.list) {
-    for(let followId of list.following){
-      if(followId._id === id) {
-        isFollowing.value = true
-      } else {
-        isFollowing.value = false
-      }
+    checkFollows.push(list.following[0]._id)
+    if (checkFollows.findIndex(item => item == id) >= 0) {
+      isFollowing.value = true
     }
   }
   patchUser({
@@ -71,10 +69,11 @@ const getFollow = async () => {
   })
 }
 
-getFollow()
+checkIsLike()
 
 // 追蹤
 const whetherToFollow = async () => {
+  if (id === userStore._id) return
   if (isFollowing.value) {
     const { data } = await deleteFollowByperson(id);
     if (data.status !== 'success') return;
@@ -92,24 +91,26 @@ const whetherToFollow = async () => {
 <template>
   <section>
     <!-- profile -->
-    <div class="profile">
+    <div class="profile" data-aos="clip-left" data-aos-duration="1000">
       <div class="headshot">
         <img v-if="profileUser.avatar" :src="profileUser.avatar" alt="">
       </div>
       <div class="content">
         <div class="head">
           <span class="name">{{ profileUser.nickName }}</span>
-          <div
-            class="follow-btn"
-            :class="isFollowing ? 'unfollow' : 'follow'"
-            @click="whetherToFollow"
-          >
-            {{ isFollowing ? '取消追蹤' : '追蹤' }}
-          </div>
+          <template v-if="userStore._id !== id">
+            <div
+              class="follow-btn"
+              :class="isFollowing ? 'unfollow' : 'follow'"
+              @click="whetherToFollow"
+            >
+              {{ isFollowing ? '取消追蹤' : '追蹤' }}
+            </div>
+          </template>
         </div>
         <div class="created">2022/04/04 加入元宇宙</div>
         <div class="detail">
-          <span>10 則貼文</span>
+          <span>{{profilePost.length}} 則貼文</span>
           <span>5 人追蹤中</span>
         </div>
       </div>
@@ -139,9 +140,9 @@ const whetherToFollow = async () => {
   position: relative
   display: flex
   padding: 50px 40px
-  border-radius: 0 100px 0 100px
+  border-radius: 10px 100px 10px 100px
   background-color: var(--white)
-  box-shadow: 0 0 20px rgba(0, 0, 0, .1)
+  box-shadow: 0 0 10px rgba(0, 0, 0, .1)
   +rwdmax(767)
     display: block
     padding: 40px 30px

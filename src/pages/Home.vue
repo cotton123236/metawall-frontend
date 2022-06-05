@@ -1,18 +1,29 @@
 <script setup>
+import { watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
+import { useUserStore } from './../stores/userStore'
 import { usePostStore } from './../stores/postStore'
+import { useModalStore } from './../stores/modalStore'
 import { getPostsByRoute } from './../api/fetch'
 import { appendQuery } from './../utils/utils'
 import Posts from './../components/Posts.vue'
 
 
 const route = useRoute()
+const userStore = useUserStore()
+const modalStore = useModalStore()
 const postStore = usePostStore()
 
 const { posts } = storeToRefs(postStore)
 const { patchPosts } = postStore
 
+watch(()=>modalStore.useModalLikes, async (newVal)=>{
+  if(!newVal){
+    patchPosts([])
+    await getAllPosts()
+  }
+})
 
 // post handler
 const getAllPosts = async () => {

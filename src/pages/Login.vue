@@ -4,7 +4,6 @@ import { watch } from "vue";
 import { reactive, ref } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 import { signIn, getMyProfile, signUpCheck, signUp } from "./../api/fetch";
-
 import {
   isNotEmpty,
   isValidEmail,
@@ -12,12 +11,22 @@ import {
   isSamePassword,
 } from "../utils/validate";
 import { useUserStore } from "./../stores/userStore";
+import { useModalStore } from './../stores/modalStore'
 import { Swiper, SwiperSlide } from "swiper/vue";
+// img
 import LogoLarge from "./../assets/image/logo-large.svg";
 import googleLogo from "./../assets/image/google-logo.png";
+import loginBg from "./../assets/image/login-bg.png";
+import rock_01 from "./../assets/image/rock-01.svg";
+import rock_02 from "./../assets/image/rock-02.svg";
+import rock_03 from "./../assets/image/rock-03.svg";
+import rock_04 from "./../assets/image/rock-04.svg";
+
 const router = useRouter();
 const userStore = useUserStore();
+const modalStore = useModalStore();
 const { patchUser } = userStore;
+const { openModalLoader, closeModalLoader } = modalStore
 const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env;
 
 // oauth Login URL
@@ -79,6 +88,8 @@ const login = async () => {
   errorMessage.email = isValidEmail(loginForm.email);
   if (errorMessage.email) return;
 
+  // 通過前端驗證
+  openModalLoader()
   const { data } = await signIn(loginForm);
   if (data.status === "success") {
     localStorage.setItem("token", data.data.token);
@@ -97,9 +108,10 @@ const login = async () => {
       errorMessage.password = "";
     }
   } else {
-    console.log("data", data);
-    apiErrorMessage.value = data.message;
+    // apiErrorMessage.value = data.message;
   }
+  // 關閉 loader
+  closeModalLoader()
 };
 
 /* ---註冊功能--- */
@@ -137,7 +149,7 @@ watch(
   }
 );
 
-watch(errorMessage.value, () => {
+watch(errorMessage, () => {
   slideUpdate();
 });
 
@@ -215,7 +227,19 @@ const register = async () => {
 
 <template>
   <main class="space-lr">
-    <div class="login-wrap">
+    <div class="bg-wrap" data-aos="fade" data-aos-duration="800">
+      <img class="bg" :src="loginBg" alt="" />
+      <img class="rock rock-01" :src="rock_01" alt="" />
+      <img class="rock rock-02" :src="rock_02" alt="" />
+      <img class="rock rock-03" :src="rock_03" alt="" />
+      <img class="rock rock-04" :src="rock_04" alt="" />
+    </div>
+    <div
+      class="login-wrap"
+      data-aos="clip-down"
+      data-aos-duration="1000"
+      data-aos-delay="500"
+    >
       <div class="inner">
         <div class="logo">
           <img :src="LogoLarge" alt="" />
@@ -261,10 +285,10 @@ const register = async () => {
                 登入
               </div>
               <div class="rect-btn signup-btn" @click="slideNext">註冊</div>
-              <div class="line" data-text="or"></div>
+              <div class="line">or</div>
               <a class="rect-btn" :href="googleOAuthLoginURL">
-                  <img class="google-logo" :src="googleLogo" alt="">
-                  Login with Google
+                <img class="google-logo" :src="googleLogo" alt="" />
+                Login with Google
               </a>
             </form>
           </swiper-slide>
@@ -309,9 +333,9 @@ const register = async () => {
                 註冊
               </div>
               <div class="rect-btn login-btn" @click="slidePrev">登入</div>
-              <div class="line" data-text="or"></div>
+              <div class="line">or</div>
               <a class="rect-btn" :href="googleOAuthLoginURL">
-                <img class="google-logo" :src="googleLogo" alt="">
+                <img class="google-logo" :src="googleLogo" alt="" />
                 Sign up with Google
               </a>
             </form>
@@ -348,11 +372,52 @@ const register = async () => {
 @import ./../assets/sass/base/mixin
 
 main
+  position: relative
   display: flex
   flex-direction: column
   min-height: 100vh
   padding-top: 60px
   padding-bottom: 60px
+
+// bg-wrap
+.bg-wrap
+  z-index: -1
+  +posFill
+  img
+    &.bg
+      opacity: .6
+      +fit
+    &.rock
+      position: absolute
+      z-index: 0
+      opacity: .7
+    &.rock-01
+      width: 100px
+      top: 60%
+      right: 25%
+      animation: rock 6s infinite linear
+      +rwdmax(1024)
+        top: 70%
+        right: 20%
+    &.rock-02
+      width: 60px
+      top: 55%
+      left: 15%
+      animation: rock 5s infinite 1s linear
+    &.rock-03
+      width: 55px
+      top: 65%
+      right: 10%
+      animation: rock 6s infinite 2s linear
+      +rwdmax(1024)
+        right: 8%
+    &.rock-04
+      width: 20px
+      top: 50%
+      right: 22%
+      animation: rock 7s infinite 1s linear
+
+// login-wrap
 .login-wrap
   margin: auto
   width: 100%
@@ -360,7 +425,8 @@ main
   padding: 50px 40px
   border: 1px solid var(--dark-white)
   border-radius: 12px
-  background-color: #fff
+  background-color: rgba(255, 255, 255, .6)
+  backdrop-filter: blur(15px)
   box-shadow: 0 0 15px rgba(0, 0, 0, .2)
   .logo
     width: 100px
@@ -392,18 +458,20 @@ main
   .line
     position: relative
     width: 100%
-    height: 1px
-    background-color: #eee
-    margin: 20px 0
+    text-align: center
+    margin: 15px 0
+    font-family: $code-font
+    color: #aaa
     & + .rect-btn
       margin-top: 0
+    &::before, &::after
+      width: calc(50% - 20px)
+      height: 1px
+      background-color: #ccc
+      top: 50%
+      +pseudo
     &::before
-      display: block
-      content: attr(data-text)
-      font-size: px(14)
-      font-family: $code-font
-      color: var(--light-gray)
-      padding: 0 10px
-      background-color: #fff
-      +posCenter
+      left: 0
+    &::after
+      right: 0
 </style>

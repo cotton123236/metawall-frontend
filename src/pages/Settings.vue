@@ -1,8 +1,12 @@
 <script setup>
 import { useUserStore } from "../stores/userStore";
+import { useModalStore } from "../stores/modalStore";
 import { storeToRefs } from "pinia";
 import { reactive, ref, onMounted } from "@vue/runtime-core";
+import { execThirdPartyLogout } from "../utils/auth-third-party";
 import { watch } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 import {
   isNotEmpty,
   isValidPassword,
@@ -20,20 +24,22 @@ const userStore = useUserStore();
 const { patchUser } = userStore;
 let { name, gender, image, _id } = storeToRefs(userStore);
 
+const modalStore = useModalStore();
+const { useModalAlert, useModalAlertText } = storeToRefs(modalStore);
+
 // 錯誤訊息
 const errorMessage = reactive({
   name: "",
   gender: 0,
   image: "",
-  old_password: "",
+  oldPassword: "",
   password: "",
-  confirm_password: "",
+  confirmPassword: "",
 });
 
 // 來自 API 回傳訊息
 const apiErrorMessagePassword = ref(null);
 const apiSuccessMessagePassword = ref(null);
-const apiErrorMessageAvatar = ref(null);
 const apiErrorMessageProfile = ref(null);
 const apiSuccessMessageProfile = ref(null);
 
@@ -57,7 +63,7 @@ const getProfile = async () => {
 
 onMounted(() => {
   // 若來自 store 的 name 沒有資料，則重新打一次 API 取得
-  if (!name) {
+  if (!name.value) {
     getProfile();
   }
 });
@@ -76,8 +82,10 @@ const uploadFile = async () => {
 
   if (data.status === "success") {
     profileForm.image = data.data.upload;
+    useModalAlert.value = true;
+    useModalAlertText.value = `上傳成功`;
   } else {
-    apiErrorMessageAvatar.value = data.message;
+    apiErrorMessageProfile.value = data.message;
   }
 };
 
@@ -113,8 +121,10 @@ const changeProfile = async () => {
   const { data } = await updateProfile(param);
 
   if (data.status === "success") {
-    apiSuccessMessageProfile.value = "修改成功";
-    apiErrorMessageProfile.value = "";
+    // apiSuccessMessageProfile.value = "修改成功";
+    // apiErrorMessageProfile.value = "";
+    useModalAlert.value = true;
+    useModalAlertText.value = `修改成功`;
     patchUser({
       name: data.data.nickName,
       gender: data.data.gender,
@@ -127,24 +137,27 @@ const changeProfile = async () => {
 
 // 修改密碼表單
 const passwordForm = reactive({
-  old_password: "",
+  oldPassword: "",
   password: "",
-  confirm_password: "",
+  confirmPassword: "",
 });
 
 // 監看 passwordForm 內容
 watch(
   passwordForm,
   (newVal) => {
-    if (newVal) apiSuccessMessagePassword.value = "";
+    if (newVal) {
+      apiSuccessMessagePassword.value = "";
+      apiErrorMessagePassword.value = "";
+    }
 
     // 內容不可為空
-    errorMessage.old_password = isNotEmpty(newVal.old_password);
+    errorMessage.oldPassword = isNotEmpty(newVal.oldPassword);
 
     // 密碼不一致
-    errorMessage.confirm_password = isSamePassword(
+    errorMessage.confirmPassword = isSamePassword(
       newVal.password,
-      newVal.confirm_password
+      newVal.confirmPassword
     );
   },
   { deep: true }
@@ -160,51 +173,74 @@ watch(
     // 不可與原密碼相同
     return (errorMessage.password = isRepeatPassword(
       newVal,
-      passwordForm.old_password
+      passwordForm.oldPassword
     ));
   }
 );
 
 const changePassword = async () => {
   // 驗證：內容不可為空
-  errorMessage.old_password = isNotEmpty(passwordForm.old_password);
+  errorMessage.oldPassword = isNotEmpty(passwordForm.oldPassword);
   errorMessage.password = isNotEmpty(passwordForm.password);
-  errorMessage.confirm_password = isNotEmpty(passwordForm.confirm_password);
+  errorMessage.confirmPassword = isNotEmpty(passwordForm.confirmPassword);
 
   if (
-    errorMessage.old_password ||
+    errorMessage.oldPassword ||
     errorMessage.password ||
-    errorMessage.confirm_password
+    errorMessage.confirmPassword
   )
     return;
 
   // 驗證： 密碼不一致
-  errorMessage.confirm_password = isSamePassword(
+  errorMessage.confirmPassword = isSamePassword(
     passwordForm.password,
-    passwordForm.confirm_password
+    passwordForm.confirmPassword
   );
-  if (errorMessage.confirm_password) return;
+  if (errorMessage.confirmPassword) return;
 
   // 驗證： 密碼少於8個字元
-  errorMessage.confirm_password = isValidPassword(passwordForm.password);
-  if (errorMessage.confirm_password) return;
+  errorMessage.confirmPassword = isValidPassword(passwordForm.password);
+  if (errorMessage.confirmPassword) return;
 
   // 驗證： 新密碼不可與原密碼相同
   errorMessage.password = isRepeatPassword(
     passwordForm.password,
-    passwordForm.old_password
+    passwordForm.oldPassword
   );
   if (errorMessage.password) return;
 
-  const { data } = await updatePassword(passwordForm);
+  const { data, error } = await updatePassword(passwordForm);
 
   if (data.status === "success") {
-    apiSuccessMessagePassword.value = data.message;
-    apiErrorMessagePassword.value = "";
+    // apiSuccessMessagePassword.value = data.message;
+    // apiErrorMessagePassword.value = "";
+    useModalAlert.value = true;
+    useModalAlertText.value = `${data.message}，將返回登入頁，請重新登入`;
+
+    countdown();
   } else {
+    if (data.message.includes("您的舊密碼不正確")) {
+      errorMessage.oldPassword = "密碼不正確";
+    }
     apiErrorMessagePassword.value = data.message;
   }
 };
+
+let timer = null;
+let count = ref(3);
+
+function countdown() {
+  timer = setInterval(() => {
+    count.value = count.value - 1;
+    if (count.value <= 0) {
+      clearInterval(timer);
+      timer = null;
+      execThirdPartyLogout();
+      userStore.$reset();
+      router.push({ path: "/login" });
+    }
+  }, 1000);
+}
 </script>
 
 <template>
@@ -215,7 +251,6 @@ const changePassword = async () => {
         <img v-if="profileForm.image" :src="profileForm.image" alt="" />
       </label>
       <i class="icon-plus"></i>
-      <div class="api-error">{{ apiErrorMessageAvatar }}</div>
     </div>
     <div class="content">
       <div class="inner">
@@ -268,7 +303,7 @@ const changePassword = async () => {
               <span>未知宇宙生物</span>
             </label>
           </div>
-          <div class="api-error">{{ apiErrorMessageProfile }}</div>
+          <!-- <div class="api-error">{{ apiErrorMessageProfile }}</div> -->
           <div class="api-success">{{ apiSuccessMessageProfile }}</div>
           <div class="rect-btn fill submit-btn" @click="changeProfile">
             修改個人資料
@@ -276,12 +311,12 @@ const changePassword = async () => {
         </form>
         <h2>重新設定密碼</h2>
         <form>
-          <label class="form-row" :data-warning="errorMessage.old_password">
+          <label class="form-row" :data-warning="errorMessage.oldPassword">
             <input
               id="old-password"
               type="password"
               required
-              v-model.trim="passwordForm.old_password"
+              v-model.trim="passwordForm.oldPassword"
             />
             <span>原密碼</span>
           </label>
@@ -294,17 +329,22 @@ const changePassword = async () => {
             />
             <span>使用者密碼</span>
           </label>
-          <label class="form-row" :data-warning="errorMessage.confirm_password">
+          <label class="form-row" :data-warning="errorMessage.confirmPassword">
             <input
               id="confirm-password"
               type="password"
               required
-              v-model.trim="passwordForm.confirm_password"
+              v-model.trim="passwordForm.confirmPassword"
             />
             <span>確認使用者密碼</span>
           </label>
-          <div class="api-error">{{ apiErrorMessagePassword }}</div>
-          <div class="api-success">{{ apiSuccessMessagePassword }}</div>
+          <!-- <div class="api-error">
+            {{ apiErrorMessagePassword }}
+          </div> -->
+          <div class="api-success" v-if="apiSuccessMessagePassword">
+            {{ apiSuccessMessagePassword }}，請重新登入
+            {{ count }} 秒後將返回登入頁
+          </div>
         </form>
         <div class="rect-btn fill submit-btn" @click="changePassword">
           修改密碼

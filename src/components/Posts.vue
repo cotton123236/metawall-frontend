@@ -1,10 +1,11 @@
 <script setup>
+import { watch } from "vue";
 import { onMounted, ref } from '@vue/runtime-core'
 import { useDateFormat } from './../utils/utils'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
-import { deletePost } from './../api/fetch'
+import { putLike, delPostLike, postComment } from './../api/fetch'
 // components
 import contenteditable from 'vue-contenteditable'
 import Comment from './Comment.vue'
@@ -16,8 +17,8 @@ const props = defineProps({
 const userStore = useUserStore()
 const postStore = usePostStore()
 const modalStore = useModalStore()
-const { patchPostingData } = postStore
-const { openModalPost } = modalStore
+const { patchPostComment, patchPostingData } = postStore
+const { openModalPost, openModalDeletePost } = modalStore
 
 // 編輯貼文
 const editPostHandler = (post) => {
@@ -29,12 +30,16 @@ const editPostHandler = (post) => {
 // 刪除貼文
 const deletePostHandler = async (post) => {
   const { _id } = post
-  // const { data } = await deletePost(_id)
-  // // 刪除成功
-  // if (data.status === 'success') {
+  openModalDeletePost(_id)
+}
 
-  // }
-  // // 錯誤
+// 新增留言
+const addComment = async () => {
+  if (!commentValue.value || commentValue.value.trim().length === 0) return
+  const { data } = await postComment(props.post._id, commentValue.value);
+  if (data.status !== 'success') return
+  patchPostComment(props.post._id, data.data.comment)
+  commentValue.value = ''  
 }
 
 // 子元件操控
@@ -47,6 +52,41 @@ const changeMoreOpenStatus = () => {
   isMoreOpen.value = !isMoreOpen.value
 }
 
+// 載入時確認自己有沒有按讚
+const checkIsLike = () => {
+  if (props.post.likes.findIndex(item => item === userStore._id) >= 0) {
+    isLike.value = true
+  }else{
+    isLike.value = false
+  }
+}
+checkIsLike()
+
+// 避免 async 問題，監聽
+watch(()=> userStore._id, (newVal)=>{
+  checkIsLike()
+},{deep:true})
+
+watch(()=> postStore.posts, (newVal)=>{
+  checkIsLike()
+},{deep:true})
+
+// 點擊按讚 button
+const triggerLikeBtn = async() => {
+  try{
+    isLike.value = !isLike.value
+    if(isLike.value){
+      const { target: putLikeResult } = await putLike(props.post._id)
+      props.post.likes = putLikeResult.likes
+    }else{
+      const { target: delLikeResult } = await delPostLike(props.post._id)
+      props.post.likes = delLikeResult.likes
+    }
+  }catch(err){
+    console.log(err)
+  }
+}
+
 onMounted(() => {
   document.body.addEventListener('click', () => {
     isMoreOpen.value = false
@@ -55,7 +95,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="each-post">
+  <div class="each-post" data-aos="clip-left">
     <!-- info -->
     <div class="info">
       <router-link class="wrap" :to="post.editor._id">
@@ -104,7 +144,7 @@ onMounted(() => {
     <!-- tool -->
     <div class="tool">
       <!-- like-btn -->
-      <div class="like like-btn" :class="{active: isLike}" @click="isLike = !isLike">
+      <div class="like like-btn" :class="{active: isLike}" @click="triggerLikeBtn">
         <div class="icon">
           <i class="icon-like"></i>
           <i class="icon-heart"></i>
@@ -142,12 +182,12 @@ onMounted(() => {
             </g>
           </svg>
         </div>
-        <span class="num" v-if="post.likes.length">{{ post.likes.length }}</span>
+        <span class="num" v-if="post.likes">{{ post.likes.length }}</span>
       </div>
       <!-- comment-btn -->
       <div class="comment comment-btn" @click="isCommentOpen = true">
         <i class="icon-commit"></i>
-        <!-- <span class="num"></span> -->
+        <span class="num" v-if="post.comments">{{ post.comments.length }}</span>
       </div>
       <!-- <div class="share">
         <i class="icon-share"></i>
@@ -158,20 +198,26 @@ onMounted(() => {
       <!-- 留言輸入 -->
       <div class="self-comment">
         <div class="headshot">
-          <!-- <img src="" alt=""> -->
+          <img v-if="userStore.image" :src="userStore.image" alt="user-photo">
         </div>
         <div class="content">
-          <span class="name">Wilson</span>
+          <span class="name">{{ userStore.name }}</span>
           <div class="textarea">
             <contenteditable tag="p" :contenteditable="true" v-model="commentValue" />
             <!-- <p contenteditable="true">{{ commentValue }}</p> -->
-            <div class="submit-btn" :class="{disable: !commentValue}">發佈</div>
+            <div class="submit-btn" @click="addComment" :class="{disable: !commentValue}">發佈</div>
           </div>
         </div>
       </div>
       <!-- 其他留言 -->
       <div class="comments-list">
-        <Comment />
+        <template v-if="post.comments.length">
+          <Comment 
+            v-for="comment in post.comments"
+            :key="comment._id"
+            :comment="comment"
+          />
+        </template>
       </div>
     </div>
   </div>
@@ -184,7 +230,7 @@ onMounted(() => {
 // each-post
 .each-post
   border: 1px solid var(--dark-white)
-  border-radius: 8px
+  border-radius: 10px
   background-color: var(--white)
   box-shadow: 0 0 5px rgba(0, 0, 0, .1)
   &:not(:first-child)

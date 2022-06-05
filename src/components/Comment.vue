@@ -1,15 +1,20 @@
 <script setup>
+  import { useDateFormat } from '../utils/utils'
+
+  const props = defineProps({
+    comment: Object
+  })
 </script>
 
 <template>
   <div class="each-comment">
     <div class="headshot">
-      <!-- <img src="" alt=""> -->
+      <img v-if="comment.editor.avatar" :src="comment.editor.avatar" alt="user-photo">
     </div>
     <div class="content">
-      <span class="name">Wilson</span>
-      <span class="date">2小時前</span>
-      <p>晴朗的天空</p>
+      <span class="name">{{comment.editor.nickName}}</span>
+      <span class="date">{{useDateFormat(comment.createdAt)}}</span>
+      <p>{{comment.comment}}</p>
     </div>
   </div>
 </template>
