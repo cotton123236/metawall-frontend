@@ -9,7 +9,6 @@ import { getPostsByRoute } from './../api/fetch'
 import { appendQuery } from './../utils/utils'
 import Posts from './../components/Posts.vue'
 
-
 const route = useRoute()
 const userStore = useUserStore()
 const modalStore = useModalStore()

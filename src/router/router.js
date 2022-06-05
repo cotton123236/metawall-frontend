@@ -33,7 +33,7 @@ const router = createRouter({
         if (urlParams.get('from') === 'google') {
           await checkThirdPartyLogin.google()
           window.location.search = ''
-          window.location.replace(window.location.origin)
+          window.location.replace(`${window.location.origin}${window.location.pathname}`)
         }
       }
     }
