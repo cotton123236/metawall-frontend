@@ -192,9 +192,9 @@ export function postComment(id, comment) {
 }
 
 // 編輯留言
-export function updateComment(postId, commentId, comment) {
+export function updateComment(potIdAndCommentId, comment) {
   return request({
-    url: `${url.post}/comment/${postId}/${commentId}`,
+    url: `${url.post}/comment/${potIdAndCommentId}`,
     method: 'patch',
     data: {
       comment

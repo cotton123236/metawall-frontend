@@ -202,7 +202,7 @@ onMounted(() => {
           <span class="name">{{ userStore.name }}</span>
           <div class="textarea">
             <contenteditable tag="p" :contenteditable="true" v-model="commentValue" />
-            <div class="submit-btn" @click="addComment" :class="{disable: !commentValue}">發佈</div>
+            <div class="submit-btn" @click="addComment" :class="{disable: !commentValue || commentValue.trim().length === 0}">發佈</div>
           </div>
         </div>
       </div>
@@ -416,6 +416,7 @@ onMounted(() => {
               opacity: 1
             &.disable
               opacity: .2
+              cursor: default
     .comments-list
       margin-top: 20px
     .each-comment
