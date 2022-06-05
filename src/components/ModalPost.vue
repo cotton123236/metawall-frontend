@@ -1,15 +1,16 @@
 <script setup>
-import { onUnmounted } from '@vue/runtime-core'
+import { onUnmounted, ref } from '@vue/runtime-core'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import Image from '@tiptap/extension-image'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
-import { getPostsByRoute, patchEditPost, postNewPost } from './../api/fetch'
+import { getPostsByRoute, patchEditPost, postNewPost, uploadPostImage } from './../api/fetch'
 // components
-// import RichEditor from './../components/RichEditor.vue'
+// import Image from './../assets/image/login-bg.png'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -43,15 +44,40 @@ const submitPost = async () => {
   }
 }
 
+// Rich editor
 const editor = useEditor({
   content: postingData.value.content,
   extensions: [
     StarterKit,
+    Image
   ],
   onUpdate: ({ editor }) => {
     postingData.value.content = editor.getHTML()
   }
 })
+
+// 新增圖片
+const imageFile = ref(null)
+const addImage = async () => {
+  openModalLoader('上傳中')
+  const uploadedFile = imageFile.value.files[0];
+  console.dir(uploadedFile);
+  const formData = new FormData();
+  formData.append("file-to-upload", uploadedFile);
+
+  const { data } = await uploadPostImage(formData);
+
+  if (data.status === "success") {
+    // console.log(editor.value.chain().focus())
+    // profileForm.image = data.data.upload;
+    editor.value.chain().focus().setImage({ src: data.data.upload }).run()
+  }
+  else {
+    openModalAlert(data.message)
+    // apiErrorMessageProfile.value = data.message;
+  }
+  closeModalLoader()
+}
 
 onUnmounted(() => {
   patchPostingData({ _id: '', content: '', image: [] })
@@ -95,13 +121,15 @@ onUnmounted(() => {
               <div class="editor-btn" @click="editor.chain().focus().toggleOrderedList().run()" :class="{ 'is-active': editor.isActive('orderedList') }">
                 <i class="icon-ol"></i>
               </div>
-              <div class="editor-btn">
+              <label class="editor-btn">
                 <i class="icon-picture"></i>
-              </div>
+                <input type="file" @change="addImage" ref="imageFile">
+              </label>
             </div>
             <editor-content class="editor-content" :editor="editor" />
-            <!-- <RichEditor class="editor" v-model="postingData.content" /> -->
-            <!-- <textarea placeholder="在想些什麼呢？" v-model="postingData.content"></textarea> -->
+            <!-- <div class="picture">
+              <img :src="Image" alt="">
+            </div> -->
           </div>
         </div>
         <div class="modal-foot">
@@ -157,9 +185,9 @@ onUnmounted(() => {
         width: calc(100% - 20px)
         left: 10px
   .modal-body
-    padding: 20px 40px
+    padding: 20px 40px 0
     +rwdmax(767)
-      padding: 20px 20px
+      padding: 20px 20px 0
     .info
       display: flex
       align-items: center
@@ -171,7 +199,11 @@ onUnmounted(() => {
       font-family: $code-font
       line-height: 1.5
     .content
-      padding: 20px 0
+      padding: 20px 0 0
+    // .picture
+    //   width: 100%
+    //   img
+    //     width: 100%
   .modal-foot
     padding: 20px
     +rwdmax(767)
@@ -196,9 +228,11 @@ onUnmounted(() => {
     &.is-active
       background-color: var(--dark-gray)
       color: var(--white)
+    input[type="file"]
+      display: none
 .editor-content
   width: 100%
-  height: 20vh
+  height: 30vh
   overflow: auto
   padding: 10px
 

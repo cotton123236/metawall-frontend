@@ -99,6 +99,18 @@ export function postNewPost(data) {
   })
 }
 
+// 上傳貼文圖片
+export function uploadPostImage(data) {
+  return request({
+    url: `${url.post}/image`,
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data
+  })
+}
+
 // 刪除貼文
 export function deletePost(id) {
   return request({
