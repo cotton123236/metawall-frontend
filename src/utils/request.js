@@ -44,7 +44,14 @@ server.interceptors.request.use(
 
 server.interceptors.response.use(
   response => {
-    if (isDev) console.log('interceptor:', response)
+    if (isDev) {
+      console.log(
+        `%c👨‍💻 Request:%c${response.config.url}`,
+        'background:#3F51B5; padding: 3px; border-radius: 5px; color: #fff;',
+        'padding: 3px;',
+        response.data
+      )
+    }
 
     const result = {
       ...response,
@@ -54,7 +61,7 @@ server.interceptors.response.use(
     return result
   },
   error => {
-    if (isDev) console.error('interceptor error', error)
+    if (isDev) console.error(`❌ 發生錯誤：${error}`)
 
 
     if (error.response) {

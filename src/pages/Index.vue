@@ -14,7 +14,7 @@ import ModalFollows from "./../components/ModalFollows.vue";
 import ModalLikes from "./../components/ModalLikes.vue";
 import ModalDeletePost from "./../components/ModalDeletePost.vue";
 
-const route = useRoute()
+const route = useRoute();
 const userStore = useUserStore();
 const { patchUser } = userStore;
 
@@ -30,9 +30,7 @@ const gerProfile = async () => {
     patchUser({
       _id: data.data._id,
       name: data.data.nickName,
-      image: data.data.hasOwnProperty("avatar")
-        ? data.data.avatar
-        : "../assets/image/logo.png",
+      image: data.data.hasOwnProperty("avatar") ? data.data.avatar : "",
     });
   }
 };
