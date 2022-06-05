@@ -9,17 +9,20 @@ import { useModalStore } from "./stores/modalStore";
 
 const modalStore = useModalStore();
 
+const { useModalAlertText } = storeToRefs(modalStore)
 const { useModalAlert, useModalLoader } = storeToRefs(modalStore);
 </script>
 
 <template>
-  <router-view></router-view>
-  <Transition name="clip">
-    <ModalAlert v-if="useModalAlert" />
-  </Transition>
-  <Transition name="fade">
-    <ModalLoader v-if="useModalLoader" />
-  </Transition>
+  <div class="app-wrapper">
+    <router-view></router-view>
+    <Transition name="fade">
+      <ModalLoader v-if="useModalLoader" />
+    </Transition>
+    <Transition name="clip">
+      <ModalAlert v-if="useModalAlert" />
+    </Transition>
+  </div>
 </template>
 
 <style>
