@@ -207,6 +207,7 @@ const whetherToFollow = async () => {
 
 .post-content
   margin-top: 20px
+  padding-bottom: 20px
   .no-post
     padding: 60px 30px
 

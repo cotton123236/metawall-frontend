@@ -95,6 +95,9 @@ onUnmounted(() => {
               <div class="editor-btn" @click="editor.chain().focus().toggleOrderedList().run()" :class="{ 'is-active': editor.isActive('orderedList') }">
                 <i class="icon-ol"></i>
               </div>
+              <div class="editor-btn">
+                <i class="icon-picture"></i>
+              </div>
             </div>
             <editor-content class="editor-content" :editor="editor" />
             <!-- <RichEditor class="editor" v-model="postingData.content" /> -->
