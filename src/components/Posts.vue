@@ -17,7 +17,7 @@ const props = defineProps({
 const userStore = useUserStore()
 const postStore = usePostStore()
 const modalStore = useModalStore()
-const { patchPostComment, patchPostingData } = postStore
+const { addPostComment, patchPostingData } = postStore
 const { openModalPost, openModalDeletePost } = modalStore
 
 // 編輯貼文
@@ -28,7 +28,7 @@ const editPostHandler = (post) => {
 }
 
 // 刪除貼文
-const deletePostHandler = async (post) => {
+const deletePostHandler = (post) => {
   const { _id } = post
   openModalDeletePost(_id)
 }
@@ -38,7 +38,7 @@ const addComment = async () => {
   if (!commentValue.value || commentValue.value.trim().length === 0) return
   const { data } = await postComment(props.post._id, commentValue.value);
   if (data.status !== 'success') return
-  patchPostComment(props.post._id, data.data.comment)
+  addPostComment(props.post._id, data.data.comment)
   commentValue.value = ''  
 }
 
@@ -204,7 +204,6 @@ onMounted(() => {
           <span class="name">{{ userStore.name }}</span>
           <div class="textarea">
             <contenteditable tag="p" :contenteditable="true" v-model="commentValue" />
-            <!-- <p contenteditable="true">{{ commentValue }}</p> -->
             <div class="submit-btn" @click="addComment" :class="{disable: !commentValue}">發佈</div>
           </div>
         </div>
@@ -212,10 +211,11 @@ onMounted(() => {
       <!-- 其他留言 -->
       <div class="comments-list">
         <template v-if="post.comments.length">
-          <Comment 
+          <Comment
             v-for="comment in post.comments"
             :key="comment._id"
             :comment="comment"
+            :post-id="post._id"
           />
         </template>
       </div>
@@ -393,7 +393,7 @@ onMounted(() => {
           line-height: 1.5
         .textarea
           position: relative
-          p
+          p[contenteditable="true"]
             font-size: px(14)
             line-height: 1.5
             color: var(--gray)

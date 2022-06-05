@@ -11,7 +11,9 @@ export const useModalStore = defineStore('modal', {
       useModalAlert: false,
       useModalAlertText: '',
       useModalDeletePost: false,
-      useModalDeletePostId: ''
+      useModalDeletePostId: '',
+      useModalDeleteComment: false,
+      useModalDeleteCommentId: ''
     }
   },
   actions: {
@@ -57,5 +59,13 @@ export const useModalStore = defineStore('modal', {
       this.useModalDeletePost = false
       this.useModalDeletePostId = ''
     },
+    openModalDeleteComment(id) {
+      this.useModalDeleteComment = true
+      this.useModalDeleteCommentId = id
+    },
+    closeModalDeleteComment() {
+      this.useModalDeleteComment = false
+      this.useModalDeleteCommentId = ''
+    }
   }
 })

@@ -1,30 +1,27 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
-import { useModalStore } from './../stores/modalStore'
-import { usePostStore } from './../stores/postStore'
-import { deletePost, getPostsByRoute } from './../api/fetch'
+import { useModalStore } from '../stores/modalStore'
+import { usePostStore } from '../stores/postStore'
+import { deleteComment } from '../api/fetch'
 
-const route = useRoute()
 const modalStore = useModalStore()
 const postStore = usePostStore()
-const { useModalDeletePostId } = storeToRefs(modalStore)
-const { openModalLoader, closeModalLoader, openModalAlert, closeModalDeletePost } = modalStore
-const { patchPosts } = postStore
+const { useModalDeleteCommentId } = storeToRefs(modalStore)
+const { openModalLoader, closeModalLoader, openModalAlert, closeModalDeleteComment } = modalStore
+const { deletePostComment } = postStore
 
-const deletePostHandler = async () => {
+const deleteCommentHandler = async () => {
   openModalLoader('刪除中')
-  const { data } = await deletePost(useModalDeletePostId.value)
+  const { data } = await deleteComment(useModalDeleteCommentId.value)
   // 刪除成功
   if (data.status === 'success') {
-    const { data } = await getPostsByRoute(route)
-    patchPosts(data.data.list)
+    deletePostComment(useModalDeleteCommentId.value)
   }
   // 錯誤
   else {
     openModalAlert(data.message)
   }
-  closeModalDeletePost()
+  closeModalDeleteComment()
   closeModalLoader()
 }
 
@@ -32,13 +29,13 @@ const deletePostHandler = async () => {
 
 <template>
   <div class="modal-wrapper modal-delete-post">
-    <div class="modal-bg" @click="closeModalDeletePost"></div>
+    <div class="modal-bg" @click="closeModalDeleteComment"></div>
     <div class="modal-content">
       <div class="modal">
-        <div class="close-btn" @click="closeModalDeletePost"></div>
+        <div class="close-btn" @click="closeModalDeleteComment"></div>
         <div class="modal-body">
-          <p>確定刪除此貼文？</p>
-          <div class="rect-btn" @click="deletePostHandler">
+          <p>確定刪除此留言？</p>
+          <div class="rect-btn" @click="deleteCommentHandler">
             <span>確定</span>
           </div>
         </div>

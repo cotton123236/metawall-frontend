@@ -13,6 +13,7 @@ import ModalLoader from "./../components/ModalLoader.vue";
 import ModalFollows from "./../components/ModalFollows.vue";
 import ModalLikes from "./../components/ModalLikes.vue";
 import ModalDeletePost from "./../components/ModalDeletePost.vue";
+import ModalDeleteComment from "./../components/ModalDeleteComment.vue";
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -38,8 +39,14 @@ const gerProfile = async () => {
 // ModalPost control
 const modalStore = useModalStore();
 
-const { useModalPost, useModalFollows, useModalLikes, useModalDeletePost } =
-  storeToRefs(modalStore);
+const {
+  useModalPost,
+  useModalFollows,
+  useModalLikes,
+  useModalDeletePost,
+  useModalDeleteComment
+} = storeToRefs(modalStore);
+
 </script>
 
 <template>
@@ -73,6 +80,9 @@ const { useModalPost, useModalFollows, useModalLikes, useModalDeletePost } =
       </Transition>
       <Transition name="clip">
         <ModalDeletePost v-if="useModalDeletePost" />
+      </Transition>
+      <Transition name="clip">
+        <ModalDeleteComment v-if="useModalDeleteComment" />
       </Transition>
     </main>
   </div>
