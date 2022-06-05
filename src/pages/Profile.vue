@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
 import { useUserStore } from './../stores/userStore'
-import { getProfileById, getPostsById } from './../api/fetch'
+import { getProfileById, getPostsById, getMyProfile } from './../api/fetch'
 import Posts from './../components/Posts.vue'
 import { 
   getFollowList,
@@ -19,6 +19,20 @@ const { patchUser } = userStore;
 
 // test
 const isFollowing = ref(false)
+if (!userStore._id) {
+  async () => {
+    const { data } = await getMyProfile();
+    if (data.status === "success") {
+      patchUser({
+        _id: data.data._id,
+        name: data.data.nickName,
+        image: data.data.hasOwnProperty("avatar")
+          ? data.data.avatar
+          : "../assets/image/logo.png",
+      });
+    }
+  }
+}
 
 const { id } = route.params
 
@@ -42,7 +56,6 @@ getProfileUser()
 
 // 取得 profile 貼文
 const profilePost = reactive([])
-
 const getProfilePost = async () => {
   const { data } = await getPostsById(id)
   console.log(data)
@@ -55,6 +68,7 @@ getProfilePost()
 // 判斷否有追蹤
 const checkIsLike = async () => {
   const checkFollows = []
+  if (!userStore._id) return
   const { data } =  await getFollowList(userStore._id);
   if (data.status !== 'success') return
   if (data.data.length === 0 )return
