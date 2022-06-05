@@ -15,7 +15,7 @@ const errorMessage = ref('');
 
 // 取得追蹤列表
 const getFollow = async () => {
-  const { data } =  await getFollowList();
+  const { data } =  await getFollowList(userStore._id);
   if (data.status !== 'success') return
   if (data.data.list.length === 0) {
     errorMessage.value = '未追蹤任何人'
@@ -52,7 +52,7 @@ getFollow()
               :key="follow._id"
             >
               <template v-if="follow?.following">
-                <div class="info" v-for="following in follow.following">
+                <div class="info" v-for="following in follow.following" :key="following._id">
                   <div class="headshot">
                     <img v-if="following.avatar" :src="following.avatar" alt="user-photo">
                   </div>

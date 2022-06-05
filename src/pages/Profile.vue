@@ -55,7 +55,7 @@ getProfilePost()
 // 判斷否有追蹤
 const checkIsLike = async () => {
   const checkFollows = []
-  const { data } =  await getFollowList();
+  const { data } =  await getFollowList(userStore._id);
   if (data.status !== 'success') return
   if (data.data.length === 0 )return
   for (let list of data.data.list) {

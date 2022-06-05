@@ -1,25 +1,26 @@
 <script setup>
-import './assets/sass/style.sass'
-import router from './router/router'
-// import { useUserStore } from './stores/userStore'
-// import { getProfileById } from './api/fetch'
+import "./assets/sass/style.sass";
+import { storeToRefs } from "pinia";
+import router from "./router/router";
+import ModalAlert from "./components/ModalAlert.vue";
+import ModalLoader from "./components/ModalLoader.vue";
+// ModalPost control
+import { useModalStore } from "./stores/modalStore";
 
-// const userStore = useUserStore()
+const modalStore = useModalStore();
 
-// const { patchUser } = userStore
-
-// const userId = '626e91ea36674e3b1cdd704b'
-
-// getProfileById(userId).then(res => {
-//   patchUser(res.data)
-// })
-
+const { useModalAlert, useModalLoader } = storeToRefs(modalStore);
 </script>
 
 <template>
   <router-view></router-view>
+  <Transition name="clip">
+    <ModalAlert v-if="useModalAlert" />
+  </Transition>
+  <Transition name="fade">
+    <ModalLoader v-if="useModalLoader" />
+  </Transition>
 </template>
 
 <style>
-
 </style>
