@@ -11,7 +11,7 @@ import {
   isSamePassword,
 } from "../utils/validate";
 import { useUserStore } from "./../stores/userStore";
-import { useModalStore } from './../stores/modalStore'
+import { useModalStore } from "./../stores/modalStore";
 import { Swiper, SwiperSlide } from "swiper/vue";
 // img
 import LogoLarge from "./../assets/image/logo-large.svg";
@@ -26,7 +26,7 @@ const router = useRouter();
 const userStore = useUserStore();
 const modalStore = useModalStore();
 const { patchUser } = userStore;
-const { openModalLoader, closeModalLoader } = modalStore
+const { openModalLoader, closeModalLoader } = modalStore;
 const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env;
 
 // oauth Login URL
@@ -89,7 +89,7 @@ const login = async () => {
   if (errorMessage.email) return;
 
   // 通過前端驗證
-  openModalLoader()
+  openModalLoader();
   const { data } = await signIn(loginForm);
   if (data.status === "success") {
     localStorage.setItem("token", data.data.token);
@@ -111,7 +111,7 @@ const login = async () => {
     // apiErrorMessage.value = data.message;
   }
   // 關閉 loader
-  closeModalLoader()
+  closeModalLoader();
 };
 
 /* ---註冊功能--- */
@@ -154,7 +154,6 @@ watch(errorMessage, () => {
 });
 
 watch(apiErrorMessage, () => {
-  console.log("apiErr");
   slideUpdate();
 });
 
@@ -328,7 +327,7 @@ const register = async () => {
                 />
                 <span>Confirm Password</span>
               </label>
-              <div class="api-error">{{ apiErrorMessage }}</div>
+              <!-- <div class="api-error">{{ apiErrorMessage }}</div> -->
               <div class="rect-btn signup-btn fill" @click="registerPreCheck">
                 註冊
               </div>
@@ -354,7 +353,7 @@ const register = async () => {
                 />
                 <span>Name</span>
               </label>
-              <div class="api-error">{{ apiErrorMessage }}</div>
+              <!-- <div class="api-error">{{ apiErrorMessage }}</div> -->
               <div class="rect-btn signup-btn fill" @click="register">
                 開啟元宇宙
               </div>

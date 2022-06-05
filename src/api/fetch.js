@@ -49,7 +49,6 @@ export function getProfileById(data) {
 
 // 更新個人資料
 export function updateProfile(data) {
-  console.log('data', data)
   return request({
     url: `${url.user}/profile/${data.id}`,
     method: 'patch',
@@ -200,5 +199,13 @@ export function updateComment(postId, commentId, comment) {
     data: {
       comment
     }
+  })
+}
+
+// 刪除留言
+export function deleteComment(potIdAndCommentId) {
+  return request({
+    url: `${url.post}/comment/${potIdAndCommentId}`,
+    method: 'delete'
   })
 }
