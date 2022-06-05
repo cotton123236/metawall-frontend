@@ -44,14 +44,14 @@ server.interceptors.request.use(
 
 server.interceptors.response.use(
   response => {
-    if (isDev) {
-      console.log(
-        `%c👨‍💻 Request:%c${response.config.url}`,
-        'background:#3F51B5; padding: 3px; border-radius: 5px; color: #fff;',
-        'padding: 3px;',
-        response.data
-      )
-    }
+    // if (isDev) {
+    //   console.log(
+    //     `%c👨‍💻 Request:%c${response.config.url}`,
+    //     'background:#3F51B5; padding: 3px; border-radius: 5px; color: #fff;',
+    //     'padding: 3px;',
+    //     response.data
+    //   )
+    // }
 
     const result = {
       ...response,
@@ -61,7 +61,15 @@ server.interceptors.response.use(
     return result
   },
   error => {
-    if (isDev) console.error(`❌ 發生錯誤：${error}`)
+    if (isDev) {
+      console.log(
+        `%c❌ 發生錯誤-${error.response.status}:%c${error.response.data.message}`,
+        'background:#EA454C; padding: 3px; border-radius: 5px; color: #fff;',
+        'padding: 3px;',
+        `API: ${error.response.config.url}，`,
+        error.response
+      )
+    }
 
 
     if (error.response) {
@@ -109,6 +117,7 @@ server.interceptors.response.use(
 
             case '40010':
               msg = `，${message}`
+              if (message.includes('不存在該筆資料')) msg = "，此 Email 尚未註冊"
               useModalAlertText.value = `ID 錯誤${msg}`
               break;
 

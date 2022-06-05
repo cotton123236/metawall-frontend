@@ -71,7 +71,6 @@ onMounted(() => {
 // 上傳圖片
 const fileInput = ref();
 const uploadFile = async () => {
-  console.log("upload");
   const uploadedFile = fileInput.value.files[0];
   console.dir(uploadedFile);
 
