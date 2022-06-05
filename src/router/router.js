@@ -27,14 +27,20 @@ const router = createRouter({
     {
       path: '/login',
       name: 'Login',
-      component: () => import('./../pages/Login.vue')
+      component: () => import('./../pages/Login.vue'),
+      beforeEnter: async () => {
+        const urlParams = new URLSearchParams(window.location.search)
+        if (urlParams.get('from') === 'google') {
+          await checkThirdPartyLogin.google()
+          window.location.search = ''
+          window.location.replace(window.location.origin)
+        }
+      }
     }
   ]
 })
 
 router.beforeEach(async (to) => {
-  await checkThirdPartyLogin.google()
-  window.location.search = ''
   if (to.name !== 'Login' && !localStorage.getItem("token")) {
     return { name: 'Login', replace: true }
   }
