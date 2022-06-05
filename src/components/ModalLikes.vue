@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from '@vue/runtime-core'
+import { ref, nextTick } from '@vue/runtime-core'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from '../stores/modalStore'
@@ -16,15 +16,18 @@ const { closeModalLikes } = modalStore
 let errorMessage = ref('');
 
 const getLike = async () => {
-  const { data } = await getLikeList();
-  if (data.status !== 'success') return
-  if(data.data.list.length === 0) {
-    errorMessage.value =  '無收藏貼文'
-    return
-  }
-  patchUser(cloneDeep({
-    likes: data.data.list
-  }))
+  await nextTick(async ()=>{
+    userStore.likes = []
+    const { data } = await getLikeList();
+    if (data.status !== 'success') return
+    if(data.data.list.length === 0) {
+      errorMessage.value =  '無收藏貼文'
+      return
+    }
+    patchUser(cloneDeep({
+      likes: data.data.list
+    }))
+  })
 }
 
 getLike()

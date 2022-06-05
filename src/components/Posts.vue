@@ -54,11 +54,9 @@ const changeMoreOpenStatus = () => {
 
 // 載入時確認自己有沒有按讚
 const checkIsLike = () => {
-  if (props.post.likes.findIndex(item => item === userStore._id) >= 0) {
-    isLike.value = true
-  }else{
-    isLike.value = false
-  }
+  props.post.likes.findIndex(item => item._id === userStore._id || item === userStore._id) >= 0
+    ? isLike.value = true
+    : isLike.value = false
 }
 checkIsLike()
 
