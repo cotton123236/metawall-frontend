@@ -122,9 +122,9 @@ export function patchEditPost(data) {
 }
 
 // 取得個人追蹤列表
-export function getFollowList() {
+export function getFollowList(id) {
   return request({
-    url: `${url.user}/follows`,
+    url: `${url.user}/follows/${id}`,
     method: 'get'
   })
 }
@@ -186,6 +186,17 @@ export function postComment(id, comment) {
   return request({
     url: `${url.post}/comment/${id}`,
     method: 'post',
+    data: {
+      comment
+    }
+  })
+}
+
+// 編輯留言
+export function updateComment(postId, commentId, comment) {
+  return request({
+    url: `${url.post}/comment/${postId}/${commentId}`,
+    method: 'patch',
     data: {
       comment
     }

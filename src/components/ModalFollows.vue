@@ -15,7 +15,7 @@ const errorMessage = ref('');
 
 // 取得追蹤列表
 const getFollow = async () => {
-  const { data } =  await getFollowList();
+  const { data } =  await getFollowList(userStore._id);
   if (data.status !== 'success') return
   if (data.data.list.length === 0) {
     errorMessage.value = '未追蹤任何人'
