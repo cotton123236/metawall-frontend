@@ -137,8 +137,8 @@ server.interceptors.response.use(
 
         case 404:
           // 查無此頁面
-          useModalAlert.value = true
-          useModalAlertText.value = `${status}: 查無此頁面`
+          // useModalAlert.value = true
+          // useModalAlertText.value = `${status}: 查無此頁面`
           // router.push({ name: 'Error404' })
           break
 
