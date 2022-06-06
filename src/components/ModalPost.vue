@@ -137,7 +137,9 @@ onUnmounted(() => {
             class="rect-btn fill"
             :class="{ disable: !postingData.content || postingData.content === '<p></p>' }"
             @click="submitPost"
-          >發布貼文</div>
+          >
+            {{ isNewPost ? '發佈貼文' : '編輯貼文' }}
+          </div>
         </div>
       </div>
     </div>
@@ -235,5 +237,15 @@ onUnmounted(() => {
   height: 30vh
   overflow: auto
   padding: 10px
+  &::-webkit-scrollbar-track
+    border-radius: 10px
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .2)
+  &::-webkit-scrollbar
+    width: 6px
+    +rwdmax(768)
+      display: none
+  &::-webkit-scrollbar-thumb
+    border-radius: 10px
+    background-color: #ccc
 
 </style>

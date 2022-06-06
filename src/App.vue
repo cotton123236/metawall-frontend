@@ -6,6 +6,7 @@ import ModalAlert from "./components/ModalAlert.vue";
 import ModalLoader from "./components/ModalLoader.vue";
 // ModalPost control
 import { useModalStore } from "./stores/modalStore";
+import loginBg from "./assets/image/login-bg.png";
 
 const modalStore = useModalStore();
 
@@ -15,6 +16,7 @@ const { useModalAlert, useModalLoader } = storeToRefs(modalStore);
 
 <template>
   <div class="app-wrapper">
+    <div class="app-bg"></div>
     <router-view></router-view>
     <Transition name="fade">
       <ModalLoader v-if="useModalLoader" />
