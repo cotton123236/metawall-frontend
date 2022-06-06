@@ -138,6 +138,7 @@ const deleteCommentHandler = (comment) => {
       position: relative
       p
         font-size: px(14)
+        font-weight: 300
         line-height: 1.5
         color: var(--gray)
         margin-top: 3px
@@ -161,4 +162,5 @@ const deleteCommentHandler = (comment) => {
         &.disable
           opacity: .2
           cursor: default
+          pointer-events: none
 </style>

@@ -20,9 +20,6 @@ const { closeModalAlert } = modalStore
       </div>
     </div>
   </div>
-  <div>
-    <span>{{ useModalAlertText }}</span>
-  </div>
 </template>
 
 <style lang="sass" scoped>

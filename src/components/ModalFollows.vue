@@ -137,7 +137,7 @@ getFollow()
         line-height: 1.5
         margin-top: 2px
     .unfollow-btn
-      font-size: px(14)
+      font-size: px(12)
       color: var(--light-gray)
       padding: 5px
       cursor: pointer

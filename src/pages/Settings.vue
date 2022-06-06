@@ -6,7 +6,6 @@ import { reactive, ref, onMounted } from "@vue/runtime-core";
 import { execThirdPartyLogout } from "../utils/auth-third-party";
 import { watch } from "vue";
 import { useRouter } from "vue-router";
-const router = useRouter();
 import {
   isNotEmpty,
   isValidPassword,
@@ -20,6 +19,7 @@ import {
   updateProfile,
 } from "../api/fetch";
 
+const router = useRouter();
 const userStore = useUserStore();
 const { patchUser } = userStore;
 let { name, gender, image, _id } = storeToRefs(userStore);
@@ -29,7 +29,7 @@ const { openModalLoader, closeModalLoader, openModalAlert } = modalStore
 
 // 錯誤訊息
 const errorMessage = reactive({
-  name: "",
+  nickName: "",
   gender: 0,
   image: "",
   oldPassword: "",
@@ -119,14 +119,13 @@ const changeProfile = async () => {
 
   if (profileForm.image) param.data.avatar = profileForm.image;
 
+  openModalLoader()
   const { data } = await updateProfile(param);
 
   if (data.status === "success") {
-    apiSuccessMessageProfile.value = "修改成功";
-    apiErrorMessageProfile.value = "";
-    openModalAlert('修改成功')
-    // useModalAlert.value = true;
-    // useModalAlertText.value = `修改成功`;
+    // apiSuccessMessageProfile.value = "修改成功";
+    // apiErrorMessageProfile.value = "";
+    openModalAlert('修改個人資料成功')
     patchUser({
       name: data.data.nickName,
       gender: data.data.gender,
@@ -136,6 +135,7 @@ const changeProfile = async () => {
     openModalAlert(data.message)
     // apiErrorMessageProfile.value = data.message;
   }
+  closeModalLoader()
 };
 
 // 修改密碼表單
@@ -212,21 +212,22 @@ const changePassword = async () => {
   );
   if (errorMessage.password) return;
 
+  openModalLoader()
   const { data, error } = await updatePassword(passwordForm);
 
   if (data.status === "success") {
     // apiSuccessMessagePassword.value = data.message;
     // apiErrorMessagePassword.value = "";
-    useModalAlert.value = true;
-    useModalAlertText.value = `${data.message}，將返回登入頁，請重新登入`;
-
+    openModalAlert(`${data.message}，將返回登入頁，請重新登入`)
     countdown();
   } else {
     if (data.message.includes("您的舊密碼不正確")) {
       errorMessage.oldPassword = "密碼不正確";
     }
-    apiErrorMessagePassword.value = data.message;
+    // apiErrorMessagePassword.value = data.message;
+    openModalAlert(data.message)
   }
+  closeModalLoader()
 };
 
 let timer = null;
@@ -248,14 +249,14 @@ function countdown() {
 
 <template>
   <section>
-    <div class="headshot-wrap">
+    <div class="headshot-wrap" data-aos="fade-up" data-aos-delay="300">
       <label class="headshot">
         <input type="file" @change="uploadFile" ref="fileInput" />
         <img v-if="profileForm.image" :src="profileForm.image" alt="" />
       </label>
       <i class="icon-plus"></i>
     </div>
-    <div class="content">
+    <div class="content" data-aos="clip-down" data-aos-duration="800">
       <div class="inner">
         <h2>編輯個人資料</h2>
         <form>
