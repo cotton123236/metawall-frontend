@@ -1,9 +1,11 @@
 <script setup>
-import { ref, reactive } from '@vue/runtime-core'
+import { watch } from 'vue'
+import { ref, reactive, onBeforeUpdate, onMounted } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
 import { useUserStore } from './../stores/userStore'
+import { useModalStore } from './../stores/modalStore'
 import { getProfileById, getPostsById, getMyProfile } from './../api/fetch'
 import Posts from './../components/Posts.vue'
 import { 
@@ -13,26 +15,25 @@ import {
 } from '../api/fetch'
 
 const userStore = useUserStore()
+const postStore = usePostStore()
 const route = useRoute()
+const modalStore = useModalStore()
 
 const { patchUser } = userStore;
 
 // test
 const isFollowing = ref(false)
-if (!userStore._id) {
-  async () => {
-    const { data } = await getMyProfile();
-    if (data.status === "success") {
-      patchUser({
-        _id: data.data._id,
-        name: data.data.nickName,
-        image: data.data.hasOwnProperty("avatar")
-          ? data.data.avatar
-          : "../assets/image/logo.png",
-      });
-    }
+
+const gerProfile = async () => {
+  const { data } = await getMyProfile();
+  if (data.status === "success") {
+    patchUser({
+      _id: data.data._id,
+      name: data.data.nickName,
+      image: data.data.hasOwnProperty("avatar") ? data.data.avatar : "",
+    });
   }
-}
+};
 
 const { id } = route.params
 
@@ -66,36 +67,69 @@ const getProfilePost = async () => {
 getProfilePost()
 
 // 判斷否有追蹤
-const checkIsLike = async () => {
-  const checkFollows = []
-  if (!userStore._id) return
-  const { data } =  await getFollowList(userStore._id);
-  if (data.status !== 'success') return
-  if (data.data.length === 0 )return
-  for (let list of data.data.list) {
-    checkFollows.push(list.following[0]._id)
-    if (checkFollows.findIndex(item => item == id) >= 0) {
-      isFollowing.value = true
+const checkFollows = ref([])
+const checkIsFollow = async () => {
+  if (userStore._id)  {
+    checkFollows.value = []
+    const { data } =  await getFollowList(userStore._id);
+    if (data.status !== 'success') return
+    patchUser({
+      follows: data.data.list
+    })  
+    for (let follow of userStore.follows) {
+      checkFollows.value.push(follow.following[0]._id)
     }
+    checkFollows.value.findIndex(item => item === id) >= 0 
+    ? isFollowing.value = true : isFollowing.value = false
   }
-  patchUser({
-    follows: data.data.list
-  })
 }
 
-checkIsLike()
+checkIsFollow()
 
-// 追蹤
+onMounted(async () => {
+  if (!userStore._id) {
+    await gerProfile()
+    await checkIsFollow()
+  }
+});
+
+// 追蹤幾個人
+const FollowNum = ref(0)
+const getFollow = async () => {
+  const { data } = await getFollowList(id)
+  FollowNum.value = data.data.list.length
+}
+getFollow()
+
+watch(()=>modalStore.useModalFollows, async (newVal)=>{
+  if(!newVal){
+    await getFollow()
+    await checkIsFollow()
+  }
+})
+
+watch(()=>modalStore.useModalPost, async (newVal)=>{
+  if(!newVal){
+    await getProfilePost()
+  }
+})
+
+
+// 追蹤 & 取消追蹤
 const whetherToFollow = async () => {
   if (id === userStore._id) return
   if (isFollowing.value) {
     const { data } = await deleteFollowByperson(id);
     if (data.status !== 'success') return;
-    isFollowing.value = false;
+    const index = checkFollows.value.findIndex(item => item == id)
+    if(index >=0 ){
+      checkFollows.value.splice(index, 1)
+      isFollowing.value = false;
+    }
   } else {
     const { data } = await postFollowByperson(id)
-    console.log('data', data);
     if (data.status !== 'success') return;
+    checkFollows.value.splice(0, 0, id)
     isFollowing.value = true;
   }
 }
@@ -125,7 +159,7 @@ const whetherToFollow = async () => {
         <div class="created">2022/04/04 加入元宇宙</div>
         <div class="detail">
           <span>{{profilePost.length}} 則貼文</span>
-          <span>5 人追蹤中</span>
+          <span>{{FollowNum}} 人追蹤中</span>
         </div>
       </div>
     </div>
