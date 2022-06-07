@@ -25,7 +25,7 @@ const { patchUser } = userStore;
 let { name, gender, image, _id } = storeToRefs(userStore);
 
 const modalStore = useModalStore();
-const { openModalLoader, closeModalLoader, openModalAlert } = modalStore
+const { openModalLoader, closeModalLoader, openModalAlert } = modalStore;
 
 // 錯誤訊息
 const errorMessage = reactive({
@@ -36,12 +36,6 @@ const errorMessage = reactive({
   password: "",
   confirmPassword: "",
 });
-
-// 來自 API 回傳訊息
-const apiErrorMessagePassword = ref(null);
-const apiSuccessMessagePassword = ref(null);
-const apiErrorMessageProfile = ref(null);
-const apiSuccessMessageProfile = ref(null);
 
 /* 修改個人表單 */
 const profileForm = reactive({
@@ -71,7 +65,7 @@ onMounted(() => {
 // 上傳圖片
 const fileInput = ref();
 const uploadFile = async () => {
-  openModalLoader('上傳中')
+  openModalLoader("上傳中");
   const uploadedFile = fileInput.value.files[0];
   console.dir(uploadedFile);
 
@@ -83,19 +77,13 @@ const uploadFile = async () => {
   if (data.status === "success") {
     profileForm.image = data.data.upload;
   }
-  else {
-    openModalAlert(data.message)
-    // apiErrorMessageProfile.value = data.message;
-  }
-  closeModalLoader()
+  closeModalLoader();
 };
 
 // 監看 profileForm 內容
 watch(
   profileForm,
   (newVal, oldVal) => {
-    if (newVal) apiSuccessMessageProfile.value = "";
-
     errorMessage.nickName = isNotEmpty(newVal.nickName);
     errorMessage.gender = isNotEmpty(newVal.gender);
   },
@@ -119,23 +107,18 @@ const changeProfile = async () => {
 
   if (profileForm.image) param.data.avatar = profileForm.image;
 
-  openModalLoader()
+  openModalLoader();
   const { data } = await updateProfile(param);
 
   if (data.status === "success") {
-    // apiSuccessMessageProfile.value = "修改成功";
-    // apiErrorMessageProfile.value = "";
-    openModalAlert('修改個人資料成功')
+    openModalAlert("修改個人資料成功");
     patchUser({
       name: data.data.nickName,
       gender: data.data.gender,
       image: data.data.avatar,
     });
-  } else {
-    openModalAlert(data.message)
-    // apiErrorMessageProfile.value = data.message;
   }
-  closeModalLoader()
+  closeModalLoader();
 };
 
 // 修改密碼表單
@@ -149,11 +132,6 @@ const passwordForm = reactive({
 watch(
   passwordForm,
   (newVal) => {
-    if (newVal) {
-      apiSuccessMessagePassword.value = "";
-      apiErrorMessagePassword.value = "";
-    }
-
     // 內容不可為空
     errorMessage.oldPassword = isNotEmpty(newVal.oldPassword);
 
@@ -212,22 +190,18 @@ const changePassword = async () => {
   );
   if (errorMessage.password) return;
 
-  openModalLoader()
+  openModalLoader();
   const { data, error } = await updatePassword(passwordForm);
 
   if (data.status === "success") {
-    // apiSuccessMessagePassword.value = data.message;
-    // apiErrorMessagePassword.value = "";
-    openModalAlert(`${data.message}，將返回登入頁，請重新登入`)
+    openModalAlert(`${data.message}，將返回登入頁，請重新登入`);
     countdown();
   } else {
     if (data.message.includes("您的舊密碼不正確")) {
       errorMessage.oldPassword = "密碼不正確";
     }
-    // apiErrorMessagePassword.value = data.message;
-    openModalAlert(data.message)
   }
-  closeModalLoader()
+  closeModalLoader();
 };
 
 let timer = null;
@@ -307,8 +281,6 @@ function countdown() {
               <span>未知宇宙生物</span>
             </label>
           </div>
-          <!-- <div class="api-error">{{ apiErrorMessageProfile }}</div> -->
-          <div class="api-success">{{ apiSuccessMessageProfile }}</div>
           <div class="rect-btn fill submit-btn" @click="changeProfile">
             修改個人資料
           </div>
@@ -342,13 +314,6 @@ function countdown() {
             />
             <span>確認使用者密碼</span>
           </label>
-          <!-- <div class="api-error">
-            {{ apiErrorMessagePassword }}
-          </div> -->
-          <div class="api-success" v-if="apiSuccessMessagePassword">
-            {{ apiSuccessMessagePassword }}，請重新登入
-            {{ count }} 秒後將返回登入頁
-          </div>
         </form>
         <div class="rect-btn fill submit-btn" @click="changePassword">
           修改密碼

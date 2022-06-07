@@ -39,8 +39,6 @@ const errorMessage = reactive({
   confirmPassword: "",
 });
 
-const apiErrorMessage = ref(" ");
-
 // login mode control
 const signupSwiperInstance = ref(null);
 const signupSwiperInit = (swiper) => {
@@ -50,7 +48,6 @@ const slidePrev = () => {
   signupSwiperInstance.value.slidePrev();
 };
 const slideNext = () => {
-  apiErrorMessage.value = "";
   signupSwiperInstance.value.slideNext();
 };
 const slideUpdate = () => {
@@ -107,8 +104,6 @@ const login = async () => {
       errorMessage.email = "";
       errorMessage.password = "";
     }
-  } else {
-    // apiErrorMessage.value = data.message;
   }
   // 關閉 loader
   closeModalLoader();
@@ -153,10 +148,6 @@ watch(errorMessage, () => {
   slideUpdate();
 });
 
-watch(apiErrorMessage, () => {
-  slideUpdate();
-});
-
 // 註冊檢查
 const registerPreCheck = async () => {
   // 驗證：內容不可為空
@@ -185,14 +176,15 @@ const registerPreCheck = async () => {
   errorMessage.password = isValidPassword(registerForm.password);
   if (errorMessage.password) return;
 
+  openModalLoader();
   const { data } = await signUpCheck(registerForm);
 
+  // 通過前端驗證
   if (data.status === "success") {
-    apiErrorMessage.value = "";
     slideNext();
-  } else {
-    apiErrorMessage.value = data.message;
   }
+  // 關閉 loader
+  closeModalLoader();
 };
 
 // 註冊
@@ -202,7 +194,7 @@ const register = async () => {
   if (errorMessage.nickName) return;
 
   const { data } = await signUp(registerForm);
-
+  openModalLoader();
   if (data.status === "success") {
     localStorage.setItem("token", data.data.token);
 
@@ -221,6 +213,8 @@ const register = async () => {
       errorMessage.confirmPassword = "";
     }
   }
+  // 關閉 loader
+  closeModalLoader();
 };
 </script>
 
@@ -275,7 +269,6 @@ const register = async () => {
                 />
                 <span>Password</span>
               </label>
-              <div class="api-error">{{ apiErrorMessage }}</div>
               <div
                 class="rect-btn fill login-btn"
                 @keyup.enter="login"
@@ -327,7 +320,6 @@ const register = async () => {
                 />
                 <span>Confirm Password</span>
               </label>
-              <!-- <div class="api-error">{{ apiErrorMessage }}</div> -->
               <div class="rect-btn signup-btn fill" @click="registerPreCheck">
                 註冊
               </div>
@@ -353,7 +345,6 @@ const register = async () => {
                 />
                 <span>Name</span>
               </label>
-              <!-- <div class="api-error">{{ apiErrorMessage }}</div> -->
               <div class="rect-btn signup-btn fill" @click="register">
                 開啟元宇宙
               </div>
