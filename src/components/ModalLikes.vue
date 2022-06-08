@@ -70,8 +70,8 @@ getLike()
   position: relative
   width: 90%
   max-width: 800px
-  // border-radius: 8px
-  background-color: #fff
+  border-radius: 10px
+  background-color: var(--white)
   margin: auto
   pointer-events: auto
   .close-btn
@@ -102,7 +102,7 @@ getLike()
   .modal-body
     max-height: calc(80vh - 61px)
     overflow: auto
-    padding: 20px
+    padding: 30px
     &::-webkit-scrollbar-track
       border-radius: 10px
       -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .2)

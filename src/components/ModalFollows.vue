@@ -34,7 +34,7 @@ const deleteFollow = async (id) => {
 
 getFollow()
 
-console.log()
+console.log('test')
 
 </script>
 
@@ -87,8 +87,8 @@ console.log()
   position: relative
   width: 90%
   max-width: 500px
-  // border-radius: 8px
-  background-color: #fff
+  border-radius: 10px
+  background-color: var(--white)
   margin: auto
   pointer-events: auto
   .close-btn
