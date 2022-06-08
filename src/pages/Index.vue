@@ -73,9 +73,6 @@ const {
         <ModalFollows v-if="useModalFollows" />
       </Transition>
       <Transition name="clip">
-        <ModalFollows v-if="useModalFollows" />
-      </Transition>
-      <Transition name="clip">
         <ModalLikes v-if="useModalLikes" />
       </Transition>
       <Transition name="clip">

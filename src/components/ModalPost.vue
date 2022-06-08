@@ -162,8 +162,8 @@ onUnmounted(() => {
   position: relative
   width: 90%
   max-width: 600px
-  // border-radius: 8px
-  background-color: #fff
+  border-radius: 10px
+  background-color: var(--white)
   margin: auto
   pointer-events: auto
   .close-btn
