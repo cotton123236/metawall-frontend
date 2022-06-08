@@ -3,6 +3,8 @@ import { ref } from 'vue-demi'
 import { useDateFormat } from '../utils/utils'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
+import { usePostStore } from '../stores/postStore'
+import { updateComment } from '../api/fetch'
 // components
 import contenteditable from 'vue-contenteditable'
 
@@ -12,13 +14,30 @@ const props = defineProps({
 })
 
 const userStore = useUserStore()
+const postStore = usePostStore()
 const modalStore = useModalStore()
-const { openModalDeleteComment } = modalStore
+const { openModalDeleteComment, openModalAlert, closeModalLoader } = modalStore
+const { patchPostComment } = postStore
 
 // 編輯留言
 const isEditing = ref(false)
 const editCommentHandler = () => {
   isEditing.value = !isEditing.value
+}
+const patchComment = async() => {
+  const potIdAndCommentId = `${props.postId}/${props.comment._id}`
+  const { data } = await updateComment(potIdAndCommentId,
+  props.comment.comment)
+  if (!props.comment.comment || props.comment.comment.trim().length === 0 ) return
+  if (data.status === 'success') {
+    patchPostComment(potIdAndCommentId,
+    data.data.comment)
+  } else {
+    openModalAlert(data.message)
+  }
+  
+  isEditing.value = false
+  closeModalLoader()  
 }
 
 // 刪除留言
@@ -54,12 +73,12 @@ const deleteCommentHandler = (comment) => {
         </span>
       </div>
       <div class="textarea">
-        <contenteditable tag="p" :contenteditable="isEditing" v-model="comment.comment" />
+        <contenteditable tag="p" :contenteditable="isEditing" v-model="comment.comment"/>
         <div
           v-if="isEditing"
           class="submit-btn"
-          :class="{disable: !comment.comment}"
-          @click="addComment"
+          :class="{disable: !comment.comment || comment.comment.trim().length === 0}"
+          @click="patchComment"
         >
           發佈
         </div>
@@ -119,6 +138,7 @@ const deleteCommentHandler = (comment) => {
       position: relative
       p
         font-size: px(14)
+        font-weight: 300
         line-height: 1.5
         color: var(--gray)
         margin-top: 3px
@@ -141,4 +161,6 @@ const deleteCommentHandler = (comment) => {
           opacity: 1
         &.disable
           opacity: .2
+          cursor: default
+          pointer-events: none
 </style>

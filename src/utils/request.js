@@ -111,7 +111,7 @@ server.interceptors.response.use(
               break;
 
             case '40005':
-              if (message.includes('File too large')) msg = "，檔案超過 2MB 限制，請重新上傳"
+              if (message.includes('large')) msg = "，檔案超過 2MB 限制，請重新上傳"
               useModalAlertText.value = `錯誤${msg}`
               break;
 
@@ -137,8 +137,8 @@ server.interceptors.response.use(
 
         case 404:
           // 查無此頁面
-          useModalAlert.value = true
-          useModalAlertText.value = `${status}: 查無此頁面`
+          // useModalAlert.value = true
+          // useModalAlertText.value = `${status}: 查無此頁面`
           // router.push({ name: 'Error404' })
           break
 
@@ -146,7 +146,7 @@ server.interceptors.response.use(
           useModalAlert.value = true
           switch (name) {
             case '50001':
-              useModalAlertText.value = '上傳發生錯誤，請重新上傳'
+              useModalAlertText.value = '錯誤，僅接受格式 jpg, png, jpeg，請重新上傳'
               break;
 
             default:

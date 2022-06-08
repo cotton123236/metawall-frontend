@@ -6,7 +6,6 @@ import { reactive, ref, onMounted } from "@vue/runtime-core";
 import { execThirdPartyLogout } from "../utils/auth-third-party";
 import { watch } from "vue";
 import { useRouter } from "vue-router";
-const router = useRouter();
 import {
   isNotEmpty,
   isValidPassword,
@@ -20,28 +19,23 @@ import {
   updateProfile,
 } from "../api/fetch";
 
+const router = useRouter();
 const userStore = useUserStore();
 const { patchUser } = userStore;
 let { name, gender, image, _id } = storeToRefs(userStore);
 
 const modalStore = useModalStore();
-const { useModalAlert, useModalAlertText } = storeToRefs(modalStore);
+const { openModalLoader, closeModalLoader, openModalAlert } = modalStore;
 
 // 錯誤訊息
 const errorMessage = reactive({
-  name: "",
+  nickName: "",
   gender: 0,
   image: "",
   oldPassword: "",
   password: "",
   confirmPassword: "",
 });
-
-// 來自 API 回傳訊息
-const apiErrorMessagePassword = ref(null);
-const apiSuccessMessagePassword = ref(null);
-const apiErrorMessageProfile = ref(null);
-const apiSuccessMessageProfile = ref(null);
 
 /* 修改個人表單 */
 const profileForm = reactive({
@@ -71,6 +65,7 @@ onMounted(() => {
 // 上傳圖片
 const fileInput = ref();
 const uploadFile = async () => {
+  openModalLoader("上傳中");
   const uploadedFile = fileInput.value.files[0];
   console.dir(uploadedFile);
 
@@ -81,19 +76,14 @@ const uploadFile = async () => {
 
   if (data.status === "success") {
     profileForm.image = data.data.upload;
-    useModalAlert.value = true;
-    useModalAlertText.value = `上傳成功`;
-  } else {
-    apiErrorMessageProfile.value = data.message;
   }
+  closeModalLoader();
 };
 
 // 監看 profileForm 內容
 watch(
   profileForm,
   (newVal, oldVal) => {
-    if (newVal) apiSuccessMessageProfile.value = "";
-
     errorMessage.nickName = isNotEmpty(newVal.nickName);
     errorMessage.gender = isNotEmpty(newVal.gender);
   },
@@ -117,21 +107,18 @@ const changeProfile = async () => {
 
   if (profileForm.image) param.data.avatar = profileForm.image;
 
+  openModalLoader();
   const { data } = await updateProfile(param);
 
   if (data.status === "success") {
-    // apiSuccessMessageProfile.value = "修改成功";
-    // apiErrorMessageProfile.value = "";
-    useModalAlert.value = true;
-    useModalAlertText.value = `修改成功`;
+    openModalAlert("修改個人資料成功");
     patchUser({
       name: data.data.nickName,
       gender: data.data.gender,
       image: data.data.avatar,
     });
-  } else {
-    apiErrorMessageProfile.value = data.message;
   }
+  closeModalLoader();
 };
 
 // 修改密碼表單
@@ -145,11 +132,6 @@ const passwordForm = reactive({
 watch(
   passwordForm,
   (newVal) => {
-    if (newVal) {
-      apiSuccessMessagePassword.value = "";
-      apiErrorMessagePassword.value = "";
-    }
-
     // 內容不可為空
     errorMessage.oldPassword = isNotEmpty(newVal.oldPassword);
 
@@ -208,21 +190,18 @@ const changePassword = async () => {
   );
   if (errorMessage.password) return;
 
+  openModalLoader();
   const { data, error } = await updatePassword(passwordForm);
 
   if (data.status === "success") {
-    // apiSuccessMessagePassword.value = data.message;
-    // apiErrorMessagePassword.value = "";
-    useModalAlert.value = true;
-    useModalAlertText.value = `${data.message}，將返回登入頁，請重新登入`;
-
+    openModalAlert(`${data.message}，將返回登入頁，請重新登入`);
     countdown();
   } else {
     if (data.message.includes("您的舊密碼不正確")) {
       errorMessage.oldPassword = "密碼不正確";
     }
-    apiErrorMessagePassword.value = data.message;
   }
+  closeModalLoader();
 };
 
 let timer = null;
@@ -244,14 +223,14 @@ function countdown() {
 
 <template>
   <section>
-    <div class="headshot-wrap">
+    <div class="headshot-wrap" data-aos="fade-up" data-aos-delay="300">
       <label class="headshot">
         <input type="file" @change="uploadFile" ref="fileInput" />
         <img v-if="profileForm.image" :src="profileForm.image" alt="" />
       </label>
       <i class="icon-plus"></i>
     </div>
-    <div class="content">
+    <div class="content" data-aos="clip-down" data-aos-duration="800">
       <div class="inner">
         <h2>編輯個人資料</h2>
         <form>
@@ -302,8 +281,6 @@ function countdown() {
               <span>未知宇宙生物</span>
             </label>
           </div>
-          <!-- <div class="api-error">{{ apiErrorMessageProfile }}</div> -->
-          <div class="api-success">{{ apiSuccessMessageProfile }}</div>
           <div class="rect-btn fill submit-btn" @click="changeProfile">
             修改個人資料
           </div>
@@ -337,13 +314,6 @@ function countdown() {
             />
             <span>確認使用者密碼</span>
           </label>
-          <!-- <div class="api-error">
-            {{ apiErrorMessagePassword }}
-          </div> -->
-          <div class="api-success" v-if="apiSuccessMessagePassword">
-            {{ apiSuccessMessagePassword }}，請重新登入
-            {{ count }} 秒後將返回登入頁
-          </div>
         </form>
         <div class="rect-btn fill submit-btn" @click="changePassword">
           修改密碼

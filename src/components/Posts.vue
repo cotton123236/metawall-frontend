@@ -43,14 +43,9 @@ const addComment = async () => {
 }
 
 // 子元件操控
-const isMoreOpen = ref(false)
 const isLike = ref(false)
 const isCommentOpen = ref(false)
 const commentValue = ref('')
-
-const changeMoreOpenStatus = () => {
-  isMoreOpen.value = !isMoreOpen.value
-}
 
 // 載入時確認自己有沒有按讚
 const checkIsLike = () => {
@@ -61,13 +56,13 @@ const checkIsLike = () => {
 checkIsLike()
 
 // 避免 async 問題，監聽
-watch(()=> userStore._id, (newVal)=>{
+watch(()=> userStore._id, (newVal) => {
   checkIsLike()
-},{deep:true})
+}, {deep:true})
 
-watch(()=> postStore.posts, (newVal)=>{
+watch(()=> postStore.posts, (newVal) => {
   checkIsLike()
-},{deep:true})
+}, {deep:true})
 
 // 點擊按讚 button
 const triggerLikeBtn = async() => {
@@ -85,11 +80,6 @@ const triggerLikeBtn = async() => {
   }
 }
 
-onMounted(() => {
-  document.body.addEventListener('click', () => {
-    isMoreOpen.value = false
-  })
-})
 </script>
 
 <template>
@@ -107,28 +97,19 @@ onMounted(() => {
         </div>
       </router-link>
       <!-- more -->
-      <div class="more"
-        :class="{ active: isMoreOpen }"
-        @click.stop="changeMoreOpenStatus"
-      >
+      <div class="more">
         <div class="more-btn">
           <i class="icon-more"></i>
         </div>
         <div class="more-list">
           <ul>
-            <li @click.stop="changeMoreOpenStatus">
+            <li>
               <router-link :to="post.editor._id">個人檔案</router-link>
             </li>
-            <li
-              v-if="userStore._id === post.editor._id"
-              @click.stop="changeMoreOpenStatus"
-            >
+            <li v-if="userStore._id === post.editor._id">
               <a href="javascript:;" @click="editPostHandler(post)">編輯貼文</a>
             </li>
-            <li
-              v-if="userStore._id === post.editor._id"
-              @click.stop="changeMoreOpenStatus"
-            >
+            <li v-if="userStore._id === post.editor._id">
               <a href="javascript:;" @click="deletePostHandler(post)">刪除貼文</a>
             </li>
           </ul>
@@ -202,7 +183,7 @@ onMounted(() => {
           <span class="name">{{ userStore.name }}</span>
           <div class="textarea">
             <contenteditable tag="p" :contenteditable="true" v-model="commentValue" />
-            <div class="submit-btn" @click="addComment" :class="{disable: !commentValue}">發佈</div>
+            <div class="submit-btn" @click="addComment" :class="{disable: !commentValue || commentValue.trim().length === 0}">發佈</div>
           </div>
         </div>
       </div>
@@ -274,7 +255,7 @@ onMounted(() => {
       margin-top: 2px
   .more
     position: relative
-    &.active
+    &:hover
       .more-list
         z-index: 2
         opacity: 1
@@ -295,7 +276,7 @@ onMounted(() => {
         font-size: 20px
     .more-list
       position: absolute
-      top: calc(100% + 10px)
+      top: calc(100% + 8px)
       left: 50%
       transform: translate(-50%, -10px)
       width: 90px
@@ -393,6 +374,7 @@ onMounted(() => {
           position: relative
           p[contenteditable="true"]
             font-size: px(14)
+            font-weight: 300
             line-height: 1.5
             color: var(--gray)
             margin-top: 3px
@@ -416,6 +398,8 @@ onMounted(() => {
               opacity: 1
             &.disable
               opacity: .2
+              cursor: default
+              pointer-events: none
     .comments-list
       margin-top: 20px
     .each-comment
