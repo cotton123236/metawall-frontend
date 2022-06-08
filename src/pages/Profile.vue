@@ -48,7 +48,6 @@ const profileUser = reactive({
 
 const getProfileUser = async () => {
   const { data } = await getProfileById(id)
-  console.log(data)
   if (data.status !== 'success') return;
   Object.assign(profileUser, data.data)
 }
@@ -59,10 +58,16 @@ getProfileUser()
 const profilePost = reactive([])
 const getProfilePost = async () => {
   const { data } = await getPostsById(id)
-  console.log(data)
   if (data.status !== 'success') return;
   Object.assign(profilePost, data.data.list)
 }
+
+watch(()=>modalStore.useModalLikes, async (newVal)=>{
+  if(!newVal){
+    Object.assign(profilePost, [])
+    getProfilePost()
+  }
+})
 
 getProfilePost()
 
