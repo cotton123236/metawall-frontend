@@ -4,6 +4,12 @@ import { checkThirdPartyLogin } from '../utils/auth-third-party'
 
 const router = createRouter({
   history: createWebHashHistory(),
+  scrollBehavior(to, from, savedPosition) {
+    return {
+      top: 0,
+      // behavior: 'smooth'
+    }
+  },
   routes: [
     {
       path: '/',
