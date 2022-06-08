@@ -17,7 +17,7 @@ const postStore = usePostStore()
 const { posts } = storeToRefs(postStore)
 const { patchPosts } = postStore
 
-watch(()=>modalStore.useModalLikes, async (newVal)=>{
+watch(() => modalStore.useModalLikes, async (newVal) => {
   if(!newVal){
     patchPosts([])
     await getAllPosts()
@@ -43,6 +43,7 @@ getAllPosts()
           v-for="post in posts"
           :key="post._id"
           :post="post"
+          data-aos="clip-left"
         />
       </template>
       <div class="no-post" v-else>

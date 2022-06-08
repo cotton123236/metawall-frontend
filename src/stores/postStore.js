@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
-import router from './../router/router'
 
 export const usePostStore = defineStore('postStore', {
   state: () => {
     return {
       posts: [],
+      profilePosts: [],
       postingData: {
         _id: '',
         content: '',
@@ -16,7 +16,11 @@ export const usePostStore = defineStore('postStore', {
     async patchPosts(data) {
       this.posts.length = 0
       Object.assign(this.posts, data)
-      console.log(this.posts)
+      // console.log(this.posts)
+    },
+    async patchProfilePosts(data) {
+      this.profilePosts.length = 0
+      Object.assign(this.profilePosts, data)
     },
     async addPostComment(id, data){
       const index = this.posts.findIndex(item => item._id === id);

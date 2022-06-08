@@ -87,7 +87,7 @@ const triggerLikeBtn = async() => {
 </script>
 
 <template>
-  <div class="each-post" data-aos="clip-left">
+  <div class="each-post">
     <!-- info -->
     <div class="info">
       <router-link class="wrap" :to="post.editor._id">

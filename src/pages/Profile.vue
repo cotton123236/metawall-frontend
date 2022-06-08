@@ -1,6 +1,6 @@
 <script setup>
 import { watch } from 'vue'
-import { ref, reactive, onBeforeUpdate, onMounted } from '@vue/runtime-core'
+import { ref, reactive, onMounted } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
@@ -20,6 +20,10 @@ const route = useRoute()
 const modalStore = useModalStore()
 
 const { patchUser } = userStore;
+const { profilePosts } = storeToRefs(postStore)
+const { patchProfilePosts } = postStore
+
+profilePosts.value.length = 0
 
 // test
 const isFollowing = ref(false)
@@ -55,21 +59,19 @@ const getProfileUser = async () => {
 getProfileUser()
 
 // 取得 profile 貼文
-const profilePost = reactive([])
-const getProfilePost = async () => {
+const getProfilePosts = async () => {
   const { data } = await getPostsById(id)
   if (data.status !== 'success') return;
-  Object.assign(profilePost, data.data.list)
+  patchProfilePosts(data.data.list)
 }
 
-watch(()=>modalStore.useModalLikes, async (newVal)=>{
+watch(() => modalStore.useModalLikes, async (newVal) => {
   if(!newVal){
-    Object.assign(profilePost, [])
-    getProfilePost()
+    getProfilePosts()
   }
 })
 
-getProfilePost()
+getProfilePosts()
 
 // 判斷否有追蹤
 const checkFollows = ref([])
@@ -102,20 +104,23 @@ onMounted(async () => {
 const FollowNum = ref(0)
 const getFollow = async () => {
   const { data } = await getFollowList(id)
-  FollowNum.value = data.data.list.length
+  console.log(data)
+  if (data.message === 'success') {
+    FollowNum.value = data.data.list.length
+  }
 }
 getFollow()
 
-watch(()=>modalStore.useModalFollows, async (newVal)=>{
+watch(() => modalStore.useModalFollows, async (newVal) => {
   if(!newVal){
     await getFollow()
     await checkIsFollow()
   }
 })
 
-watch(()=>modalStore.useModalPost, async (newVal)=>{
+watch(() => modalStore.useModalPost, async (newVal) => {
   if(!newVal){
-    await getProfilePost()
+    await getProfilePosts()
   }
 })
 
@@ -163,18 +168,19 @@ const whetherToFollow = async () => {
         </div>
         <div class="created">2022/04/04 加入元宇宙</div>
         <div class="detail">
-          <span>{{profilePost.length}} 則貼文</span>
+          <span>{{profilePosts.length}} 則貼文</span>
           <span>{{FollowNum}} 人追蹤中</span>
         </div>
       </div>
     </div>
     <!-- post-content -->
     <div class="post-content">
-      <template v-if="profilePost.length">
+      <template v-if="profilePosts.length">
         <Posts
-          v-for="post in profilePost"
+          v-for="post in profilePosts"
           :key="post._id"
           :post="post"
+          data-aos="clip-left"
         />
       </template>
       <div class="no-post" v-else>

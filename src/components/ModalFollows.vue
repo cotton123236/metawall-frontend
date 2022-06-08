@@ -34,6 +34,8 @@ const deleteFollow = async (id) => {
 
 getFollow()
 
+console.log()
+
 </script>
 
 <template>
@@ -46,7 +48,7 @@ getFollow()
           <span>追蹤名單</span>
         </div>
         <div class="modal-body">
-          <ul>
+          <ul v-if="userStore.follows?.length">
             <li
               v-for="follow in userStore.follows"
               :key="follow._id"
@@ -65,6 +67,9 @@ getFollow()
               </template>              
             </li>
           </ul>
+          <div class="no-post" v-else>
+            目前尚未有追蹤名單！
+          </div>
         </div>
       </div>
     </div>

@@ -1,24 +1,30 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
+import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
-import { deletePost, getPostsByRoute } from './../api/fetch'
+import { deletePost, getPostsByRoute, getPostsById } from './../api/fetch'
 
 const route = useRoute()
+const userStore = useUserStore()
 const modalStore = useModalStore()
 const postStore = usePostStore()
 const { useModalDeletePostId } = storeToRefs(modalStore)
 const { openModalLoader, closeModalLoader, openModalAlert, closeModalDeletePost } = modalStore
-const { patchPosts } = postStore
+const { patchPosts, patchProfilePosts } = postStore
+
+// 刪除貼文功能
+const isProfile = route.params.id && route.params.id === userStore._id ? true : false
 
 const deletePostHandler = async () => {
   openModalLoader('刪除中')
   const { data } = await deletePost(useModalDeletePostId.value)
   // 刪除成功
   if (data.status === 'success') {
-    const { data } = await getPostsByRoute(route)
-    patchPosts(data.data.list)
+    const { data } = isProfile ? await getPostsById(userStore._id) : await getPostsByRoute(route)
+    if (data.status !== 'success') return;
+    isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
   }
   // 錯誤
   else {

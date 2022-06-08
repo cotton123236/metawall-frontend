@@ -8,7 +8,13 @@ import { storeToRefs } from 'pinia'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
-import { getPostsByRoute, patchEditPost, postNewPost, uploadPostImage } from './../api/fetch'
+import {
+  getPostsByRoute,
+  getPostsById,
+  patchEditPost,
+  postNewPost,
+  uploadPostImage
+} from './../api/fetch'
 // components
 // import Image from './../assets/image/login-bg.png'
 
@@ -18,11 +24,12 @@ const modalStore = useModalStore()
 const postStore = usePostStore()
 
 const { closeModalPost, openModalLoader, closeModalLoader, openModalAlert } = modalStore
-const { patchPosts, patchPostingData } = postStore
+const { patchPosts, patchProfilePosts, patchPostingData } = postStore
 const { postingData } = storeToRefs(postStore)
 
 // 貼文資料處理與發送
 const isNewPost = postingData.value.content === ''
+const isProfile = route.params.id && route.params.id === userStore._id ? true : false
 
 const submitPost = async () => {
   if (!postingData.value.content) return;
@@ -35,8 +42,9 @@ const submitPost = async () => {
   closeModalPost()
   // 若成功就重整畫面
   if (submitData.status === 'success') {
-    const { data } = await getPostsByRoute(route)
-    patchPosts(data.data.list)
+    const { data } = isProfile ? await getPostsById(userStore._id) : await getPostsByRoute(route)
+    if (data.status !== 'success') return;
+    isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
   }
   // 若失敗則顯示錯誤訊息
   else {
@@ -68,13 +76,10 @@ const addImage = async () => {
   const { data } = await uploadPostImage(formData);
 
   if (data.status === "success") {
-    // console.log(editor.value.chain().focus())
-    // profileForm.image = data.data.upload;
     editor.value.chain().focus().setImage({ src: data.data.upload }).run()
   }
   else {
     openModalAlert(data.message)
-    // apiErrorMessageProfile.value = data.message;
   }
   closeModalLoader()
 }

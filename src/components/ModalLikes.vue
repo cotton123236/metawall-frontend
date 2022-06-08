@@ -44,11 +44,16 @@ getLike()
           <span>收藏貼文</span>
         </div>
         <div class="modal-body">
-          <Posts
-            v-for="post in userStore.likes"
-            :key="post._id"
-            :post="post"
-          />
+          <template v-if="userStore.likes?.length">
+            <Posts
+              v-for="post in userStore.likes"
+              :key="post._id"
+              :post="post"
+            />
+          </template>
+          <div class="no-post" v-else>
+            目前尚未有收藏貼文！
+          </div>
         </div>
       </div>
     </div>
