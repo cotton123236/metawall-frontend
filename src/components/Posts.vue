@@ -64,6 +64,10 @@ watch(()=> postStore.posts, (newVal) => {
   checkIsLike()
 }, {deep:true})
 
+watch(()=> props.post, (newVal) => {
+  checkIsLike()
+}, {deep:true})
+
 // 點擊按讚 button
 const triggerLikeBtn = async() => {
   try{
