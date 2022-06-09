@@ -52,7 +52,7 @@ const addComment = debounce(async () => {
     openModalAlert(data.message)
   }
   commentValue.value = '' 
-})
+},500)
 
 // 子元件操控
 const isCommentOpen = ref(false)
