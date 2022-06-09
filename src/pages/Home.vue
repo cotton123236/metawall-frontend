@@ -19,12 +19,12 @@ const { patchPosts } = postStore
 
 const isLoading = ref(true)
 
-watch(() => modalStore.useModalLikes, async (newVal) => {
-  if(!newVal){
-    patchPosts([])
-    await getAllPosts()
-  }
-})
+// watch(() => modalStore.useModalLikes, async (newVal) => {
+//   if(!newVal){
+//     patchPosts([])
+//     await getAllPosts()
+//   }
+// })
 
 // post handler
 const getAllPosts = async () => {

@@ -1,16 +1,18 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
+import { cloneDeep } from 'lodash-es'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
-import { deletePost, getPostsByRoute, getPostsById } from './../api/fetch'
+import { deletePost, getPostsByRoute, getPostsById, getLikeList } from './../api/fetch'
 
 const route = useRoute()
 const userStore = useUserStore()
 const modalStore = useModalStore()
 const postStore = usePostStore()
 const { useModalDeletePostId } = storeToRefs(modalStore)
+const { patchUser } = userStore
 const { openModalLoader, closeModalLoader, openModalAlert, closeModalDeletePost } = modalStore
 const { patchPosts, patchProfilePosts } = postStore
 
@@ -25,6 +27,11 @@ const deletePostHandler = async () => {
     const { data } = isProfile ? await getPostsById(userStore._id) : await getPostsByRoute(route)
     if (data.status !== 'success') return;
     isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
+    const { data: likeData } = await getLikeList()
+    if (likeData.status !== 'success') return;
+    patchUser(cloneDeep({
+      likes: likeData.data.list
+    }))
   }
   // 錯誤
   else {
