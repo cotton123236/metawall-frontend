@@ -45,25 +45,41 @@ export const usePostStore = defineStore('postStore', {
       const index = this.posts.findIndex(item => item._id === id);
       this.posts[index].comments.splice(0, 0, data)
     },
-    async addProfileComment(id, data) {
+    async addProfilePostComment(id, data) {
       const index = this.profilePosts.findIndex(item => item._id === id);
       this.profilePosts[index].comments.splice(0, 0, data)
     },
-    async patchPostComment(potIdAndCommentId, data) {
-      const splits = potIdAndCommentId.split('/')
+    async patchPostComment(postIdAndCommentId, data) {
+      const splits = postIdAndCommentId.split('/')
       const postId = splits[0]
       const commentId = splits[1]
       const postIndex = this.posts.findIndex(item => item._id === postId)
       const commentIndex = this.posts[postIndex].comments.findIndex(item => item._id === commentId)
       this.posts[postIndex].comments.splice(commentIndex, 1, data)
     },
-    async deletePostComment(potIdAndCommentId) {
-      const splits = potIdAndCommentId.split('/')
+    async patchProfilePostComment(postIdAndCommentId, data) {
+      const splits = postIdAndCommentId.split('/')
+      const postId = splits[0]
+      const commentId = splits[1]
+      const postIndex = this.profilePosts.findIndex(item => item._id === postId)
+      const commentIndex = this.profilePosts[postIndex].comments.findIndex(item => item._id === commentId)
+      this.profilePosts[postIndex].comments.splice(commentIndex, 1, data)
+    },
+    async deletePostComment(postIdAndCommentId) {
+      const splits = postIdAndCommentId.split('/')
       const postId = splits[0]
       const commentId = splits[1]
       const postIndex = this.posts.findIndex(item => item._id === postId)
       const commentIndex = this.posts[postIndex].comments.findIndex(item => item._id === commentId)
       this.posts[postIndex].comments.splice(commentIndex, 1)
+    },
+    async deleteProfilePostComment(postIdAndCommentId) {
+      const splits = postIdAndCommentId.split('/')
+      const postId = splits[0]
+      const commentId = splits[1]
+      const postIndex = this.profilePosts.findIndex(item => item._id === postId)
+      const commentIndex = this.profilePosts[postIndex].comments.findIndex(item => item._id === commentId)
+      this.profilePosts[postIndex].comments.splice(commentIndex, 1)
     },
     patchPostingData(data) {
       Object.assign(this.postingData, data)

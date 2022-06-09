@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue-demi'
+import { useRoute } from 'vue-router'
 import { useDateFormat } from '../utils/utils'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
@@ -13,25 +14,30 @@ const props = defineProps({
   postId: String
 })
 
+const route = useRoute()
 const userStore = useUserStore()
 const postStore = usePostStore()
 const modalStore = useModalStore()
 const { openModalDeleteComment, openModalAlert, closeModalLoader } = modalStore
-const { patchPostComment } = postStore
+const { patchPostComment, patchProfilePostComment } = postStore
 
 // 編輯留言
 const isEditing = ref(false)
+
 const editCommentHandler = () => {
   isEditing.value = !isEditing.value
 }
+
 const patchComment = async() => {
+  const isProfile = route.params.id ? true : false
   const potIdAndCommentId = `${props.postId}/${props.comment._id}`
   const { data } = await updateComment(potIdAndCommentId,
   props.comment.comment)
   if (!props.comment.comment || props.comment.comment.trim().length === 0 ) return
   if (data.status === 'success') {
-    patchPostComment(potIdAndCommentId,
-    data.data.comment)
+    isProfile ? 
+    patchProfilePostComment(potIdAndCommentId, data.data.comment) : 
+    patchPostComment(potIdAndCommentId, data.data.comment)
   } else {
     openModalAlert(data.message)
   }

@@ -1,20 +1,25 @@
 <script setup>
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
 import { useModalStore } from '../stores/modalStore'
 import { usePostStore } from '../stores/postStore'
 import { deleteComment } from '../api/fetch'
 
+const route = useRoute()
 const modalStore = useModalStore()
 const postStore = usePostStore()
 const { useModalDeleteCommentId } = storeToRefs(modalStore)
 const { openModalLoader, closeModalLoader, openModalAlert, closeModalDeleteComment } = modalStore
-const { deletePostComment } = postStore
+const { deletePostComment, deleteProfilePostComment } = postStore
 
 const deleteCommentHandler = async () => {
   openModalLoader('刪除中')
+  const isProfile = route.params.id ? true : false
   const { data } = await deleteComment(useModalDeleteCommentId.value)
   // 刪除成功
   if (data.status === 'success') {
+    isProfile ? 
+    deleteProfilePostComment(useModalDeleteCommentId.value) : 
     deletePostComment(useModalDeleteCommentId.value)
   }
   // 錯誤
