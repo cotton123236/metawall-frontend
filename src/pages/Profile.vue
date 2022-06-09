@@ -8,6 +8,7 @@ import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { getProfileById, getPostsByIdAndRoute, getMyProfile } from './../api/fetch'
 import { useDateFormat } from './../utils/utils'
+import { debounce } from 'lodash-es'
 import { 
   getFollowList,
   postFollowByperson,
@@ -132,7 +133,7 @@ watch(() => [modalStore.useModalPost, profilePosts], async (newVal) => {
 })
 
 // 追蹤 & 取消追蹤
-const whetherToFollow = async () => {
+const whetherToFollow = debounce(async () => {
   if (id === userStore._id) return
   if (isFollowing.value) {
     const { data } = await deleteFollowByperson(id);
@@ -148,7 +149,7 @@ const whetherToFollow = async () => {
     checkFollows.value.splice(0, 0, id)
     isFollowing.value = true;
   }
-}
+}, 150)
 // infinite scroll
 const loadingDetector = ref(null)
 const isAllowScroll = ref(true)

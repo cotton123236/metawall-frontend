@@ -21,11 +21,17 @@ const modalStore = useModalStore()
 const { openModalDeleteComment, openModalAlert, closeModalLoader } = modalStore
 const { patchPostComment, patchProfilePostComment } = postStore
 
+// 紀錄 comment
+let content = props.comment.comment
+
 // 編輯留言
 const isEditing = ref(false)
 
 const editCommentHandler = () => {
   isEditing.value = !isEditing.value
+  if (isEditing) {
+    props.comment.comment = content
+  }
 }
 
 const patchComment = async() => {
@@ -38,6 +44,7 @@ const patchComment = async() => {
     isProfile ? 
     patchProfilePostComment(potIdAndCommentId, data.data.comment) : 
     patchPostComment(potIdAndCommentId, data.data.comment)
+    content = props.comment.comment
   } else {
     openModalAlert(data.message)
   }
