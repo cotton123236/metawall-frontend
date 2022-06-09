@@ -66,16 +66,18 @@ export function updatePassword(data) {
 }
 
 // 取得所有貼文 by route query
-export function getPostsByRoute(route) {
+export function getPostsByRoute(route, page = 1) {
   let sendUrl = url.post
   if (route) {
-    const { query } = route
+    const query = Object.assign({}, route.query)
+    query.currentPage = page
     const keys = Object.keys(query)
     keys.forEach((key, i) => {
       if (i === 0) sendUrl += `?${key}=${query[key]}`
       else sendUrl += `&${key}=${query[key]}`
     })
   }
+  console.log(sendUrl);
   return request({
     url: sendUrl,
     method: 'get'
@@ -91,16 +93,18 @@ export function getPostsById(id) {
 }
 
 // 取得所有貼文 by id
-export function getPostsByIdAndRoute(id, route) {
+export function getPostsByIdAndRoute(id, route, page = 1) {
   let sendUrl = `${url.post}/${id}`
   if (route) {
-    const { query } = route
+    const query = Object.assign({}, route.query)
+    query.currentPage = page
     const keys = Object.keys(query)
     keys.forEach((key, i) => {
       if (i === 0) sendUrl += `?${key}=${query[key]}`
       else sendUrl += `&${key}=${query[key]}`
     })
   }
+  console.log(sendUrl);
   return request({
     url: sendUrl,
     method: 'get'

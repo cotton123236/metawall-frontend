@@ -6,6 +6,8 @@ const userStore = useUserStore()
 export const usePostStore = defineStore('postStore', {
   state: () => {
     return {
+      currentPage: 1,
+      hasNext: false,
       posts: [],
       profilePosts: [],
       postingData: {
@@ -23,6 +25,18 @@ export const usePostStore = defineStore('postStore', {
       Object.assign(this.posts, data)
       // console.log(this.posts)
     },
+    async patchProfilePosts(data) {
+      const { _id } = userStore
+      this.profilePosts.length = 0
+      data.forEach(post => post.isLike = post.likes.some(item => item._id === _id || item === _id))
+      Object.assign(this.profilePosts, data)
+    },
+    async pushPosts(data) {
+      this.posts.push(...data)
+    },
+    async pushProfilePosts(data) {
+      this.profilePosts.push(...data)
+    },
     patchPostLikes(id, likes) {
       const postsIndex = this.posts.findIndex(item => item._id === id)
       if (postsIndex > -1) this.posts[postsIndex].likes = likes
@@ -34,12 +48,6 @@ export const usePostStore = defineStore('postStore', {
       if (postsIndex > -1) this.posts[postsIndex].isLike = state
       const profileIndex = this.profilePosts.findIndex(item => item._id === id)
       if (profileIndex > -1) this.profilePosts[profileIndex].isLike = state
-    },
-    async patchProfilePosts(data) {
-      const { _id } = userStore
-      this.profilePosts.length = 0
-      data.forEach(post => post.isLike = post.likes.some(item => item._id === _id || item === _id))
-      Object.assign(this.profilePosts, data)
     },
     async addPostComment(id, data){
       const index = this.posts.findIndex(item => item._id === id);
