@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { useFilterStore } from '../stores/filterStores'
 import { appendQuery } from '../utils/utils'
-import { getPostsByRoute } from './../api/fetch'
+import { getPostsByRoute, getPostsByIdAndRoute } from './../api/fetch'
 import { usePostStore } from './../stores/postStore'
 
 
@@ -29,19 +29,22 @@ onMounted(() => {
 
 // change selected control
 const { filters: datalist } = storeToRefs(filterStore)
-const { patchPosts } = postStore
+const { patchPosts, patchProfilePosts } = postStore
 const selectedIndex = ref(datalist.value.findIndex(item => item.sort === route.query.sort))
 
 const changeSelected = async (li, index) => {
   if (index === selectedIndex.value) return;
+  const { id } = route.params
+  const isProfile = id ? true : false
   const { sort } = li
   selectedIndex.value = index
   // push query
   await appendQuery(route, { sort })
   // then get data
-  const { data } = await getPostsByRoute(route)
+  const { data } = isProfile ? await getPostsByIdAndRoute(id, route) : await getPostsByRoute(route)
+  // patch data
   if (data.status !== 'success') return;
-  patchPosts(data.data.list)
+  isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
 }
 
 </script>

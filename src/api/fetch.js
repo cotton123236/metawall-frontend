@@ -90,6 +90,23 @@ export function getPostsById(id) {
   })
 }
 
+// 取得所有貼文 by id
+export function getPostsByIdAndRoute(id, route) {
+  let sendUrl = `${url.post}/${id}`
+  if (route) {
+    const { query } = route
+    const keys = Object.keys(query)
+    keys.forEach((key, i) => {
+      if (i === 0) sendUrl += `?${key}=${query[key]}`
+      else sendUrl += `&${key}=${query[key]}`
+    })
+  }
+  return request({
+    url: sendUrl,
+    method: 'get'
+  })
+}
+
 // 新增貼文
 export function postNewPost(data) {
   return request({

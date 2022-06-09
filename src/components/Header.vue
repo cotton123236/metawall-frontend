@@ -1,7 +1,5 @@
 <script setup>
-import { reactive } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
-import { storeToRefs } from "pinia";
 // components
 import Filter from "./../components/Filter.vue";
 import Searcher from "./../components/Searcher.vue";
@@ -9,6 +7,9 @@ import UserTools from "./../components/UserTools.vue";
 // images
 import LogoLarge from "./../assets/image/logo-large.svg";
 import Logo from "./../assets/image/logo.svg";
+
+const route = useRoute()
+
 </script>
 
 <template>
@@ -22,9 +23,9 @@ import Logo from "./../assets/image/logo.svg";
         </picture>
       </router-link>
       <!-- searcher -->
-      <Searcher />
+      <Searcher :key="route.path" />
       <div class="tools">
-        <Filter />
+        <Filter :key="route.path" />
         <UserTools />
       </div>
     </div>
