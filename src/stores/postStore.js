@@ -1,4 +1,7 @@
 import { defineStore } from 'pinia'
+import { useUserStore } from './userStore'
+
+const userStore = useUserStore()
 
 export const usePostStore = defineStore('postStore', {
   state: () => {
@@ -14,10 +17,11 @@ export const usePostStore = defineStore('postStore', {
   },
   actions: {
     async patchPosts(data) {
+      const { _id } = userStore
       this.posts.length = 0
-      data.forEach(item => item.isLike = false)
+      data.forEach(post => post.isLike = post.likes.some(item => item._id === _id || item === _id))
       Object.assign(this.posts, data)
-      console.log(this.posts)
+      // console.log(this.posts)
     },
     patchPostLikes(id, likes) {
       const postsIndex = this.posts.findIndex(item => item._id === id)
@@ -32,7 +36,9 @@ export const usePostStore = defineStore('postStore', {
       if (profileIndex > -1) this.profilePosts[profileIndex].isLike = state
     },
     async patchProfilePosts(data) {
+      const { _id } = userStore
       this.profilePosts.length = 0
+      data.forEach(post => post.isLike = post.likes.some(item => item._id === _id || item === _id))
       Object.assign(this.profilePosts, data)
     },
     async addPostComment(id, data){

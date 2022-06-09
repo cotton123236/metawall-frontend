@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
-import { getProfileById, getPostsById, getMyProfile } from './../api/fetch'
+import { getProfileById, getPostsByIdAndRoute, getMyProfile } from './../api/fetch'
 import { useDateFormat } from './../utils/utils'
 import { 
   getFollowList,
@@ -16,9 +16,9 @@ import {
 // components
 import Posts from './../components/Posts.vue'
 
+const route = useRoute()
 const userStore = useUserStore()
 const postStore = usePostStore()
-const route = useRoute()
 const modalStore = useModalStore()
 
 const { patchUser } = userStore;
@@ -65,7 +65,7 @@ const isLoading = ref(true)
 
 const getProfilePosts = async () => {
   isLoading.value = true
-  const { data } = await getPostsById(id)
+  const { data } = await getPostsByIdAndRoute(id, route)
   if (data.status !== 'success') return;
   isLoading.value = false
   patchProfilePosts(data.data.list)

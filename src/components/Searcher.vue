@@ -2,29 +2,31 @@
 import { ref } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { appendQuery } from '../utils/utils'
-import { getPostsByRoute } from './../api/fetch'
+import { getPostsByRoute, getPostsByIdAndRoute } from './../api/fetch'
 import { usePostStore } from '../stores/postStore'
 
 
 const route = useRoute()
 const postStore = usePostStore()
-const { patchPosts } = postStore
+const { patchPosts, patchProfilePosts } = postStore
 
 // search content handler
-const { content } = route.query || ''
-const searchValue = ref(content)
+const { q } = route.query || ''
+const searchValue = ref(q)
 
 const searchPosts = async () => {
+  const { id } = route.params
+  const isProfile = id ? true : false
   // push query
   const queries = {
     q: searchValue.value
   }
   await appendQuery(route, queries)
   // then get data
-  const { data } = await getPostsByRoute(route)
+  const { data } = isProfile ? await getPostsByIdAndRoute(id, route) : await getPostsByRoute(route)
   // patch data
   if (data.status !== 'success') return;
-  patchPosts(data.data.list)
+  isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
 }
 
 const clearInput = () => {

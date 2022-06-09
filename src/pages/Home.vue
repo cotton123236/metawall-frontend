@@ -19,17 +19,11 @@ const { patchPosts } = postStore
 
 const isLoading = ref(true)
 
-// watch(() => modalStore.useModalLikes, async (newVal) => {
-//   if(!newVal){
-//     patchPosts([])
-//     await getAllPosts()
-//   }
-// })
-
 // post handler
 const getAllPosts = async () => {
   isLoading.value = true
   const { data } = await getPostsByRoute(route)
+  console.log(data);
   if (data.status !== 'success') return;
   isLoading.value = false
   patchPosts(data.data.list)

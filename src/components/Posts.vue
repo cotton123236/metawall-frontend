@@ -43,15 +43,12 @@ const addComment = async () => {
 }
 
 // 子元件操控
-// const isLike = ref(false)
 const isCommentOpen = ref(false)
 const commentValue = ref('')
 
 // 載入時確認自己有沒有按讚
 const checkIsLike = () => {
-  props.post.likes.findIndex(item => item._id === userStore._id || item === userStore._id) >= 0
-    ? props.post.isLike = true
-    : props.post.isLike = false
+  props.post.isLike = props.post.likes.some(item => item._id === userStore._id || item === userStore._id)
 }
 checkIsLike()
 
@@ -60,18 +57,12 @@ const triggerLikeBtn = async() => {
   try {
     props.post.isLike = !props.post.isLike
     patchPostLikeStats(props.post._id, props.post.isLike)
-
-    if (props.post.isLike) {
-      const { target: putLikeResult } = await putLike(props.post._id)
-      props.post.likes = putLikeResult.likes
-      patchPostLikes(props.post._id, putLikeResult.likes)
-    }
-    else {
-      const { target: delLikeResult } = await delPostLike(props.post._id)
-      props.post.likes = delLikeResult.likes
-      patchPostLikes(props.post._id, delLikeResult.likes)
-    }
-  } catch(err) {
+    // put 到資料庫
+    const { target: likeResult } = props.post.isLike ? await putLike(props.post._id) : await delPostLike(props.post._id)
+    props.post.likes = likeResult.likes
+    patchPostLikes(props.post._id, likeResult.likes)
+  }
+  catch(err) {
     console.log(err)
   }
 }
