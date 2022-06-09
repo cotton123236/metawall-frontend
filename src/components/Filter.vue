@@ -29,6 +29,7 @@ onMounted(() => {
 
 // change selected control
 const { filters: datalist } = storeToRefs(filterStore)
+const { currentPage, hasNext } = storeToRefs(postStore)
 const { patchPosts, patchProfilePosts } = postStore
 const selectedIndex = ref(datalist.value.findIndex(item => item.sort === route.query.sort))
 
@@ -37,14 +38,18 @@ const changeSelected = async (li, index) => {
   const { id } = route.params
   const isProfile = id ? true : false
   const { sort } = li
+  currentPage.value = 1
+  hasNext.value = false
   selectedIndex.value = index
   // push query
   await appendQuery(route, { sort })
   // then get data
-  const { data } = isProfile ? await getPostsByIdAndRoute(id, route) : await getPostsByRoute(route)
+  const { data } = isProfile ? await getPostsByIdAndRoute(id, route, currentPage.value) : await getPostsByRoute(route, currentPage.value)
   // patch data
-  if (data.status !== 'success') return;
-  isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
+  if (data.status === 'success') {
+    isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
+    hasNext.value = data.data.page.has_next
+  }
 }
 
 </script>
