@@ -33,8 +33,6 @@ const deleteFollow = async (id) => {
 
 getFollow()
 
-console.log('test')
-
 </script>
 
 <template>

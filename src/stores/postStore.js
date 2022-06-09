@@ -39,6 +39,10 @@ export const usePostStore = defineStore('postStore', {
       const index = this.posts.findIndex(item => item._id === id);
       this.posts[index].comments.splice(0, 0, data)
     },
+    async addProfileComment(id, data) {
+      const index = this.profilePosts.findIndex(item => item._id === id);
+      this.profilePosts[index].comments.splice(0, 0, data)
+    },
     async patchPostComment(potIdAndCommentId, data) {
       const splits = potIdAndCommentId.split('/')
       const postId = splits[0]
