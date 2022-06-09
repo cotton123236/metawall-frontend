@@ -7,12 +7,14 @@ import { usePostStore } from './../stores/postStore'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { getProfileById, getPostsById, getMyProfile } from './../api/fetch'
-import Posts from './../components/Posts.vue'
+import { useDateFormat } from './../utils/utils'
 import { 
   getFollowList,
   postFollowByperson,
   deleteFollowByperson 
 } from '../api/fetch'
+// components
+import Posts from './../components/Posts.vue'
 
 const userStore = useUserStore()
 const postStore = usePostStore()
@@ -69,12 +71,6 @@ const getProfilePosts = async () => {
   patchProfilePosts(data.data.list)
 }
 
-watch(() => modalStore.useModalLikes, async (newVal) => {
-  if(!newVal){
-    getProfilePosts()
-  }
-})
-
 getProfilePosts()
 
 // 判斷否有追蹤
@@ -108,8 +104,7 @@ onMounted(async () => {
 const FollowNum = ref(0)
 const getFollow = async () => {
   const { data } = await getFollowList(id)
-  console.log(data)
-  if (data.message === 'success') {
+  if (data.status === 'success') {
     FollowNum.value = data.data.list.length
   }
 }
@@ -170,10 +165,10 @@ const whetherToFollow = async () => {
             </div>
           </template>
         </div>
-        <div class="created">2022/04/04 加入元宇宙</div>
+        <div class="created">{{ useDateFormat(profileUser.createdAt) }} 加入元宇宙</div>
         <div class="detail">
-          <span>{{profilePosts.length}} 則貼文</span>
-          <span>{{FollowNum}} 人追蹤中</span>
+          <span>{{ profilePosts.length }} 則貼文</span>
+          <span>{{ FollowNum }} 人追蹤中</span>
         </div>
       </div>
     </div>

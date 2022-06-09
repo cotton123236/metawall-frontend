@@ -15,8 +15,21 @@ export const usePostStore = defineStore('postStore', {
   actions: {
     async patchPosts(data) {
       this.posts.length = 0
+      data.forEach(item => item.isLike = false)
       Object.assign(this.posts, data)
-      // console.log(this.posts)
+      console.log(this.posts)
+    },
+    patchPostLikes(id, likes) {
+      const postsIndex = this.posts.findIndex(item => item._id === id)
+      if (postsIndex > -1) this.posts[postsIndex].likes = likes
+      const profileIndex = this.profilePosts.findIndex(item => item._id === id)
+      if (profileIndex > -1) this.profilePosts[profileIndex].likes = likes
+    },
+    patchPostLikeStats(id, state) {
+      const postsIndex = this.posts.findIndex(item => item._id === id)
+      if (postsIndex > -1) this.posts[postsIndex].isLike = state
+      const profileIndex = this.profilePosts.findIndex(item => item._id === id)
+      if (profileIndex > -1) this.profilePosts[profileIndex].isLike = state
     },
     async patchProfilePosts(data) {
       this.profilePosts.length = 0

@@ -14,20 +14,15 @@ const modalStore = useModalStore()
 const { patchUser } = userStore;
 const { closeModalLikes } = modalStore
 
-const errorMessage = ref('')
 const isLoading = ref(true)
 
 const getLike = async () => {
-  await nextTick(async ()=>{
+  await nextTick(async () => {
     isLoading.value = true
     userStore.likes = []
     const { data } = await getLikeList();
     if (data.status !== 'success') return;
     isLoading.value = false
-    if(data.data.list.length === 0) {
-      errorMessage.value =  '無收藏貼文'
-      return
-    }
     patchUser(cloneDeep({
       likes: data.data.list
     }))

@@ -17,7 +17,7 @@ const props = defineProps({
 const userStore = useUserStore()
 const postStore = usePostStore()
 const modalStore = useModalStore()
-const { addPostComment, patchPostingData } = postStore
+const { addPostComment, patchPostingData, patchPostLikeStats, patchPostLikes } = postStore
 const { openModalPost, openModalDeletePost } = modalStore
 
 // 編輯貼文
@@ -43,43 +43,35 @@ const addComment = async () => {
 }
 
 // 子元件操控
-const isLike = ref(false)
+// const isLike = ref(false)
 const isCommentOpen = ref(false)
 const commentValue = ref('')
 
 // 載入時確認自己有沒有按讚
 const checkIsLike = () => {
   props.post.likes.findIndex(item => item._id === userStore._id || item === userStore._id) >= 0
-    ? isLike.value = true
-    : isLike.value = false
+    ? props.post.isLike = true
+    : props.post.isLike = false
 }
 checkIsLike()
 
-// 避免 async 問題，監聽
-watch(()=> userStore._id, (newVal) => {
-  checkIsLike()
-}, {deep:true})
-
-watch(()=> postStore.posts, (newVal) => {
-  checkIsLike()
-}, {deep:true})
-
-watch(()=> props.post, (newVal) => {
-  checkIsLike()
-}, {deep:true})
-
 // 點擊按讚 button
 const triggerLikeBtn = async() => {
-  try{
-    isLike.value = !isLike.value
-    if(isLike.value){
+  try {
+    props.post.isLike = !props.post.isLike
+    patchPostLikeStats(props.post._id, props.post.isLike)
+
+    if (props.post.isLike) {
       const { target: putLikeResult } = await putLike(props.post._id)
       props.post.likes = putLikeResult.likes
-    }else{
+      patchPostLikes(props.post._id, putLikeResult.likes)
+    }
+    else {
       const { target: delLikeResult } = await delPostLike(props.post._id)
       props.post.likes = delLikeResult.likes
+      patchPostLikes(props.post._id, delLikeResult.likes)
     }
-  }catch(err){
+  } catch(err) {
     console.log(err)
   }
 }
@@ -127,7 +119,7 @@ const triggerLikeBtn = async() => {
     <!-- tool -->
     <div class="tool">
       <!-- like-btn -->
-      <div class="like like-btn" :class="{active: isLike}" @click="triggerLikeBtn">
+      <div class="like like-btn" :class="{active: post.isLike}" @click="triggerLikeBtn">
         <div class="icon">
           <i class="icon-like"></i>
           <i class="icon-heart"></i>
