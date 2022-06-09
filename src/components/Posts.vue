@@ -1,6 +1,7 @@
 <script setup>
-import { watch } from "vue";
+import { watch } from 'vue'
 import { onMounted, ref } from '@vue/runtime-core'
+import { useRoute } from 'vue-router'
 import { useDateFormat } from './../utils/utils'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
@@ -14,11 +15,14 @@ const props = defineProps({
   post: Object
 })
 
+const route = useRoute()
 const userStore = useUserStore()
 const postStore = usePostStore()
 const modalStore = useModalStore()
-const { addPostComment, patchPostingData, patchPostLikeStats, patchPostLikes } = postStore
+const { addPostComment, patchPostingData, patchPostLikeStats, patchPostLikes, addProfileComment } = postStore
 const { openModalPost, openModalDeletePost } = modalStore
+
+const isProfile = route.params.id && route.params.id === userStore._id ? true : false
 
 // 編輯貼文
 const editPostHandler = (post) => {
@@ -38,7 +42,9 @@ const addComment = async () => {
   if (!commentValue.value || commentValue.value.trim().length === 0) return
   const { data } = await postComment(props.post._id, commentValue.value);
   if (data.status !== 'success') return
-  addPostComment(props.post._id, data.data.comment)
+  isProfile
+  ? addProfileComment(props.post._id, data.data.comment)
+  : addPostComment(props.post._id, data.data.comment)
   commentValue.value = ''  
 }
 

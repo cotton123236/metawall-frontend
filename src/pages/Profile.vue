@@ -117,12 +117,11 @@ watch(() => modalStore.useModalFollows, async (newVal) => {
   }
 })
 
-watch(() => modalStore.useModalPost, async (newVal) => {
+watch(() => [modalStore.useModalPost, profilePosts], async (newVal) => {
   if(!newVal){
     await getProfilePosts()
   }
 })
-
 
 // 追蹤 & 取消追蹤
 const whetherToFollow = async () => {
