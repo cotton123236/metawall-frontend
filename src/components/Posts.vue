@@ -7,6 +7,7 @@ import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 import { usePostStore } from './../stores/postStore'
 import { putLike, delPostLike, postComment } from './../api/fetch'
+import { debounce } from 'lodash-es'
 // components
 import contenteditable from 'vue-contenteditable'
 import Comment from './Comment.vue'
@@ -36,7 +37,7 @@ const deletePostHandler = (post) => {
 }
 
 // 新增留言
-const addComment = async () => {
+const addComment = debounce(async () => {
   if (!commentValue.value || commentValue.value.trim().length === 0) return
   const isProfile = route.params.id ? true : false
   const { data } = await postComment(props.post._id, commentValue.value);
@@ -51,7 +52,7 @@ const addComment = async () => {
     openModalAlert(data.message)
   }
   commentValue.value = '' 
-}
+})
 
 // 子元件操控
 const isCommentOpen = ref(false)
