@@ -16,6 +16,7 @@ const postStore = usePostStore()
 
 const { posts } = storeToRefs(postStore)
 const { patchPosts } = postStore
+const { openModalAlert } = modalStore
 
 const isLoading = ref(true)
 
@@ -23,11 +24,17 @@ const isLoading = ref(true)
 const getAllPosts = async () => {
   isLoading.value = true
   const { data } = await getPostsByRoute(route)
-  console.log(data);
-  if (data.status !== 'success') return;
+  // 成功取得
+  if (data.status === 'success') {
+    patchPosts(data.data.list)
+  }
+  // 失敗
+  else {
+    openModalAlert(data.message)
+  }
   isLoading.value = false
-  patchPosts(data.data.list)
 }
+
 getAllPosts()
 
 </script>

@@ -19,10 +19,8 @@ const route = useRoute()
 const userStore = useUserStore()
 const postStore = usePostStore()
 const modalStore = useModalStore()
-const { addPostComment, patchPostingData, patchPostLikeStats, patchPostLikes, addProfileComment } = postStore
-const { openModalPost, openModalDeletePost } = modalStore
-
-const isProfile = route.params.id && route.params.id === userStore._id ? true : false
+const { addPostComment, patchPostingData, patchPostLikeStats, patchPostLikes, addProfilePostComment } = postStore
+const { openModalPost, openModalDeletePost, openModalAlert } = modalStore
 
 // 編輯貼文
 const editPostHandler = (post) => {
@@ -40,12 +38,19 @@ const deletePostHandler = (post) => {
 // 新增留言
 const addComment = async () => {
   if (!commentValue.value || commentValue.value.trim().length === 0) return
+  const isProfile = route.params.id ? true : false
   const { data } = await postComment(props.post._id, commentValue.value);
-  if (data.status !== 'success') return
-  isProfile
-  ? addProfileComment(props.post._id, data.data.comment)
-  : addPostComment(props.post._id, data.data.comment)
-  commentValue.value = ''  
+  // 新增成功
+  if (data.status === 'success') {
+    isProfile
+    ? addProfilePostComment(props.post._id, data.data.comment)
+    : addPostComment(props.post._id, data.data.comment)
+  }
+  // 錯誤
+  else {
+    openModalAlert(data.message)
+  }
+  commentValue.value = '' 
 }
 
 // 子元件操控
