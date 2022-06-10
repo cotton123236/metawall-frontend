@@ -35,6 +35,8 @@ const deleteFollow = async (id) => {
 
 getFollow()
 
+console.log(userStore.follows);
+
 </script>
 
 <template>
@@ -56,17 +58,25 @@ getFollow()
               :key="follow._id"
             >
               <template v-if="follow?.following">
-                <div class="info" v-for="following in follow.following" :key="following._id">
-                  <div class="headshot">
-                    <img v-if="following.avatar" :src="following.avatar" alt="user-photo">
-                  </div>
-                  <div class="detail">
-                    <div class="name">{{ following?.nickName }}</div>
-                    <div class="date">追蹤於 - {{ useDateFormat(follow.createdAt) }}</div>
-                  </div>
+                <div class="info">
+                  <router-link
+                    class="link"
+                    v-for="following in follow.following"
+                    :to="following._id"
+                    :key="following._id"
+                    @click="closeModalFollows"
+                  >
+                    <div class="headshot">
+                      <img v-if="following.avatar" :src="following.avatar" alt="user-photo">
+                    </div>
+                    <div class="detail">
+                      <div class="name">{{ following?.nickName }}</div>
+                      <div class="date">追蹤於 - {{ useDateFormat(follow.createdAt) }}</div>
+                    </div>
+                  </router-link>
                   <div class="unfollow-btn" @click="deleteFollow(following._id)">取消追蹤</div>
                 </div>
-              </template>              
+              </template>
             </li>
           </ul>
           <div class="no-post" v-else>
@@ -138,28 +148,45 @@ getFollow()
       display: flex
       align-items: center
       padding: 10px 20px
+    .link
+      display: flex
+      align-items: center
+      pointer-events: none
+      &:hover
+        img
+          transform: scale(1.1)
+        .name
+          color: var(--primary-pink)
     .headshot
       width: 50px
       height: 50px
       margin-right: 15px
+      pointer-events: auto
+      img
+        transition: transform var(--trans-m)
     .detail
       flex: 1
       font-family: $code-font
       .name
+        display: inline-block
         font-size: px(16)
         line-height: 1.5
+        transition: color var(--trans-s)
+        pointer-events: auto
       .date
         font-size: px(12)
         color: #ccc
         line-height: 1.5
         margin-top: 2px
     .unfollow-btn
+      flex-shrink: 0
       font-size: px(12)
       color: var(--light-gray)
       padding: 5px
       cursor: pointer
       transition: color var(--trans-s)
+      margin-left: auto
       &:hover
-        color: var(--gray)
+        color: var(--primary-pink)
 
 </style>

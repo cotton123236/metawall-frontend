@@ -251,7 +251,7 @@ onBeforeUnmount(() => {
   +rwdmax(767)
     display: block
     padding: 40px 30px
-    border-radius: 0 60px 0 60px
+    border-radius: 8px 60px 8px 60px
 
   .headshot
     width: 130px

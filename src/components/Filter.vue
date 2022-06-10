@@ -6,11 +6,13 @@ import { useFilterStore } from '../stores/filterStores'
 import { appendQuery } from '../utils/utils'
 import { getPostsByRoute, getPostsByIdAndRoute } from './../api/fetch'
 import { usePostStore } from './../stores/postStore'
+import { useModalStore } from '../stores/modalStore'
 
 
 const route = useRoute()
 const filterStore = useFilterStore()
 const postStore = usePostStore()
+const modalStore = useModalStore()
 
 // open and close control
 const filterActive = ref(false)
@@ -31,6 +33,7 @@ onMounted(() => {
 const { filters: datalist } = storeToRefs(filterStore)
 const { currentPage, hasNext } = storeToRefs(postStore)
 const { patchPosts, patchProfilePosts } = postStore
+const { openModalAlert } = modalStore
 const selectedIndex = ref(datalist.value.findIndex(item => item.sort === route.query.sort))
 
 const changeSelected = async (li, index) => {
@@ -49,6 +52,9 @@ const changeSelected = async (li, index) => {
   if (data.status === 'success') {
     isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
     hasNext.value = data.data.page.has_next
+  }
+  else {
+    openModalAlert(data.message)
   }
 }
 
