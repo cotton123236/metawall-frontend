@@ -1,6 +1,5 @@
 <script setup>
 import { ref, nextTick } from '@vue/runtime-core'
-import { storeToRefs } from 'pinia'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from '../stores/modalStore'
 import { getLikeList } from '../api/fetch'
@@ -24,6 +23,7 @@ const getLike = async () => {
     userStore.likes = []
     const { data } = await getLikeList();
     if (data.status !== 'success') return;
+    console.log(data)
     isLoading.value = false
     patchUser(cloneDeep({
       likes: data.data.list

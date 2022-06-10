@@ -281,6 +281,8 @@ onBeforeUnmount(() => {
       font-size: px(24)
       font-weight: 500
       color: var(--primary-pink)
+      +rwdmax(1024)
+        font-size: px(20)
     .follow-btn
       display: inline-block
       font-size: px(12)
