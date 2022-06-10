@@ -128,7 +128,7 @@ onUnmounted(() => {
               </div>
               <label class="editor-btn">
                 <i class="icon-picture"></i>
-                <input type="file" @change="addImage" ref="imageFile">
+                <input type="file" @change="addImage" accept="image/*" ref="imageFile">
               </label>
             </div>
             <editor-content class="editor-content" :editor="editor" />

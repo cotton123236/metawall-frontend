@@ -252,7 +252,7 @@ onBeforeUnmount(() => {
     display: block
     padding: 40px 30px
     border-radius: 8px 60px 8px 60px
-
+  
   .headshot
     width: 130px
     height: 130px

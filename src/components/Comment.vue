@@ -63,12 +63,12 @@ const deleteCommentHandler = (comment) => {
 
 <template>
   <div class="each-comment">
-    <div class="headshot">
+    <router-link :to="comment.editor._id" class="headshot">
       <img v-if="comment.editor.avatar" :src="comment.editor.avatar" alt="user-photo">
-    </div>
+    </router-link>
     <div class="content">
       <div class="head">
-        <span class="name">{{ comment.editor.nickName }}</span>
+        <router-link :to="comment.editor._id" class="name">{{ comment.editor.nickName }}</router-link>
         <span class="date">{{ useDateFormat(comment.createdAt) }}</span>
         <span
           class="edit-btn"
@@ -115,6 +115,11 @@ const deleteCommentHandler = (comment) => {
     flex-shrink: 0
     width: 40px
     height: 40px
+    &:hover
+      img
+        transform: scale(1.1)
+    img
+      transition: transform var(--trans-m)
   .content
     width: 100%
     .head
@@ -125,6 +130,9 @@ const deleteCommentHandler = (comment) => {
       font-family: $code-font
       font-size: px(14)
       line-height: 1.5
+      transition: color var(--trans-s)
+      &:hover
+        color: var(--primary-pink)
     .date
       color: #ccc
       font-size: px(12)
