@@ -225,7 +225,7 @@ function countdown() {
   <section>
     <div class="headshot-wrap" data-aos="fade-up" data-aos-delay="300">
       <label class="headshot">
-        <input type="file" @change="uploadFile" ref="fileInput" />
+        <input type="file" accept="image/*" @change="uploadFile" ref="fileInput" />
         <img v-if="profileForm.image" :src="profileForm.image" alt="" />
       </label>
       <i class="icon-plus"></i>
@@ -344,6 +344,7 @@ section
     margin: 0 auto -60px
   .headshot
     position: relative
+    z-index: -1
     box-shadow: 0 0 10px rgba(0, 0, 0, .3)
     width: 100%
     height: 100%
@@ -354,11 +355,15 @@ section
       &::before
         opacity: 1
     &::before
+      z-index: -1
       background-color: rgba(0, 0, 0, .3)
       opacity: 0
       transition: opacity var(--trans-s)
       +posFill
       +pseudo
+    img
+      position: relative
+      z-index: -2
     input
       display: none
   i
