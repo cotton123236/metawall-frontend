@@ -107,6 +107,8 @@ getLike()
     max-height: calc(80vh - 61px)
     overflow: auto
     padding: 30px
+    +rwdmax(767)
+      padding: 20px
     &::-webkit-scrollbar-track
       border-radius: 10px
       -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .2)
