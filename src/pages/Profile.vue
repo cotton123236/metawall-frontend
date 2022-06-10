@@ -26,6 +26,7 @@ const modalStore = useModalStore()
 const { patchUser } = userStore;
 const { profilePosts, currentPage, hasNext } = storeToRefs(postStore)
 const { pushProfilePosts, patchProfilePosts } = postStore
+const { openModalAlert } = modalStore
 
 profilePosts.value.length = 0
 
@@ -187,7 +188,7 @@ onBeforeUnmount(() => {
 <template>
   <section>
     <!-- profile -->
-    <div class="profile" data-aos="clip-left" data-aos-duration="1000">
+    <div class="profile" data-aos="clip-left" data-aos-duration="1000" v-if="profileUser._id">
       <div class="headshot">
         <img v-if="profileUser.avatar" :src="profileUser.avatar" alt="">
       </div>

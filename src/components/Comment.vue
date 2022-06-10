@@ -112,6 +112,8 @@ const deleteCommentHandler = (comment) => {
       .edit-btn, .delete-btn
         opacity: .4
   .headshot
+    position: relative
+    z-index: 1
     flex-shrink: 0
     width: 40px
     height: 40px
@@ -119,6 +121,8 @@ const deleteCommentHandler = (comment) => {
       img
         transform: scale(1.1)
     img
+      position: relative
+      z-index: -1
       transition: transform var(--trans-m)
   .content
     width: 100%

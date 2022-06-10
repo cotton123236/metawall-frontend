@@ -371,8 +371,12 @@ main
 
 // bg-wrap
 .bg-wrap
+  position: fixed
   z-index: -1
-  +posFill
+  top: 0
+  left: 0
+  width: 100%
+  height: 100vh
   img
     &.bg
       opacity: .6
