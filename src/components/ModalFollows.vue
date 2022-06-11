@@ -58,12 +58,13 @@ console.log(userStore.follows);
               :key="follow._id"
             >
               <template v-if="follow?.following">
-                <div class="info">
+                <div class="info"
+                 v-for="following in follow.following"
+                 :key="following._id"
+                 >
                   <router-link
                     class="link"
-                    v-for="following in follow.following"
                     :to="following._id"
-                    :key="following._id"
                     @click="closeModalFollows"
                   >
                     <div class="headshot">
