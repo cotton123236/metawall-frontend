@@ -14,10 +14,11 @@ cd dist
 
 git init
 git checkout -b main
+# git checkout main
 git add -A
 git commit -m 'deploy'
 
 # 如果你要部署在 https://<USERNAME>.github.io/<REPO>
-git push -f https://github.com/Charlie50503/metawall-frontend.git master:gh-pages
+git push -f https://github.com/Charlie50503/metawall-frontend.git main:gh-pages
 
 cd -
