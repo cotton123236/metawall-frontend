@@ -20,7 +20,7 @@ axios.defaults.timeout = 1000
 // retry 請求次數
 axios.defaults.retry = 4
 // retryDelay 請求間隙
-axios.defaults.retryDelay = 1000
+// axios.defaults.retryDelay = 1000
 
 server.interceptors.request.use(
   config => {
