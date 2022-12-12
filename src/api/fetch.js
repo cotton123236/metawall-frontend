@@ -65,6 +65,33 @@ export function updatePassword(data) {
   })
 }
 
+// 忘記密碼
+export function forgetPassword(data) {
+  return request({
+    url: `${url.user}/forgetPassword`,
+    method: 'post',
+    data
+  })
+}
+
+// 修改密碼
+export function verification(data) {
+  return request({
+    url: `${url.user}/verification/${data.userId}`,
+    method: 'post',
+    data: data.data
+  })
+}
+
+// 忘記密碼
+export function changePassword(data) {
+  return request({
+    url: `${url.user}/changePassword`,
+    method: 'patch',
+    data
+  })
+}
+
 // 取得所有貼文 by route query
 export function getPostsByRoute(route, page = 1) {
   let sendUrl = url.post

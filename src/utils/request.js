@@ -16,11 +16,11 @@ const server = axios.create({
   [請求超時設置]
 */
 // timeout 請求時限
-axios.defaults.timeout = 1000
+axios.defaults.timeout = 5000
 // retry 請求次數
-axios.defaults.retry = 4
+// axios.defaults.retry = 4
 // retryDelay 請求間隙
-axios.defaults.retryDelay = 1000
+// axios.defaults.retryDelay = 1000
 
 server.interceptors.request.use(
   config => {
