@@ -1,9 +1,9 @@
 <script setup>
 import "swiper/css";
 import { watch } from "vue";
-import { reactive, ref } from "@vue/runtime-core";
-import { useRouter } from "vue-router";
-import { signIn, getMyProfile, signUpCheck, signUp } from "./../api/fetch";
+import { reactive, ref, onMounted } from "@vue/runtime-core";
+import { useRoute, useRouter } from "vue-router";
+import { signIn, getMyProfile, signUpCheck, signUp, forgetPassword, verification, changePassword } from "./../api/fetch";
 import {
   isNotEmpty,
   isValidEmail,
@@ -22,11 +22,12 @@ import rock_02 from "./../assets/image/rock-02.svg";
 import rock_03 from "./../assets/image/rock-03.svg";
 import rock_04 from "./../assets/image/rock-04.svg";
 
+const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const modalStore = useModalStore();
 const { patchUser } = userStore;
-const { openModalLoader, closeModalLoader } = modalStore;
+const { openModalLoader, closeModalLoader, openModalAlert } = modalStore;
 const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env;
 
 // oauth Login URL
@@ -38,7 +39,6 @@ const errorMessage = reactive({
   password: "",
   confirmPassword: "",
 });
-
 // login mode control
 const signupSwiperInstance = ref(null);
 const signupSwiperInit = (swiper) => {
@@ -55,6 +55,19 @@ const slideUpdate = () => {
     signupSwiperInstance.value.update();
   }, 100);
 };
+const slideTo = (index) => {
+  signupSwiperInstance.value.slideTo(index, 0, false); //切换到第一个slide，速度为1秒
+};
+
+onMounted(() => {
+  if(isVerificationMode(route.query?.mode) && route.query?.token){
+    goVerificationSlide()
+    const token = route.query?.token
+    localStorage.setItem("token", token)
+    // openModalAlert("hello")
+  }
+})
+
 
 /* ---登入功能--- */
 
@@ -216,6 +229,108 @@ const register = async () => {
   // 關閉 loader
   closeModalLoader();
 };
+
+/* ---忘記密碼功能--- */
+// 忘記密碼表單
+const forgetPasswordForm = reactive({
+  email: "",
+});
+
+// 監看 registerForm 內容
+watch(
+  forgetPasswordForm,
+  (newVal) => {
+    // 驗證 Email 格式
+    errorMessage.email = isValidEmail(newVal.email);
+  },
+  { deep: true }
+);
+
+const sendForgetPassword = async () => {
+  
+  // 驗證：內容不可為空
+  errorMessage.email = isNotEmpty(forgetPasswordForm.email);
+  if (errorMessage.email) return;
+
+  const result = await forgetPassword(forgetPasswordForm);
+  console.log(result)
+}
+
+// 驗證碼表單
+const verificationForm = reactive({
+  verificationCode: "",
+});
+
+// 監看 verificationForm 內容
+watch(
+  verificationForm,
+  (newVal) => {
+    // 驗證 Email 格式
+    errorMessage.verificationCode = isNotEmpty(newVal.verificationCode);
+  },
+  { deep: true }
+);
+
+const checkVerificationCode = async() => {
+
+  errorMessage.verificationCode = isNotEmpty(verificationForm.verificationCode);
+  if (errorMessage.verificationCode) return;
+
+  const {data} = await verification({
+    userId:route.query.userId,
+    data: {
+      verification:verificationForm.verificationCode
+    }
+  })
+  // 通過前端驗證
+  if (data.status === "success") {
+    slideNext();
+  }
+}
+
+
+const isVerificationMode = (mode) => {
+  return mode==="verification"
+}
+
+const goVerificationSlide = () => {
+  slideTo(4)
+}
+
+
+// 驗證碼表單
+const changePasswordForm = reactive({
+  newPassword: "",
+  confirmNewPassword: "",
+});
+
+// 監看 changePasswordForm 內容
+watch(
+  changePasswordForm,
+  (newVal) => {
+    // 驗證密碼格式
+    errorMessage.newPassword = isValidPassword(newVal.newPassword);
+    errorMessage.confirmNewPassword = isValidPassword(newVal.confirmNewPassword);
+
+    // 確認密碼是否一致
+    errorMessage.confirmPassword = isSamePassword(
+      newVal.newPassword,
+      newVal.confirmNewPassword
+    );
+  },
+  { deep: true }
+);
+
+const onChangePassword = async () => {
+  const {data} = await changePassword({
+    password:changePasswordForm.newPassword,
+    confirmPassword:changePasswordForm.confirmNewPassword
+  })
+  if(data.status==="success"){
+    router.push({ path: "/" });
+  }
+}
+
 </script>
 
 <template>
@@ -283,6 +398,7 @@ const register = async () => {
                 Login with Google
               </a>
             </form>
+            <div class="forget-password-warp"><a class="forget-password-link text-primary-blue text-primary-blue-light--hover link-underline--hover" @click="slideTo(3)">忘記密碼</a></div>
           </swiper-slide>
           <!-- sign-up email & password -->
           <swiper-slide>
@@ -329,6 +445,7 @@ const register = async () => {
                 <img class="google-logo" :src="googleLogo" alt="" />
                 Sign up with Google
               </a>
+              
             </form>
           </swiper-slide>
           <!-- sign-up name -->
@@ -349,6 +466,69 @@ const register = async () => {
                 開啟元宇宙
               </div>
               <div class="rect-btn signup-btn" @click="slidePrev">回上一步</div>
+            </form>
+          </swiper-slide>
+          <swiper-slide>
+            <p class="brief">請輸入你的 Email</p>
+            <form>
+              <label class="form-row" :data-warning="errorMessage.email">
+                <input
+                  id="signup-name"
+                  type="text"
+                  required
+                  @keydown.tab.prevent
+                  v-model.trim="forgetPasswordForm.email"
+                />
+                <span>Email</span>
+              </label>
+              <div class="rect-btn signup-btn fill" @click="sendForgetPassword">
+                發送驗證碼到信箱
+              </div>
+              <div class="rect-btn signup-btn" @click="slideTo(0)">回上一步</div>
+            </form>
+          </swiper-slide>
+          <swiper-slide>
+            <p class="brief">請輸入你的驗證碼</p>
+            <form>
+              <label class="form-row" :data-warning="errorMessage.verificationCode">
+                <input
+                  id="signup-name"
+                  type="text"
+                  required
+                  @keydown.tab.prevent
+                  v-model.trim="verificationForm.verificationCode"
+                />
+                <span>驗證碼</span>
+              </label>
+              <div class="rect-btn signup-btn fill" @click="checkVerificationCode">
+                確認
+              </div>
+            </form>
+          </swiper-slide>
+          <swiper-slide>
+            <p class="brief">請輸入新的密碼</p>
+            <form>
+              <label class="form-row" :data-warning="errorMessage.newPassword">
+                <input
+                  id="signup-email"
+                  type="password"
+                  required
+                  v-model.trim="changePasswordForm.newPassword"
+                />
+                <span>新密碼</span>
+              </label>
+              <label class="form-row" :data-warning="errorMessage.confirmNewPassword">
+                <input
+                  id="signup-password"
+                  type="password"
+                  required
+                  v-model.trim="changePasswordForm.confirmNewPassword"
+                />
+                <span>確認新密碼</span>
+              </label>
+              <div class="rect-btn signup-btn fill" @click="onChangePassword">
+                更新密碼
+              </div>
             </form>
           </swiper-slide>
         </swiper>
@@ -468,4 +648,11 @@ main
       left: 0
     &::after
       right: 0
+
+.forget-password-link
+  cursor: pointer
+
+.forget-password-warp
+  margin-top: 15px
+  text-align: end
 </style>
