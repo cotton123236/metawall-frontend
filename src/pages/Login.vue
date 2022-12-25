@@ -60,11 +60,8 @@ const slideTo = (index) => {
 };
 
 onMounted(() => {
-  if(isVerificationMode(route.query?.mode) && route.query?.token){
+  if(isVerificationMode(route.query?.mode) && route.query?.verificationId){
     goVerificationSlide()
-    const token = route.query?.token
-    localStorage.setItem("token", token)
-    // openModalAlert("hello")
   }
 })
 
@@ -298,11 +295,17 @@ const checkVerificationCode = async() => {
   if (errorMessage.verificationCode) return;
 
   const {data} = await verification({
-    userId:route.query.userId,
     data: {
-      verification:verificationForm.verificationCode
+      verificationId:route.query.verificationId,
+      verificationCode:verificationForm.verificationCode
     }
   })
+  
+  if(!data.data.token){
+    openModalAlert("沒有找到 token")
+  }
+  const token = data.data.token
+  localStorage.setItem("token", token)
   // 通過前端驗證
   if (data.status === "success") {
     slideNext();
