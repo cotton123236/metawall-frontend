@@ -69,7 +69,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  clearInterval(enableSendEmailBtnTimer);
+  resetEnableSendEmailBtnTimer();
 })
 /* ---登入功能--- */
 
@@ -242,8 +242,13 @@ const countdown = () =>{
   enableSendEmailBtnTime.value--;
   if(enableSendEmailBtnTime.value===0){
     isEmailSent.value = false;
-    clearInterval(enableSendEmailBtnTimer);
+    resetEnableSendEmailBtnTimer()
   }
+}
+
+const resetEnableSendEmailBtnTimer = () => {
+  enableSendEmailBtnTime.value = 60
+  clearInterval(enableSendEmailBtnTimer);
 }
 
 const forgetPasswordForm = reactive({
@@ -268,7 +273,7 @@ const sendForgetPassword = async () => {
 
   isEmailSent.value = true;
   slideUpdate();
-  timer=setInterval(countdown, 1000);
+  enableSendEmailBtnTimer=setInterval(countdown, 1000);
   const result = await forgetPassword(forgetPasswordForm);
 }
 
