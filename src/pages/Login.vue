@@ -1,7 +1,7 @@
 <script setup>
 import "swiper/css";
 import { watch } from "vue";
-import { reactive, ref, onMounted } from "@vue/runtime-core";
+import { reactive, ref, onMounted , onBeforeUnmount } from "@vue/runtime-core";
 import { useRoute, useRouter } from "vue-router";
 import { signIn, getMyProfile, signUpCheck, signUp, forgetPassword, verification, changePassword } from "./../api/fetch";
 import {
@@ -68,7 +68,9 @@ onMounted(() => {
   }
 })
 
-
+onBeforeUnmount(() => {
+  clearInterval(enableSendEmailBtnTimer);
+})
 /* ---登入功能--- */
 
 // 登入表單
@@ -232,6 +234,18 @@ const register = async () => {
 
 /* ---忘記密碼功能--- */
 // 忘記密碼表單
+const isEmailSent = ref(false);
+const enableSendEmailBtnTime = ref(60);
+let enableSendEmailBtnTimer = null;
+
+const countdown = () =>{
+  enableSendEmailBtnTime.value--;
+  if(enableSendEmailBtnTime.value===0){
+    isEmailSent.value = false;
+    clearInterval(enableSendEmailBtnTimer);
+  }
+}
+
 const forgetPasswordForm = reactive({
   email: "",
 });
@@ -247,13 +261,15 @@ watch(
 );
 
 const sendForgetPassword = async () => {
-  
+  if(isEmailSent.value) return;
   // 驗證：內容不可為空
   errorMessage.email = isNotEmpty(forgetPasswordForm.email);
   if (errorMessage.email) return;
 
+  isEmailSent.value = true;
+  slideUpdate();
+  timer=setInterval(countdown, 1000);
   const result = await forgetPassword(forgetPasswordForm);
-  console.log(result)
 }
 
 // 驗證碼表單
@@ -297,8 +313,7 @@ const goVerificationSlide = () => {
   slideTo(4)
 }
 
-
-// 驗證碼表單
+// 更新密碼表單
 const changePasswordForm = reactive({
   newPassword: "",
   confirmNewPassword: "",
@@ -398,7 +413,9 @@ const onChangePassword = async () => {
                 Login with Google
               </a>
             </form>
-            <div class="forget-password-warp"><a class="forget-password-link text-primary-blue text-primary-blue-light--hover link-underline--hover" @click="slideTo(3)">忘記密碼</a></div>
+            <div class="forget-password-warp">
+              <a class="forget-password-link text-primary-blue text-primary-blue-light--hover link-underline--hover" @click="slideTo(3)">忘記密碼</a>
+            </div>
           </swiper-slide>
           <!-- sign-up email & password -->
           <swiper-slide>
@@ -481,9 +498,10 @@ const onChangePassword = async () => {
                 />
                 <span>Email</span>
               </label>
-              <div class="rect-btn signup-btn fill" @click="sendForgetPassword">
+              <div class="rect-btn signup-btn fill" @click="sendForgetPassword" :class="{disable: isEmailSent}">
                 發送驗證碼到信箱
               </div>
+              <div class="msg" v-show="isEmailSent">重新發送驗證碼等待時間 {{ enableSendEmailBtnTime }} 秒</div>
               <div class="rect-btn signup-btn" @click="slideTo(0)">回上一步</div>
             </form>
           </swiper-slide>
@@ -655,4 +673,11 @@ main
 .forget-password-warp
   margin-top: 15px
   text-align: end
+
+.msg
+  margin-top: 8px
+  font-size: px(14)
+  line-height: 1.5
+  color: var(--light-gray)
+  text-align: center
 </style>
