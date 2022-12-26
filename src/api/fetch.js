@@ -77,7 +77,7 @@ export function forgetPassword(data) {
 // 修改密碼
 export function verification(data) {
   return request({
-    url: `${url.user}/verification/${data.userId}`,
+    url: `${url.user}/verification`,
     method: 'post',
     data: data.data
   })
