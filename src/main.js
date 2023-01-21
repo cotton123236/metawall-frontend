@@ -8,6 +8,9 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 // App
 import App from './App.vue'
+// FontAwesomeIcon
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import "@/plugins/fontawesome";
 
 
 const app = createApp(App)
@@ -23,5 +26,6 @@ app
   .use(router)
   .provide('axios', app.config.globalProperties.axios)
   .provide('aos', aos)
+  .component("font-awesome-icon", FontAwesomeIcon)
 
 app.mount('#app')
