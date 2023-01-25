@@ -9,12 +9,11 @@ import { useUserStore } from './../stores/userStore';
 import { useModalStore } from './../stores/modalStore';
 import { usePostStore } from './../stores/postStore';
 import {
-  getPostsByRoute,
-  getPostsById,
-  patchEditPost,
-  postNewPost,
-  uploadPostImage,
+  postCreateOrder,
+  getOrderInfo
 } from './../api/fetch';
+import { postNewebpay } from './../api/helper/newebpay'
+import { result } from 'lodash-es';
 // components
 // import Image from './../assets/image/login-bg.png'
 
@@ -27,33 +26,75 @@ const { closeModalPay, openModalLoader, closeModalLoader, openModalAlert } =
   modalStore;
 const { patchPosts, patchProfilePosts, patchPostingData } = postStore;
 const { postingData } = storeToRefs(postStore);
+const { useModalPayPostId } = storeToRefs(modalStore)
 
 // 貼文資料處理與發送
 const isNewPost = postingData.value.content === '';
 const isProfile =
   route.params.id && route.params.id === userStore._id ? true : false;
 
-const amount = ref(0);
+
 
 const submitPay = async () => {
-  // if (!postingData.value.content) return;
-  // // 打開 loader
-  // openModalLoader('發佈中')
-  // // 發送 request (新增或編輯)
-  // const { data: submitData } = isNewPost ? await postNewPost(postingData.value) : await patchEditPost(postingData.value)
-  // // 關閉燈箱
-  // closeModalLoader()
-  // closeModalPost()
-  // // 若成功就重整畫面
-  // if (submitData.status === 'success') {
-  //   const { data } = isProfile ? await getPostsById(userStore._id) : await getPostsByRoute(route)
-  //   if (data.status !== 'success') return;
-  //   isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
-  // }
-  // // 若失敗則顯示錯誤訊息
-  // else {
-  //   openModalAlert(submitData.message)
-  // }
+  const requestData = {
+    postId : useModalPayPostId.value,
+    amt : amount.value,
+    description: '贊助貼文'
+  }
+
+  const createOrderResult = await postCreateOrder(requestData)
+  console.log(createOrderResult);
+  if (createOrderResult.data.status !== 'success') {
+    openModalAlert(createOrderResult.message)
+    closeModalPay()
+    return
+  }
+  console.log(createOrderResult.data?.tradeInfo?.TimeStamp);
+  if(!createOrderResult?.data?.data || createOrderResult.data.data?.tradeInfo?.TimeStamp===undefined){
+    openModalAlert("沒找到資料")
+    closeModalPay()
+    return
+  }
+
+  const orderId = createOrderResult.data.data?.tradeInfo?.TimeStamp
+  const orderInfoResult = await getOrderInfo(orderId)
+  
+  if (orderInfoResult.data.status !== 'success') {
+    openModalAlert(orderInfoResult.message)
+    closeModalPay()
+    return
+  }
+
+  console.log(orderInfoResult)
+
+  const requestBody = {
+    MerchantID: 'MS140625957',
+    TradeSha: orderInfoResult.data.data.shaEncrypt,
+    TradeInfo: orderInfoResult.data.data.aesEncrypt,
+    TimeStamp: orderInfoResult.data.data.TimeStamp,
+    MerchantOrderNo: orderInfoResult.data.data.order.MerchantOrderNo,
+    Version: 1.5,
+    Amt: orderInfoResult.data.data.order.Amt,
+    Email: orderInfoResult.data.data.order.Email,
+  }
+
+  const form = document.createElement("form");
+  form.method = "post";
+  form.action = "https://ccore.spgateway.com/MPG/mpg_gateway";
+  // form.target = "_blank";
+
+  for(const key in requestBody){
+    const hiddenField = document.createElement("input");
+    hiddenField.type = "hidden";
+    hiddenField.name = key;
+    hiddenField.value = requestBody[key];
+
+    form.appendChild(hiddenField);
+  }
+
+  document.body.appendChild(form);
+  form.submit();
+  form.remove();
 };
 
 // Rich editor
@@ -88,6 +129,22 @@ onUnmounted(() => {
   patchPostingData({ _id: '', content: '', image: [] });
 });
 
+const isSubmitDisable = ref(true);
+
+const checkSubmitDisable = (value)=>{
+  if(/^0$/.test(value) || value==="" || value === null){
+    isSubmitDisable.value = true;
+  } else if (/^[1-9][0-9]*$/.test(value)) {
+    isSubmitDisable.value = false;
+  } else if (/^[0-9]*$/.test(value)) {
+    isSubmitDisable.value = false;
+  } else {
+    isSubmitDisable.value = true;
+  }
+}
+
+const amount = ref(0);
+
 const reactiveAmount = computed({
   get() {
     return amount.value;
@@ -100,6 +157,7 @@ const reactiveAmount = computed({
     } else {
       amount.value = null;
     }
+    checkSubmitDisable(amount.value)
   },
 });
 </script>
@@ -135,7 +193,7 @@ const reactiveAmount = computed({
             class="rect-btn fill"
             :class="{
               disable:
-                !postingData.content || postingData.content === '<p></p>',
+              isSubmitDisable,
             }"
             @click="submitPay"
           >

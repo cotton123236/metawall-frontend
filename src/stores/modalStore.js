@@ -4,6 +4,7 @@ export const useModalStore = defineStore('modal', {
   state: () => {
     return {
       useModalPay: false,
+      useModalPayPostId:'',
       useModalPost: false,
       useModalLoader: false,
       useModalLoaderText: '',
@@ -18,8 +19,9 @@ export const useModalStore = defineStore('modal', {
     }
   },
   actions: {
-    openModalPay() {
+    openModalPay(id) {
       this.useModalPay = true
+      this.useModalPayPostId = id
     },
     closeModalPay() {
       this.useModalPay = false
