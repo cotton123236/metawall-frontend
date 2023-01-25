@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 export const useModalStore = defineStore('modal', {
   state: () => {
     return {
+      useModalPay: false,
       useModalPost: false,
       useModalLoader: false,
       useModalLoaderText: '',
@@ -17,6 +18,12 @@ export const useModalStore = defineStore('modal', {
     }
   },
   actions: {
+    openModalPay() {
+      this.useModalPay = true
+    },
+    closeModalPay() {
+      this.useModalPay = false
+    },
     openModalPost() {
       this.useModalPost = true
     },
