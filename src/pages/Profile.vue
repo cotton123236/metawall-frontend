@@ -32,6 +32,8 @@ profilePosts.value.length = 0
 
 // test
 const isFollowing = ref(false)
+// 被贊助多少錢
+const donatedAmount = ref(0)
 
 const gerProfile = async () => {
   const { data } = await getMyProfile();
@@ -40,6 +42,7 @@ const gerProfile = async () => {
       _id: data.data._id,
       name: data.data.nickName,
       image: data.data.hasOwnProperty("avatar") ? data.data.avatar : "",
+      donatedAmount: data.data.donatedAmount
     });
   }
 };
@@ -109,6 +112,7 @@ onMounted(async () => {
     await checkIsFollow()
   }
 });
+
 
 // 追蹤幾個人
 const FollowNum = ref(0)
@@ -209,6 +213,7 @@ onBeforeUnmount(() => {
         <div class="detail">
           <span>{{ profilePosts.length }} 則貼文</span>
           <span>{{ FollowNum }} 人追蹤中</span>
+          <span>{{ userStore.donatedAmount }} 贊助金額</span>
         </div>
       </div>
     </div>
