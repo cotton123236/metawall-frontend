@@ -1,6 +1,6 @@
 <script setup>
-import { onUnmounted, ref, computed, reactive } from '@vue/runtime-core';
-import { useEditor, EditorContent } from '@tiptap/vue-3';
+import { onUnmounted, ref, computed } from '@vue/runtime-core';
+import { useEditor } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import { useRoute } from 'vue-router';
@@ -12,10 +12,6 @@ import {
   postCreateOrder,
   getOrderInfo
 } from './../api/fetch';
-import { postNewebpay } from './../api/helper/newebpay'
-import { result } from 'lodash-es';
-// components
-// import Image from './../assets/image/login-bg.png'
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -24,16 +20,9 @@ const postStore = usePostStore();
 
 const { closeModalPay, openModalLoader, closeModalLoader, openModalAlert } =
   modalStore;
-const { patchPosts, patchProfilePosts, patchPostingData } = postStore;
+const { patchPostingData } = postStore;
 const { postingData } = storeToRefs(postStore);
 const { useModalPayPostId } = storeToRefs(modalStore)
-
-// 貼文資料處理與發送
-const isNewPost = postingData.value.content === '';
-const isProfile =
-  route.params.id && route.params.id === userStore._id ? true : false;
-
-
 
 const submitPay = async () => {
   const requestData = {
@@ -270,42 +259,6 @@ const reactiveAmount = computed({
     +rwdmax(767)
       padding: 10px
 
-// editor
-.editor-tools
-  display: flex
-  .editor-btn
-    display: flex
-    justify-content: center
-    align-items: center
-    width: 32px
-    height: 32px
-    cursor: pointer
-    border-radius: 5px
-    transition: var(--trans-s)
-    & + .editor-btn
-      margin-left: 5px
-    &:hover
-      background-color: var(--background)
-    &.is-active
-      background-color: var(--dark-gray)
-      color: var(--white)
-    input[type="file"]
-      display: none
-.editor-content
-  width: 100%
-  height: 30vh
-  overflow: auto
-  padding: 10px
-  &::-webkit-scrollbar-track
-    border-radius: 10px
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .2)
-  &::-webkit-scrollbar
-    width: 6px
-    +rwdmax(768)
-      display: none
-  &::-webkit-scrollbar-thumb
-    border-radius: 10px
-    background-color: #ccc
 .payment-img-wrapper
   margin-bottom: 32px
 .payment-img
