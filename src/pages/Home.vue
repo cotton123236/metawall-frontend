@@ -63,8 +63,16 @@ const infiniteLoading = async () => {
   }
 }
 
+const onShowPaidModal = () => {
+  const urlParams = new URLSearchParams(window.location.search)
+  if (urlParams.get('isPaid').startsWith('true')) {
+    openModalAlert("支付成功");
+  }
+}
+
 onMounted(() => {
   window.addEventListener('scroll', infiniteLoading)
+  onShowPaidModal();
 })
 
 onBeforeUnmount(() => {
