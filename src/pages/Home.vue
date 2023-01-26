@@ -18,7 +18,7 @@ const postStore = usePostStore()
 
 const { posts, currentPage, hasNext } = storeToRefs(postStore)
 const { patchPosts, pushPosts } = postStore
-const { openModalAlert } = modalStore
+const { openModalAlert, openModalPaid } = modalStore
 
 
 // post handler
@@ -66,7 +66,7 @@ const infiniteLoading = async () => {
 const onShowPaidModal = () => {
   const urlParams = new URLSearchParams(window.location.search)
   if (urlParams.get('isPaid')?.startsWith('true')) {
-    openModalAlert("支付成功");
+    openModalPaid();
   }
 }
 
