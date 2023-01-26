@@ -25,20 +25,24 @@ const { postingData } = storeToRefs(postStore);
 const { useModalPayPostId } = storeToRefs(modalStore)
 
 const submitPay = async () => {
+  const amountNumber = +amount.value
+  if(isNaN(amountNumber)){
+    openModalAlert("請輸入正確的金額")
+    return
+  }
+
   const requestData = {
     postId : useModalPayPostId.value,
-    amt : amount.value,
+    amt : amountNumber,
     description: '贊助貼文'
   }
 
   const createOrderResult = await postCreateOrder(requestData)
-  console.log(createOrderResult);
   if (createOrderResult.data.status !== 'success') {
-    openModalAlert(createOrderResult.message)
+    openModalAlert(createOrderResult.data.message)
     closeModalPay()
     return
   }
-  console.log(createOrderResult.data?.tradeInfo?.TimeStamp);
   if(!createOrderResult?.data?.data || createOrderResult.data.data?.tradeInfo?.TimeStamp===undefined){
     openModalAlert("沒找到資料")
     closeModalPay()
@@ -49,7 +53,7 @@ const submitPay = async () => {
   const orderInfoResult = await getOrderInfo(orderId)
   
   if (orderInfoResult.data.status !== 'success') {
-    openModalAlert(orderInfoResult.message)
+    openModalAlert(orderInfoResult.data.message)
     closeModalPay()
     return
   }
@@ -132,7 +136,7 @@ const checkSubmitDisable = (value)=>{
   }
 }
 
-const amount = ref(0);
+const amount = ref("0");
 
 const reactiveAmount = computed({
   get() {
