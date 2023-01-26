@@ -32,12 +32,6 @@ profilePosts.value.length = 0
 
 // test
 const isFollowing = ref(false)
-// 被贊助多少錢
-const donatedAmount = computed({
-  get() {
-    return userStore.donatedAmount;
-  },
-});
 
 const gerProfile = async () => {
   const { data } = await getMyProfile();
@@ -46,7 +40,6 @@ const gerProfile = async () => {
       _id: data.data._id,
       name: data.data.nickName,
       image: data.data.hasOwnProperty("avatar") ? data.data.avatar : "",
-      donatedAmount: data.data.donatedAmount
     });
   }
 };
@@ -59,7 +52,8 @@ const profileUser = reactive({
   nickName: '',
   avatar: '',
   follows: [],
-  likes: []
+  likes: [],
+  donatedAmount: 0
 })
 
 const getProfileUser = async () => {
@@ -218,7 +212,7 @@ onBeforeUnmount(() => {
         <div class="detail">
           <span>{{ profilePosts.length }} 則貼文</span>
           <span>{{ FollowNum }} 人追蹤中</span>
-          <span>{{ donatedAmount }} 贊助金額</span>
+          <span>{{ profileUser.donatedAmount }} 贊助金額</span>
         </div>
       </div>
     </div>
