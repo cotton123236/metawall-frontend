@@ -65,7 +65,7 @@ const infiniteLoading = async () => {
 
 const onShowPaidModal = () => {
   const urlParams = new URLSearchParams(window.location.search)
-  if (urlParams.get('isPaid').startsWith('true')) {
+  if (urlParams.get('isPaid')?.startsWith('true')) {
     openModalAlert("支付成功");
   }
 }
