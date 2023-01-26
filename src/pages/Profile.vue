@@ -1,6 +1,6 @@
 <script setup>
 import { watch } from 'vue'
-import { ref, reactive, onMounted, onBeforeUnmount } from '@vue/runtime-core'
+import { ref, reactive, onMounted, onBeforeUnmount, computed } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
@@ -33,7 +33,11 @@ profilePosts.value.length = 0
 // test
 const isFollowing = ref(false)
 // 被贊助多少錢
-const donatedAmount = ref(0)
+const donatedAmount = computed({
+  get() {
+    return userStore.donatedAmount;
+  },
+});
 
 const gerProfile = async () => {
   const { data } = await getMyProfile();
@@ -203,7 +207,8 @@ onBeforeUnmount(() => {
             <div
               class="follow-btn"
               :class="isFollowing ? 'unfollow' : 'follow'"
-              @click="whetherToFollow"
+              @click="
+              "
             >
               {{ isFollowing ? '取消追蹤' : '追蹤' }}
             </div>
@@ -213,7 +218,7 @@ onBeforeUnmount(() => {
         <div class="detail">
           <span>{{ profilePosts.length }} 則貼文</span>
           <span>{{ FollowNum }} 人追蹤中</span>
-          <span>{{ userStore.donatedAmount }} 贊助金額</span>
+          <span>{{ donatedAmount }} 贊助金額</span>
         </div>
       </div>
     </div>
