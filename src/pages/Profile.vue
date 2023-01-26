@@ -201,8 +201,7 @@ onBeforeUnmount(() => {
             <div
               class="follow-btn"
               :class="isFollowing ? 'unfollow' : 'follow'"
-              @click="
-              "
+              @click="whetherToFollow"
             >
               {{ isFollowing ? '取消追蹤' : '追蹤' }}
             </div>
