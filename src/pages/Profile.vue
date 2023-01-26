@@ -211,7 +211,7 @@ onBeforeUnmount(() => {
         <div class="detail">
           <span>{{ profilePosts.length }} 則貼文</span>
           <span>{{ FollowNum }} 人追蹤中</span>
-          <span>{{ profileUser.donatedAmount }} 贊助金額</span>
+          <span>獲得 {{ profileUser.donatedAmount }} 元贊助</span>
         </div>
       </div>
     </div>

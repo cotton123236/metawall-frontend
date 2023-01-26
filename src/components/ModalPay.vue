@@ -34,7 +34,7 @@ const submitPay = async () => {
   const requestData = {
     postId : useModalPayPostId.value,
     amt : amountNumber,
-    description: '贊助貼文'
+    description: '贊助推文者'
   }
 
   const createOrderResult = await postCreateOrder(requestData)
@@ -162,7 +162,7 @@ const reactiveAmount = computed({
       <div class="modal">
         <div class="close-btn" @click="closeModalPay"></div>
         <div class="modal-head">
-          <span>贊助貼文</span>
+          <span>贊助推文者</span>
         </div>
         <div class="modal-body">
           <div class="content">
