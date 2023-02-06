@@ -8,7 +8,7 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 // App
 import App from './App.vue'
-
+// FontAwesomeIcon
 
 const app = createApp(App)
 const aos = AOS.init({

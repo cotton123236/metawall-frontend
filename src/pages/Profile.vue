@@ -1,6 +1,6 @@
 <script setup>
 import { watch } from 'vue'
-import { ref, reactive, onMounted, onBeforeUnmount } from '@vue/runtime-core'
+import { ref, reactive, onMounted, onBeforeUnmount, computed } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from './../stores/postStore'
@@ -52,7 +52,8 @@ const profileUser = reactive({
   nickName: '',
   avatar: '',
   follows: [],
-  likes: []
+  likes: [],
+  donatedAmount: 0
 })
 
 const getProfileUser = async () => {
@@ -109,6 +110,7 @@ onMounted(async () => {
     await checkIsFollow()
   }
 });
+
 
 // 追蹤幾個人
 const FollowNum = ref(0)
@@ -209,6 +211,7 @@ onBeforeUnmount(() => {
         <div class="detail">
           <span>{{ profilePosts.length }} 則貼文</span>
           <span>{{ FollowNum }} 人追蹤中</span>
+          <span>已獲得 {{ profileUser.donatedAmount }} 元贊助</span>
         </div>
       </div>
     </div>
