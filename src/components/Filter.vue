@@ -4,13 +4,15 @@ import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { useFilterStore } from '../stores/filterStores'
 import { appendQuery } from '../utils/utils'
-import { getPostByRoute } from './../api/fetch'
+import { getPostsByRoute, getPostsByIdAndRoute } from './../api/fetch'
 import { usePostStore } from './../stores/postStore'
+import { useModalStore } from '../stores/modalStore'
 
 
 const route = useRoute()
 const filterStore = useFilterStore()
 const postStore = usePostStore()
+const modalStore = useModalStore()
 
 // open and close control
 const filterActive = ref(false)
@@ -29,18 +31,31 @@ onMounted(() => {
 
 // change selected control
 const { filters: datalist } = storeToRefs(filterStore)
-const { patchPosts } = postStore
+const { currentPage, hasNext } = storeToRefs(postStore)
+const { patchPosts, patchProfilePosts } = postStore
+const { openModalAlert } = modalStore
 const selectedIndex = ref(datalist.value.findIndex(item => item.sort === route.query.sort))
 
 const changeSelected = async (li, index) => {
   if (index === selectedIndex.value) return;
+  const { id } = route.params
+  const isProfile = id ? true : false
   const { sort } = li
+  currentPage.value = 1
+  hasNext.value = false
   selectedIndex.value = index
   // push query
   await appendQuery(route, { sort })
   // then get data
-  const { data } = await getPostByRoute(route)
-  patchPosts(data)
+  const { data } = isProfile ? await getPostsByIdAndRoute(id, route, currentPage.value) : await getPostsByRoute(route, currentPage.value)
+  // patch data
+  if (data.status === 'success') {
+    isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
+    hasNext.value = data.data.page.has_next
+  }
+  else {
+    openModalAlert(data.message)
+  }
 }
 
 </script>
@@ -92,7 +107,6 @@ const changeSelected = async (li, index) => {
     font-weight: 300
     color: var(--dark-gray)
     margin: 0 20px
-    background-color: #fff
     cursor: pointer
     transition: box-shadow var(--trans-m)
     .inner
@@ -114,6 +128,8 @@ const changeSelected = async (li, index) => {
     pointer-events: none
     transition: opacity var(--trans-m), transform var(--trans-m), box-shadow var(--trans-m)
     filter: drop-shadow(5px 5px 8px rgba(0, 0, 0, .2))
+    +rwdmax(767)
+      width: 100px
     &::before
       position: absolute
       content: ''
@@ -123,6 +139,9 @@ const changeSelected = async (li, index) => {
       border-width: 0 10px 10px 10px
       border-style: solid
       border-color: transparent transparent #fff transparent
+      +rwdmax(767)
+        top: -8px
+        border-width: 0 8px 8px 8px
     ul
       padding: 5px 0
       border-top: none
@@ -137,6 +156,9 @@ const changeSelected = async (li, index) => {
       padding: 12px 20px
       cursor: pointer
       transition: background-color var(--trans-m)
+      +rwdmax(767)
+        font-size: px(13)
+        padding: 10px
       &:hover
         background-color: var(--dark-white)
       &.active

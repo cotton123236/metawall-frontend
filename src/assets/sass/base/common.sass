@@ -19,6 +19,16 @@ html
       background-color: rgba(108, 110, 113, 1)
       -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3)
 
+.app-bg
+  position: fixed
+  z-index: -1
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background-image: linear-gradient(to bottom, #fafafa, #dce5f0)
+  img
+    +fit
 
 // space-lr
 .space-lr
@@ -38,9 +48,15 @@ html
 
 // headshot
 .headshot
+  display: block
   border-radius: 50%
   overflow: hidden
-  animation: headshotLoading 4s infinite linear
+  animation: headshotLoading 3s infinite linear
+  background-image: linear-gradient(to bottom, #f8f8f8, #ddd, #f8f8f8)
+  background-size: 100% 200%
+  background-position: 0 0
+  img
+    +fit
 
 // no-post
 .no-post
@@ -51,3 +67,83 @@ html
   border: 1px solid var(--dark-white)
   background-color: #fff
   padding: 80px 30px
+
+// is-loading
+.is-loading
+  text-align: center
+  padding: 30px
+
+// editor
+.editor-content
+  .ProseMirror
+    height: 100%
+
+.ProseMirror
+  font-family: $basic-font
+  font-size: px(14)
+  line-height: 1.6
+  letter-spacing: .02em
+  font-weight: 300
+  color: var(--dark-gray)
+  p
+    min-height: 22px
+  h1
+    font-size: px(16)
+    font-weight: 400
+  strong
+    font-weight: 500
+  em
+    font-style: italic
+  ul
+    li
+      display: flex
+      align-items: flex-start
+      &::before
+        content: ''
+        display: inline-block
+        width: 4px
+        height: 4px
+        border-radius: 50%
+        background-color: var(--gray)
+        margin: 9px 5px 9px 5px
+  ol
+    counter-reset: num
+    li
+      display: flex
+      align-items: flex-start
+      &::before
+        content: counters(num, '.', decimal-leading-zero) '.'
+        counter-increment: num
+        font-size: px(12)
+        margin-top: 2px
+        color: var(--gray)
+        margin-right: 5px
+  img
+    width: 100%
+
+// vue transition
+.fade-enter-active,
+.fade-leave-active
+  transition: opacity var(--trans-m)
+
+.fade-enter-from,
+.fade-leave-to
+  opacity: 0
+
+.clip-enter-from,
+.clip-leave-to
+  opacity: 0
+  transition: opacity var(--trans-m) var(--trans-s)
+  .modal
+    opacity: 0
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0)
+    transition: opacity .6s, clip-path .6s
+
+.clip-enter-to,
+.clip-leave-from
+  opacity: 1
+  transition: opacity var(--trans-xl)
+  .modal
+    opacity: 1
+    clip-path: polygon(0 0, 100% 0, 100% 115%, 0 100%)
+    transition: opacity .6s var(--trans-s), clip-path .6s var(--trans-s)
