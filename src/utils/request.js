@@ -7,9 +7,9 @@ const { useModalAlert, useModalAlertText } = storeToRefs(modalStore);
 
 // 判斷環境
 const isDev = import.meta.env.VITE_ENV === 'dev'
-
+const apiUrl = import.meta.env.VITE_API_URL
 const server = axios.create({
-  baseURL: 'http://127.0.0.1:3005'
+  baseURL: apiUrl
 })
 
 /*

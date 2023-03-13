@@ -9,6 +9,8 @@ import { useRoute } from "vue-router";
 import Header from "./../components/Header.vue";
 import Navigation from "./../components/Navigation.vue";
 import ModalPost from "./../components/ModalPost.vue";
+import ModalPay from "./../components/ModalPay.vue";
+import ModalPaid from "./../components/ModalPaid.vue";
 import ModalLoader from "./../components/ModalLoader.vue";
 import ModalFollows from "./../components/ModalFollows.vue";
 import ModalLikes from "./../components/ModalLikes.vue";
@@ -40,6 +42,8 @@ const gerProfile = async () => {
 const modalStore = useModalStore();
 
 const {
+  useModalPaid,
+  useModalPay,
   useModalPost,
   useModalFollows,
   useModalLikes,
@@ -66,6 +70,12 @@ const {
         </div>
       </div>
       <!-- modal -->
+      <Transition name="clip">
+        <ModalPaid v-if="useModalPaid" />
+      </Transition>
+      <Transition name="clip">
+        <ModalPay v-if="useModalPay" />
+      </Transition>
       <Transition name="clip">
         <ModalPost v-if="useModalPost" />
       </Transition>

@@ -269,3 +269,41 @@ export function deleteComment(potIdAndCommentId) {
     method: 'delete'
   })
 }
+
+
+/**
+ * 建立訂單 POST
+ * @export
+ * @param {String} postId 貼文ID
+ * @param {Number} amt 金額
+ * @param {String} description 商品說明
+ * @return {Object} - HTTP request post
+ */
+export function postCreateOrder({
+  postId,
+  amt,
+  description
+}) {
+  return request({
+    url: `${url.payment}/createOrder`,
+    method: 'post',
+    data: {
+      postId,
+      amt,
+      description
+    }
+  })
+}
+
+/**
+ * 取得訂單資訊 GET
+ * @export
+ * @param {String} orderId 訂單ID
+ * @return {Object} - HTTP request get
+ */
+export function getOrderInfo(orderId) {
+  return request({
+    url: `${url.payment}/getOrderInfo/${orderId}`,
+    method: 'get',
+  })
+}
