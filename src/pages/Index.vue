@@ -16,6 +16,7 @@ import ModalFollows from "./../components/ModalFollows.vue";
 import ModalLikes from "./../components/ModalLikes.vue";
 import ModalDeletePost from "./../components/ModalDeletePost.vue";
 import ModalDeleteComment from "./../components/ModalDeleteComment.vue";
+import Chatroom from "./../components/Chatroom.vue";
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -93,6 +94,7 @@ const {
       </Transition>
     </main>
   </div>
+  <Chatroom/>
 </template>
 
 <style lang="sass">
@@ -119,5 +121,6 @@ main
     +rwdmax(900)
       width: 0
     //   display: none
+
 
 </style>
