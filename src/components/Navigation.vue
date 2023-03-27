@@ -1,4 +1,5 @@
 <script setup>
+import ChatSidebar from "./../components/ChatSidebar.vue";
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 
@@ -37,6 +38,7 @@ const {
       </li>
     </ul>
   </nav>
+  <chat-sidebar></chat-sidebar>
 </template>
 
 <style lang="sass">
