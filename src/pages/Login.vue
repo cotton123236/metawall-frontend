@@ -16,6 +16,9 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 // img
 import LogoLarge from "./../assets/image/logo-large.svg";
 import googleLogo from "./../assets/image/google-logo.png";
+import discordLogo from './../assets/image/discord-logo.svg';
+import facebookLogo from './../assets/image/facebook-logo.svg';
+import lineLogo from './../assets/image/line-logo.svg';
 import loginBg from "./../assets/image/login-bg.png";
 import rock_01 from "./../assets/image/rock-01.svg";
 import rock_02 from "./../assets/image/rock-02.svg";
@@ -28,10 +31,18 @@ const userStore = useUserStore();
 const modalStore = useModalStore();
 const { patchUser } = userStore;
 const { openModalLoader, closeModalLoader, openModalAlert } = modalStore;
-const { VITE_GOOGLE_OAUTH_LOGIN_URL } = import.meta.env;
+const { 
+  VITE_GOOGLE_OAUTH_LOGIN_URL,
+  VITE_DISCORD_OAUTH_LOGIN_URL,
+  VITE_LINE_OAUTH_LOGIN_URL,
+  VITE_FACEBOOK_OAUTH_LOGIN_URL,
+} = import.meta.env;
 
 // oauth Login URL
 const googleOAuthLoginURL = VITE_GOOGLE_OAUTH_LOGIN_URL;
+const discordOAuthLoginURL = VITE_DISCORD_OAUTH_LOGIN_URL;
+const lineOAuthLoginURL = VITE_LINE_OAUTH_LOGIN_URL;
+const facebookOAuthLoginURL = VITE_FACEBOOK_OAUTH_LOGIN_URL;
 // 錯誤訊息
 const errorMessage = reactive({
   nickName: "",
@@ -416,10 +427,20 @@ const onChangePassword = async () => {
               </div>
               <div class="rect-btn signup-btn" @click="slideNext">註冊</div>
               <div class="line">or</div>
-              <a class="rect-btn" :href="googleOAuthLoginURL">
-                <img class="google-logo" :src="googleLogo" alt="" />
-                Login with Google
-              </a>
+              <div class="third-party">
+                <a :href="discordOAuthLoginURL">
+                  <img class="discord-logo" :src="discordLogo" alt="" />
+                </a>
+                <a :href="lineOAuthLoginURL">
+                  <img class="line-logo" :src="lineLogo" alt="" />
+                </a>
+                <a :href="googleOAuthLoginURL">
+                  <img class="google-logo" :src="googleLogo" alt="" />
+                </a>
+                <a :href="facebookOAuthLoginURL">
+                  <img class="facebook-logo" :src="facebookLogo" alt="" />
+                </a>
+              </div> 
             </form>
             <div class="forget-password-warp">
               <a class="forget-password-link text-primary-blue text-primary-blue-light--hover link-underline--hover" @click="slideTo(3)">忘記密碼</a>
@@ -431,7 +452,6 @@ const onChangePassword = async () => {
             <form>
               <label class="form-row" :data-warning="errorMessage.email">
                 <input
-                  id="signup-email"
                   type="text"
                   required
                   v-model.trim="registerForm.email"
@@ -440,7 +460,6 @@ const onChangePassword = async () => {
               </label>
               <label class="form-row" :data-warning="errorMessage.password">
                 <input
-                  id="signup-password"
                   type="password"
                   required
                   v-model.trim="registerForm.password"
@@ -466,11 +485,20 @@ const onChangePassword = async () => {
               </div>
               <div class="rect-btn login-btn" @click="slidePrev">登入</div>
               <div class="line">or</div>
-              <a class="rect-btn" :href="googleOAuthLoginURL">
-                <img class="google-logo" :src="googleLogo" alt="" />
-                Sign up with Google
-              </a>
-              
+              <div class="third-party">
+                <a :href="discordOAuthLoginURL">
+                  <img class="discord-logo" :src="discordLogo" alt="" />
+                </a>
+                <a :href="lineOAuthLoginURL">
+                  <img class="line-logo" :src="lineLogo" alt="" />
+                </a>
+                <a :href="googleOAuthLoginURL">
+                  <img class="google-logo" :src="googleLogo" alt="" />
+                </a>
+                <a :href="facebookOAuthLoginURL">
+                  <img class="facebook-logo" :src="facebookLogo" alt="" />
+                </a>
+              </div>              
             </form>
           </swiper-slide>
           <!-- sign-up name -->
@@ -479,7 +507,6 @@ const onChangePassword = async () => {
             <form>
               <label class="form-row" :data-warning="errorMessage.nickName">
                 <input
-                  id="signup-name"
                   type="text"
                   required
                   @keydown.tab.prevent
@@ -498,7 +525,6 @@ const onChangePassword = async () => {
             <form>
               <label class="form-row" :data-warning="errorMessage.email">
                 <input
-                  id="signup-name"
                   type="text"
                   required
                   @keydown.tab.prevent
@@ -518,7 +544,6 @@ const onChangePassword = async () => {
             <form>
               <label class="form-row" :data-warning="errorMessage.verificationCode">
                 <input
-                  id="signup-name"
                   type="text"
                   required
                   @keydown.tab.prevent
@@ -536,7 +561,6 @@ const onChangePassword = async () => {
             <form>
               <label class="form-row" :data-warning="errorMessage.newPassword">
                 <input
-                  id="signup-email"
                   type="password"
                   required
                   v-model.trim="changePasswordForm.newPassword"
@@ -545,7 +569,6 @@ const onChangePassword = async () => {
               </label>
               <label class="form-row" :data-warning="errorMessage.confirmNewPassword">
                 <input
-                  id="signup-password"
                   type="password"
                   required
                   v-model.trim="changePasswordForm.confirmNewPassword"
@@ -651,6 +674,16 @@ main
     line-height: 1.5
     color: var(--warning)
     font-size: 0.875rem
+  .third-party
+    display: flex
+    justify-content: space-evenly
+    align-items: center
+    a
+      padding: 5px
+      &:hover
+        outline: 1px solid var(--primary-blue-light)
+    img
+      width: 50px
   .rect-btn
     margin-top: 20px
     & + .rect-btn

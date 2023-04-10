@@ -41,6 +41,21 @@ const router = createRouter({
           window.location.search = ''
           window.location.replace(`${window.location.origin}${window.location.pathname}`)
         }
+        if (urlParams.get('from') === 'discord') {
+          await checkThirdPartyLogin.discord()
+          window.location.search = ''
+          window.location.replace(`${window.location.origin}${window.location.pathname}`)
+        }
+        if (urlParams.get('from') === 'line') {
+          await checkThirdPartyLogin.line()
+          window.location.search = ''
+          window.location.replace(`${window.location.origin}${window.location.pathname}`)
+        }
+        if (urlParams.get('from') === 'facebook') {
+          await checkThirdPartyLogin.facebook()
+          window.location.search = ''
+          window.location.replace(`${window.location.origin}${window.location.pathname}`)
+        }
       }
     }
   ]
