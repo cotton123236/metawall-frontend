@@ -427,10 +427,6 @@ const onChangePassword = async () => {
               </div>
               <div class="rect-btn signup-btn" @click="slideNext">註冊</div>
               <div class="line">or</div>
-              <a class="rect-btn" :href="googleOAuthLoginURL">
-                <img class="google-logo" :src="googleLogo" alt="" />
-                Login with Google
-              </a>             
               <div class="third-party">
                 <a :href="discordOAuthLoginURL">
                   <img class="discord-logo" :src="discordLogo" alt="" />
@@ -489,10 +485,6 @@ const onChangePassword = async () => {
               </div>
               <div class="rect-btn login-btn" @click="slidePrev">登入</div>
               <div class="line">or</div>
-              <!-- <a class="rect-btn" :href="googleOAuthLoginURL">
-                <img class="google-logo" :src="googleLogo" alt="" />
-                Sign up with Google
-              </a> -->
               <div class="third-party">
                 <a :href="discordOAuthLoginURL">
                   <img class="discord-logo" :src="discordLogo" alt="" />
