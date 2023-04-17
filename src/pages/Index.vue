@@ -1,19 +1,56 @@
 <script setup>
-import { ref } from '@vue/runtime-core'
-import { storeToRefs } from 'pinia'
-import { useModalStore } from '../stores/modalStore'
-import Header from './../components/Header.vue'
-import Navigation from './../components/Navigation.vue'
-import ModalPost from './../components/ModalPost.vue'
-import ModalLoader from './../components/ModalLoader.vue'
-import ModalFollows from './../components/ModalFollows.vue'
-import ModalLikes from './../components/ModalLikes.vue'
+import { onMounted } from "@vue/runtime-core";
+import { storeToRefs } from "pinia";
+import { useModalStore } from "../stores/modalStore";
+import { getMyProfile } from "./../api/fetch";
+import { useUserStore } from "./../stores/userStore";
+import { useRoute } from "vue-router";
+// components
+import Header from "./../components/Header.vue";
+import Navigation from "./../components/Navigation.vue";
+import ModalPost from "./../components/ModalPost.vue";
+import ModalPay from "./../components/ModalPay.vue";
+import ModalPaid from "./../components/ModalPaid.vue";
+import ModalLoader from "./../components/ModalLoader.vue";
+import ModalFollows from "./../components/ModalFollows.vue";
+import ModalLikes from "./../components/ModalLikes.vue";
+import ModalDeletePost from "./../components/ModalDeletePost.vue";
+import ModalDeleteComment from "./../components/ModalDeleteComment.vue";
+import Chatroom from "./../components/Chatroom.vue";
 
+const route = useRoute();
+const userStore = useUserStore();
+const { patchUser } = userStore;
+
+// 若姓名沒資料，則打 api 取得
+onMounted(() => {
+  if (!userStore.name) {
+    gerProfile();
+  }
+});
+const gerProfile = async () => {
+  const { data } = await getMyProfile();
+  if (data.status === "success") {
+    patchUser({
+      _id: data.data._id,
+      name: data.data.nickName,
+      image: data.data.hasOwnProperty("avatar") ? data.data.avatar : "",
+    });
+  }
+};
 
 // ModalPost control
-const modalStore = useModalStore()
+const modalStore = useModalStore();
 
-const { useModalPost, useModalFollows, useModalLikes, useModalLoader } = storeToRefs(modalStore)
+const {
+  useModalPaid,
+  useModalPay,
+  useModalPost,
+  useModalFollows,
+  useModalLikes,
+  useModalDeletePost,
+  useModalDeleteComment
+} = storeToRefs(modalStore);
 
 </script>
 
@@ -30,10 +67,16 @@ const { useModalPost, useModalFollows, useModalLikes, useModalLoader } = storeTo
         </div>
         <!-- view -->
         <div class="main-view">
-          <router-view></router-view>
+          <router-view :key="route.path"></router-view>
         </div>
       </div>
       <!-- modal -->
+      <Transition name="clip">
+        <ModalPaid v-if="useModalPaid" />
+      </Transition>
+      <Transition name="clip">
+        <ModalPay v-if="useModalPay" />
+      </Transition>
       <Transition name="clip">
         <ModalPost v-if="useModalPost" />
       </Transition>
@@ -41,16 +84,17 @@ const { useModalPost, useModalFollows, useModalLikes, useModalLoader } = storeTo
         <ModalFollows v-if="useModalFollows" />
       </Transition>
       <Transition name="clip">
-        <ModalFollows v-if="useModalFollows" />
-      </Transition>
-      <Transition name="clip">
         <ModalLikes v-if="useModalLikes" />
       </Transition>
-      <Transition name="fade">
-        <ModalLoader v-if="useModalLoader" />
+      <Transition name="clip">
+        <ModalDeletePost v-if="useModalDeletePost" />
+      </Transition>
+      <Transition name="clip">
+        <ModalDeleteComment v-if="useModalDeleteComment" />
       </Transition>
     </main>
   </div>
+  <Chatroom/>
 </template>
 
 <style lang="sass">
@@ -59,6 +103,8 @@ const { useModalPost, useModalFollows, useModalLikes, useModalLoader } = storeTo
 // main
 main
   padding-top: 85px
+  +rwdmax(900)
+    padding-bottom: 50px
 
   .main-content
     display: flex
@@ -76,30 +122,5 @@ main
       width: 0
     //   display: none
 
-.fade-enter-active,
-.fade-leave-active
-  transition: opacity var(--trans-m)
-
-.fade-enter-from,
-.fade-leave-to
-  opacity: 0
-
-.clip-enter-from,
-.clip-leave-to
-  opacity: 0
-  transition: opacity var(--trans-m) var(--trans-s)
-  .modal
-    opacity: 0
-    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0)
-    transition: opacity .6s, clip-path .6s
-
-.clip-enter-to,
-.clip-leave-from
-  opacity: 1
-  transition: opacity var(--trans-xl)
-  .modal
-    opacity: 1
-    clip-path: polygon(0 0, 100% 0, 100% 115%, 0 100%)
-    transition: opacity .6s var(--trans-s), clip-path .6s var(--trans-s)
 
 </style>

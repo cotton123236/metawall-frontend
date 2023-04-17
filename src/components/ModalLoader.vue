@@ -1,4 +1,9 @@
 <script setup>
+import { storeToRefs } from 'pinia'
+import { useModalStore } from './../stores/modalStore'
+
+const modalStore = useModalStore()
+const { useModalLoaderText } = storeToRefs(modalStore)
 </script>
 
 <template>
@@ -11,7 +16,7 @@
             <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite"/>
           </path>
         </svg>
-        <span>發佈中</span>
+        <span v-if="useModalLoaderText">{{ useModalLoaderText }}</span>
       </div>
     </div>
   </div>
