@@ -15,7 +15,6 @@ export class Socket {
       this.token = localStorage.getItem('token')
       this.socket = this.connectSocketServer(this.token);
       this.initSocketMethod();
-      this.joinRoom();
       this.socketStore = socketStore;
     } catch (error) {
       console.log(error);
@@ -27,12 +26,13 @@ export class Socket {
     this.socket.emit("getChatroomList", {});
   }
 
-  getMessages() {
+  getMessages(roomId) {
     this.socket.emit('getMessages', {
-      roomId: this.roomId,
+      roomId: roomId,
     });
   }
   addUser(userId,roomId) {
+    console.log("addUser");
     this.socket.emit('addUserInRoom', { roomId: roomId, userId: userId});
   }
 
@@ -52,15 +52,15 @@ export class Socket {
     this.socket.emit('getUserList', {});
   }
 
-  joinRoom() {
+  joinRoom(chatroom) {
+    console.log("chatroom",chatroom);
     const data = {
-      roomId: this.roomId,
+      roomId: chatroom._id,
     };
-    this.socket.emit('getUserInfo', { token: this.token });
+    // this.socket.emit('getUserInfo', { token: this.token });
     console.log('getUserInfo');
     this.socket.emit('joinRoom', data);
-    this.socket.emit('sendJoinRoomMessage', data);
-    this.getParticipantList();
+
     // getUserList();
   }
 
@@ -74,8 +74,28 @@ export class Socket {
     this.socket.emit('chat', data);
   }
 
-  getParticipantList() {
-    this.socket.emit('getParticipantList', { roomId: this.roomId });
+  getParticipantList(roomId) {
+    this.socket.emit('getParticipantList', { roomId: roomId });
+  }
+
+  setParticipantList(participants) {
+    this.socketStore.chatroomList.participants = participants
+    // participants.forEach(participant => {
+    //   console.log("loop user list");
+    //   const participantElement = document.createElement("li");
+    //   let innerHtml = /*html*/ `
+    //       <li class="p-2">
+    //         <div class="d-flex justify-content-between align-items-center border border-1 rounded-2 p-2">
+    //           <p font="noto" class="lh-base ms-4 mb-0">${participant.nickName}</p>
+    //         </li>
+    //         `;
+    //   participantElement.innerHTML = innerHtml;
+    //   participantListElement.append(participantElement);
+    // });
+  }
+
+  appendMessage(chatMessage){
+    this.socketStore.addChatMessage(chatMessage);
   }
 
   initSocketMethod() {
@@ -120,15 +140,12 @@ export class Socket {
     this.socket.on('showMessage', (chatMessage) => {
       console.log('showMessage', chatMessage);
       this.appendMessage(chatMessage);
-      this.scrollToBottom(messageContainer);
+      // this.scrollToBottom(messageContainer);
     });
 
     this.socket.on('getMessagesResponse', (chatMessages) => {
       console.log('chatMessages', chatMessages);
-
-      chatMessages.forEach((chatMessage) => {
-        this.appendMessage(chatMessage);
-      });
+      this.socketStore.chatMessages = chatMessages
     });
 
     this.socket.on('getUserListResponse', (userList) => {
@@ -160,6 +177,14 @@ export class Socket {
       this.setParticipantList(conversation.participants);
       this.getUserList();
     });
+
+    this.socket.on('joinRoomSuccess',(conversation)=>{
+      console.log("joinRoomSuccess", conversation);
+      this.socketStore.connectedChatroom=conversation
+      this.socket.emit('sendJoinRoomMessage', {roomId:conversation._id});
+      this.getParticipantList(conversation._id);
+      this.getMessages(conversation._id);
+    })
   }
 }
 

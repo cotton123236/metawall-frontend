@@ -9,9 +9,6 @@ const mySocketStore = socketStore();
 const socket = inject("socket");
 const message = ref('');
 
-const connect = () => {
-  // init()
-};
 const getChatInfo = () => {
   socket.getChatroomList();
   socket.getUserList();
@@ -21,19 +18,24 @@ const localSendMessage = () => {
   socket.sendMessage(userStore._id, '123123', message.value);
   message.value = '';
 };
+
+const addUserToRoom = (userId) => {
+  console.log("addUserToRoom",userId);
+  socket.addUser(userId,mySocketStore.connectedChatroom._id)
+}
 </script>
 
 <template>
   <div>
-    <button @click="connect()">連線聊天室</button>
     <button @click="getChatInfo()">取得聊天室資訊</button>
     <input type="text" v-model="message" />
     <button @click="localSendMessage()">送信</button>
     <ul class="chat-media mb-3">
       <h3 class="chat-media-header">聊天室</h3>
       <li v-for="chatroom in mySocketStore.chatroomList" :key="chatroom._id">
-        <div class="chat-media-item p-3">
+        <div class="chat-media-item justify-between items-center d-flex p-3">
           <p class="">{{ chatroom.displayName }}</p>
+          <button @click="socket.joinRoom(chatroom)">連線聊天室</button>
         </div>
       </li>
     </ul>
@@ -46,14 +48,18 @@ const localSendMessage = () => {
           <div class="headshot">
             <img v-if="user?.avatar" :src="user.avatar" alt="user-photo" />
           </div>
-          <p :class="{ 'hidden': user.userStatus==='offline' }" class="chat-media-item-content-online">{{ user.nickName }}</p>
-          <p :class="{ 'hidden': user.userStatus==='online' }" class="chat-media-item-content-offline">{{ user.nickName }}</p>
+          <div class="position-relvate">
+            <p :class="{ 'hidden': user.userStatus==='offline' }" class="chat-media-item-content-online">{{ user.nickName }}</p>
+            <p :class="{ 'hidden': user.userStatus==='online' }" class="chat-media-item-content-offline">{{ user.nickName }}</p>
+          </div>
+          <button class="" @click="addUserToRoom(user._id)">邀請</button>
         </div>
       </li>
     </ul>
   </div>
 </template>
 <style lang="scss" scoped>
+
 .hidden {
   display: none;
 }
