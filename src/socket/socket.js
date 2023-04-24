@@ -1,7 +1,8 @@
 
 
 import { io } from "socket.io-client";
-const URL = "http://localhost:3010";
+const { VITE_API_URL } = import.meta.env
+const URL = VITE_API_URL;
 import { socketStore } from '../stores/socketStores';
 export class Socket {
   socketStore = null;
