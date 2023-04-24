@@ -8,16 +8,16 @@ const mySocketStore = socketStore();
 
 const socket = inject("socket");
 const message = ref('');
+const chatroomName = ref('');
 
 const getChatInfo = () => {
   socket.getChatroomList();
   socket.getUserList();
 };
 
-const localSendMessage = () => {
-  socket.sendMessage(userStore._id, '123123', message.value);
-  message.value = '';
-};
+const createChatroom = () => {
+  socket.createChatroom(chatroomName.value);
+}
 
 const addUserToRoom = (userId) => {
   console.log("addUserToRoom",userId);
@@ -27,9 +27,11 @@ const addUserToRoom = (userId) => {
 
 <template>
   <div>
+    <div>
+      <input type="text" v-model="chatroomName" />
+      <button @click="createChatroom()">建立聊天室</button>
+    </div>
     <button @click="getChatInfo()">取得聊天室資訊</button>
-    <input type="text" v-model="message" />
-    <button @click="localSendMessage()">送信</button>
     <ul class="chat-media mb-3">
       <h3 class="chat-media-header">聊天室</h3>
       <li v-for="chatroom in mySocketStore.chatroomList" :key="chatroom._id">

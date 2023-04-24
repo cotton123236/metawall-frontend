@@ -20,6 +20,11 @@ export class Socket {
       console.log(error);
     }
   }
+  createChatroom(roomName){
+    this.socket.emit("createChatroom", {
+      displayName: roomName,
+    });
+  }
 
   getChatroomList() {
     console.log("do getChatroomList");
@@ -101,7 +106,7 @@ export class Socket {
   initSocketMethod() {
     console.log('socket', this.socket);
     this.socket.on("getChatroomListRequest", data=>{
-      socket.emit("getChatroomList", {});
+      this.socket.emit("getChatroomList", {});
     });
   
     this.socket.on("getChatroomListResponse", userInfo => {
