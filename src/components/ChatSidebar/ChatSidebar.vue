@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue-demi';
-import { useUserStore } from './../stores/userStore';
-import { socketStore } from './../stores/socketStores';
+import { useUserStore } from './../../stores/userStore';
+import { socketStore } from './../../stores/socketStores';
+import ChatRoomDropDown from "./ChatRoomDropDown.vue";
 import {inject } from "vue";
 const userStore = useUserStore();
 const mySocketStore = socketStore();
@@ -9,7 +10,7 @@ const mySocketStore = socketStore();
 const socket = inject("socket");
 const message = ref('');
 const chatroomName = ref('');
-
+const selectedChatroomIndex = ref(-1);
 const getChatInfo = () => {
   socket.getChatroomList();
   socket.getUserList();
@@ -23,6 +24,12 @@ const addUserToRoom = (userId) => {
   console.log("addUserToRoom",userId);
   socket.addUser(userId,mySocketStore.connectedChatroom._id)
 }
+
+const joinRoom = (chatRoom,index) => {
+  selectedChatroomIndex.value = index;
+  console.log(selectedChatroomIndex.value);
+  socket.joinRoom(chatRoom)
+}
 </script>
 
 <template>
@@ -34,10 +41,11 @@ const addUserToRoom = (userId) => {
     <button @click="getChatInfo()">取得聊天室資訊</button>
     <ul class="chat-media mb-3">
       <h3 class="chat-media-header">聊天室</h3>
-      <li v-for="chatroom in mySocketStore.chatroomList" :key="chatroom._id">
-        <div class="chat-media-item justify-between items-center d-flex p-3">
+      <li v-for="(chatroom, index) in mySocketStore.chatroomList" :key="chatroom._id">
+        <div :class="{ 'chat-media-item-active': selectedChatroomIndex=== index}" class="chat-media-item justify-between items-center d-flex p-3 mb-2" @dblclick="joinRoom(chatroom,index)">
           <p class="">{{ chatroom.displayName }}</p>
-          <button @click="socket.joinRoom(chatroom)">連線聊天室</button>
+          <p v-show="selectedChatroomIndex=== index" >連線中...</p>
+          <ChatRoomDropDown></ChatRoomDropDown>
         </div>
       </li>
     </ul>
@@ -67,6 +75,10 @@ const addUserToRoom = (userId) => {
 }
 .p-3 {
   padding: 16px;
+}
+
+.mb-2 {
+  margin-bottom: 8px;
 }
 .mb-3 {
   margin-bottom: 16px;
@@ -120,6 +132,12 @@ const addUserToRoom = (userId) => {
   display: flex;
   align-items: center;
   cursor: pointer;
+}
+
+.chat-media-item-active {
+  background: rgba(7, 140, 235, 0.4);
+  border-radius: 8px;
+  box-shadow: 1px 2px 1px #869489;
 }
 
 .chat-media-item:hover {

@@ -1,5 +1,5 @@
 <script setup>
-import ChatSidebar from "./../components/ChatSidebar.vue";
+import ChatSidebar from "./../components/ChatSidebar/ChatSidebar.vue";
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 
