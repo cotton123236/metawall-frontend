@@ -50,7 +50,7 @@ const joinRoom = (chatRoom,index) => {
       </li>
     </ul>
   </div>
-  <div class="chat-media">
+  <div class="chat-media"  data-aos="clip-left">
     <h3 class="chat-media-header">用戶</h3>
     <ul>
       <li v-for="user in mySocketStore.userList" :key="user._id">

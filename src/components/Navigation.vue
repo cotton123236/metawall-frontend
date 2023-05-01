@@ -1,8 +1,10 @@
 <script setup>
+import { ref } from 'vue-demi';
 import ChatSidebar from "./../components/ChatSidebar/ChatSidebar.vue";
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 
+const isShowChartSidebar = ref(false)
 
 const userStore = useUserStore()
 const modalStore = useModalStore()
@@ -12,6 +14,10 @@ const {
   openModalFollows,
   openModalLikes
 } = modalStore
+
+const openChatSidebar = () =>{
+  isShowChartSidebar.value = true
+}
 
 </script>
 
@@ -36,9 +42,15 @@ const {
         <i class="icon-like"></i>
         <span>收藏文章</span>
       </li>
+      <li @click="openChatSidebar">
+        <i class="icon-like"></i>
+        <span>聊天室</span>
+      </li>
     </ul>
   </nav>
-  <chat-sidebar></chat-sidebar>
+  <div v-if="isShowChartSidebar">
+    <chat-sidebar></chat-sidebar>
+  </div>
 </template>
 
 <style lang="sass">
