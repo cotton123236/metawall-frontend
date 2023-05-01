@@ -21,6 +21,13 @@ export class Socket {
       console.log(error);
     }
   }
+  setOnlineStatus(){
+    this.socket.emit("setOnlineStatus", {  });
+  }
+  setOfflineStatus(){
+    this.socket.emit("setOfflineStatus", {  });
+  }
+
   createChatroom(roomName){
     this.socket.emit("createChatroom", {
       displayName: roomName,
@@ -104,8 +111,27 @@ export class Socket {
     this.socketStore.addChatMessage(chatMessage);
   }
 
+  patchUserList(updatedUser){
+    const updatedList = this.socketStore.userList.map(user => {
+      if (user._id === updatedUser._id) {
+        return {...user, ...updatedUser};
+      } else {
+        return user;
+      }
+    });
+  
+    return updatedList;
+  }
+
   initSocketMethod() {
     console.log('socket', this.socket);
+    this.socket.on("connect", () => {
+      console.log("connected", this.socket.connected); // true
+      if(!this.socket.connected){
+        socket.close();
+      }
+    });
+
     this.socket.on("getChatroomListRequest", data=>{
       this.socket.emit("getChatroomList", {});
     });
@@ -116,37 +142,17 @@ export class Socket {
       if (userInfo.conversations) {
         this.socketStore.chatroomList = userInfo.conversations
         console.log(userInfo.conversations)
-        // TODO 下次實現這裡顯示
-        // userInfo.conversations.forEach((conversation, index) => {
-        //   console.log("loop");
-        //   const li = document.createElement("li");
-        //   let innerHtml = "";
-        //   innerHtml += /*html*/ `
-        //   <div class="border border-1 border-dark rounded-2 p-4 mt-3">
-        //     <div class="row">
-        //       <div class="room-container  d-flex justify-content-between align-content-center ">
-        //         <h5 font="noto" class="d-flex align-content-center mb-0 lh-base">${conversation.displayName}</h5>
-        //         <button class="btn btn-warning" onclick="goChatPage(${index})">進入</button>
-        //       </div>
-        //     </div>
-        //   `;
-        //   innerHtml +=
-        //     /*html*/ `<div class="row"><div class="col-1">` +
-        //     createNameTags(conversation.participants) +
-        //     /*html*/ `</div></div></div>`;
-  
-        //   innerHtml +=`<input type="text" name="CONVERSATION_ID_${index}" value="${conversation._id}" hidden>`;
-        //   li.innerHTML = innerHtml;
-        //   chatroomListEl.appendChild(li);
-        // });
       }
-  
-      // appendMessage(data);
     });
     this.socket.on('showMessage', (chatMessage) => {
       console.log('showMessage', chatMessage);
       this.appendMessage(chatMessage);
       // this.scrollToBottom(messageContainer);
+    });
+
+    this.socket.on('updateUserStatusResponse', (updatedUser) => {
+      console.log('updateUserStatusResponse', updatedUser);
+      this.socketStore.userList = this.patchUserList(updatedUser)
     });
 
     this.socket.on('getMessagesResponse', (chatMessages) => {
@@ -198,7 +204,7 @@ export const socketPlugin = {
   install: (app, options) => {
     const socketStoreInstance = socketStore();
     const socket = new Socket(socketStoreInstance);
-
+    socket.setOnlineStatus();
     app.config.globalProperties.$socket = socket;
   }
 };
