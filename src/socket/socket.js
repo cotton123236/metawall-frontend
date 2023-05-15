@@ -150,9 +150,9 @@ export class Socket {
       // this.scrollToBottom(messageContainer);
     });
 
-    this.socket.on('updateUserStatusResponse', (updatedUser) => {
-      console.log('updateUserStatusResponse', updatedUser);
-      this.socketStore.userList = this.patchUserList(updatedUser)
+    this.socket.on('updateUserStatusResponse', (response) => {
+      console.log('updateUserStatusResponse', response);
+      this.socketStore.userList = this.patchUserList(response.data)
     });
 
     this.socket.on('getMessagesResponse', (response) => {
@@ -177,6 +177,15 @@ export class Socket {
       this.getUserList();
     });
 
+    this.socket.on('leaveChatroomResponse', (data) => {
+      console.log('leaveChatroomResponse', data);
+      this.getChatroomList();
+    });
+    this.socket.on('addUserInRoomResponse', (data) => {
+      console.log('addUserInRoomResponse', data);
+      // this.getChatroomList();
+    });
+
     this.socket.on('getUserInfoResponse', (userInfo) => {
       console.log('getUserInfoResponse');
       this.userInfo = userInfo;
@@ -196,6 +205,10 @@ export class Socket {
       this.socket.emit('sendJoinRoomMessage', {roomId:conversation._id});
       this.getParticipantList(conversation._id);
       this.getMessages(conversation._id);
+    })
+
+    this.socket.on('error',(data)=>{
+      console.log(data);
     })
   }
 }
