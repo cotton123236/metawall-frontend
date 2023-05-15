@@ -1,5 +1,9 @@
 <script setup>
-
+import { inject } from "vue";
+const socket = inject("socket");
+const props = defineProps({
+  chatroom: Object,
+})
 </script>
 <template>
   <div class="more">
@@ -9,13 +13,7 @@
         <div class="more-list">
           <ul>
             <li>
-              <a>個人檔案</a>
-            </li>
-            <li>
-              <a href="javascript:;" @click="null">編輯貼文</a>
-            </li>
-            <li>
-              <a href="javascript:;" @click="null">刪除貼文</a>
+              <a href="javascript:;" @click="socket.leaveChatroom(chatroom._id)">離開聊天室</a>
             </li>
           </ul>
         </div>
@@ -48,7 +46,7 @@
       top: calc(100% + 8px)
       left: 50%
       transform: translate(-50%, -10px)
-      width: 90px
+      width: 120px
       filter: drop-shadow(3px 3px 5px rgba(0, 0, 0, 0.2))
       opacity: 0
       pointer-events: none

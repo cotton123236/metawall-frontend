@@ -91,6 +91,12 @@ export class Socket {
     this.socket.emit('getParticipantList', { roomId: roomId });
   }
 
+  leaveChatroom(roomId){
+    this.socket.emit("leaveChatroom", {
+      roomId
+    });
+  }
+
   setParticipantList(participants) {
     this.socketStore.chatroomList.participants = participants
     // participants.forEach(participant => {
@@ -112,6 +118,7 @@ export class Socket {
   }
 
   patchUserList(updatedUser){
+    console.log("updatedUser",updatedUser);
     const updatedList = this.socketStore.userList.map(user => {
       if (user._id === updatedUser._id) {
         return {...user, ...updatedUser};
