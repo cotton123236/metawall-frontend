@@ -167,9 +167,9 @@ export class Socket {
       this.socketStore.chatMessages = response.data
     });
 
-    this.socket.on('getUserListResponse', (userList) => {
-      console.log('getUserListResponse', userList);
-      this.socketStore.userList = userList
+    this.socket.on('getUserListResponse', (response) => {
+      console.log('getUserListResponse', response);
+      this.socketStore.userList = response.data
       // this.appendUser(userList);
     });
 
