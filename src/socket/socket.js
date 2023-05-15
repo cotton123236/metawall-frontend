@@ -155,9 +155,9 @@ export class Socket {
       this.socketStore.userList = this.patchUserList(updatedUser)
     });
 
-    this.socket.on('getMessagesResponse', (chatMessages) => {
-      console.log('chatMessages', chatMessages);
-      this.socketStore.chatMessages = chatMessages
+    this.socket.on('getMessagesResponse', (response) => {
+      console.log('chatMessages', response);
+      this.socketStore.chatMessages = response.data
     });
 
     this.socket.on('getUserListResponse', (userList) => {
