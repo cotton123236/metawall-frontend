@@ -9,6 +9,7 @@ import { useRoute } from "vue-router";
 import Header from "./../components/Header.vue";
 import Navigation from "./../components/Navigation.vue";
 import ModalPost from "./../components/ModalPost.vue";
+import ModalCreateChatroom from "./../components/ModalCreateChatroom.vue";
 import ModalPay from "./../components/ModalPay.vue";
 import ModalPaid from "./../components/ModalPaid.vue";
 import ModalLoader from "./../components/ModalLoader.vue";
@@ -49,9 +50,9 @@ const {
   useModalFollows,
   useModalLikes,
   useModalDeletePost,
-  useModalDeleteComment
+  useModalDeleteComment,
+  useModelCreateChatroom,
 } = storeToRefs(modalStore);
-
 </script>
 
 <template>
@@ -92,9 +93,12 @@ const {
       <Transition name="clip">
         <ModalDeleteComment v-if="useModalDeleteComment" />
       </Transition>
+      <Transition name="clip">
+        <ModalCreateChatroom v-if="useModelCreateChatroom" />
+      </Transition>
     </main>
   </div>
-  <Chatroom/>
+  <Chatroom />
 </template>
 
 <style lang="sass">
@@ -121,6 +125,4 @@ main
     +rwdmax(900)
       width: 0
     //   display: none
-
-
 </style>
