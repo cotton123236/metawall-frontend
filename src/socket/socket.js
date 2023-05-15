@@ -206,12 +206,12 @@ export class Socket {
       this.getUserList();
     });
 
-    this.socket.on('joinRoomSuccess',(conversation)=>{
-      console.log("joinRoomSuccess", conversation);
-      this.socketStore.connectedChatroom=conversation
-      this.socket.emit('sendJoinRoomMessage', {roomId:conversation._id});
-      this.getParticipantList(conversation._id);
-      this.getMessages(conversation._id);
+    this.socket.on('joinRoomResponse',(response)=>{
+      console.log("joinRoomResponse", response);
+      this.socketStore.connectedChatroom=response.data
+      this.socket.emit('sendJoinRoomMessage', {roomId:response.data._id});
+      this.getParticipantList(response.data._id);
+      this.getMessages(response.data._id);
     })
 
     this.socket.on('error',(data)=>{
