@@ -98,19 +98,7 @@ export class Socket {
   }
 
   setParticipantList(participants) {
-    this.socketStore.chatroomList.participants = participants
-    // participants.forEach(participant => {
-    //   console.log("loop user list");
-    //   const participantElement = document.createElement("li");
-    //   let innerHtml = /*html*/ `
-    //       <li class="p-2">
-    //         <div class="d-flex justify-content-between align-items-center border border-1 rounded-2 p-2">
-    //           <p font="noto" class="lh-base ms-4 mb-0">${participant.nickName}</p>
-    //         </li>
-    //         `;
-    //   participantElement.innerHTML = innerHtml;
-    //   participantListElement.append(participantElement);
-    // });
+    this.socketStore.chatroomList.participants = participants;
   }
 
   appendMessage(chatMessage){
@@ -139,21 +127,21 @@ export class Socket {
       }
     });
 
-    this.socket.on("getChatroomListRequest", data=>{
+    this.socket.on("getChatroomListRequest", response=>{
       this.socket.emit("getChatroomList", {});
     });
   
-    this.socket.on("getChatroomListResponse", userInfo => {
-      console.log("getChatroomListResponse", userInfo);
-      console.log(userInfo.conversations);
-      if (userInfo.conversations) {
-        this.socketStore.chatroomList = userInfo.conversations
-        console.log(userInfo.conversations)
+    this.socket.on("getChatroomListResponse", response => {
+      console.log("getChatroomListResponse", response.data);
+      console.log(response.data.conversations);
+      if (response.data.conversations) {
+        this.socketStore.chatroomList = response.data.conversations
+        console.log(response.data.conversations)
       }
     });
-    this.socket.on('showMessage', (chatMessage) => {
-      console.log('showMessage', chatMessage);
-      this.appendMessage(chatMessage);
+    this.socket.on('chatResponse', (response) => {
+      console.log('chatResponse', response);
+      this.appendMessage(response.data);
       // this.scrollToBottom(messageContainer);
     });
 
@@ -173,36 +161,36 @@ export class Socket {
       // this.appendUser(userList);
     });
 
-    this.socket.on('joinRoomMessage', (data) => {
-      console.log('joinRoomMessage', data);
+    this.socket.on('joinRoomMessage', (response) => {
+      console.log('joinRoomMessage', response.data);
       this.joinRoomMessage(data);
     });
 
-    this.socket.on('leaveRoomMessage', (data) => {
-      console.log('leaveRoomMessage', data);
-      this.leaveRoomMessage(data);
+    this.socket.on('leaveRoomMessage', (response) => {
+      console.log('leaveRoomMessage', response);
+      this.leaveRoomMessage(response.data);
       this.getUserList();
     });
 
-    this.socket.on('leaveChatroomResponse', (data) => {
-      console.log('leaveChatroomResponse', data);
+    this.socket.on('leaveChatroomResponse', (response) => {
+      console.log('leaveChatroomResponse', response);
       this.getChatroomList();
     });
-    this.socket.on('addUserInRoomResponse', (data) => {
-      console.log('addUserInRoomResponse', data);
+    this.socket.on('addUserInRoomResponse', (response) => {
+      console.log('addUserInRoomResponse', response);
       // this.getChatroomList();
     });
 
-    this.socket.on('getUserInfoResponse', (userInfo) => {
+    this.socket.on('getUserInfoResponse', (response) => {
       console.log('getUserInfoResponse');
-      this.userInfo = userInfo;
+      this.userInfo = response.data;
       this.getMessages();
     });
 
-    this.socket.on('getParticipantListResponse', (conversation) => {
-      console.log('getParticipantListResponse', conversation);
-      this.participants = conversation.participants;
-      this.setParticipantList(conversation.participants);
+    this.socket.on('getParticipantListResponse', (response) => {
+      console.log('getParticipantListResponse', response);
+      this.participants = response.data.participants;
+      this.setParticipantList(response.data.participants);
       this.getUserList();
     });
 
@@ -214,8 +202,8 @@ export class Socket {
       this.getMessages(response.data._id);
     })
 
-    this.socket.on('error',(data)=>{
-      console.log(data);
+    this.socket.on('error',(response)=>{
+      console.log(response);
     })
   }
 }
