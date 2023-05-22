@@ -1,48 +1,55 @@
 <script setup>
 import { ref } from 'vue-demi';
-import { useUserStore } from './../stores/userStore';
-import { socketStore } from './../stores/socketStores';
-import {inject } from "vue";
+import { useUserStore } from './../../stores/userStore';
+import { socketStore } from './../../stores/socketStores';
+import ChatRoomDropDown from "./ChatRoomDropDown.vue";
+import ChatRoomHeaderDropDown from "./ChatRoomHeaderDropDown.vue";
+import { inject,onMounted } from "vue";
 const userStore = useUserStore();
 const mySocketStore = socketStore();
 
 const socket = inject("socket");
-const message = ref('');
-const chatroomName = ref('');
-
+const selectedChatroomIndex = ref(-1);
 const getChatInfo = () => {
   socket.getChatroomList();
   socket.getUserList();
 };
 
-const createChatroom = () => {
-  socket.createChatroom(chatroomName.value);
-}
 
 const addUserToRoom = (userId) => {
   console.log("addUserToRoom",userId);
   socket.addUser(userId,mySocketStore.connectedChatroom._id)
 }
+
+const joinRoom = (chatRoom,index) => {
+  selectedChatroomIndex.value = index;
+  console.log(selectedChatroomIndex.value);
+  socket.joinRoom(chatRoom)
+}
+
+onMounted(() => {
+  getChatInfo()
+  
+})
 </script>
 
 <template>
-  <div>
-    <div>
-      <input type="text" v-model="chatroomName" />
-      <button @click="createChatroom()">建立聊天室</button>
-    </div>
-    <button @click="getChatInfo()">取得聊天室資訊</button>
+  <div data-aos="clip-left">
     <ul class="chat-media mb-3">
-      <h3 class="chat-media-header">聊天室</h3>
-      <li v-for="chatroom in mySocketStore.chatroomList" :key="chatroom._id">
-        <div class="chat-media-item justify-between items-center d-flex p-3">
+      <h3 class="chat-media-header">聊天室
+        <ChatRoomHeaderDropDown></ChatRoomHeaderDropDown>
+      </h3>
+      <li v-for="(chatroom, index) in mySocketStore.chatroomList" :key="chatroom._id">
+        <div :class="{ 'chat-media-item-active': selectedChatroomIndex=== index}" class="chat-media-item justify-between items-center d-flex px-2 py-1 mb-2" @dblclick="joinRoom(chatroom,index)">
           <p class="">{{ chatroom.displayName }}</p>
-          <button @click="socket.joinRoom(chatroom)">連線聊天室</button>
+          <ChatRoomDropDown
+            :chatroom="chatroom"
+          ></ChatRoomDropDown>
         </div>
       </li>
     </ul>
   </div>
-  <div class="chat-media">
+  <div class="chat-media"  data-aos="clip-left">
     <h3 class="chat-media-header">用戶</h3>
     <ul>
       <li v-for="user in mySocketStore.userList" :key="user._id">
@@ -67,6 +74,20 @@ const addUserToRoom = (userId) => {
 }
 .p-3 {
   padding: 16px;
+}
+
+.px-2 {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.py-1 {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.mb-2 {
+  margin-bottom: 8px;
 }
 .mb-3 {
   margin-bottom: 16px;
@@ -108,8 +129,11 @@ const addUserToRoom = (userId) => {
 }
 
 .chat-media-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: var(--dark-white);
-  padding: 16px 8px 16px 8px;
+  padding: 8px 8px 8px 8px;
   margin-bottom: 4px;
   border-radius: 4px 4px 0px 0px;
 }
@@ -120,6 +144,12 @@ const addUserToRoom = (userId) => {
   display: flex;
   align-items: center;
   cursor: pointer;
+}
+
+.chat-media-item-active {
+  background: rgba(7, 140, 235, 0.4);
+  border-radius: 8px;
+  box-shadow: 1px 2px 1px #869489;
 }
 
 .chat-media-item:hover {

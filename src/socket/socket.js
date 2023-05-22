@@ -1,7 +1,8 @@
 
 
 import { io } from "socket.io-client";
-const URL = "http://localhost:3010";
+const { VITE_API_URL } = import.meta.env
+const URL = VITE_API_URL;
 import { socketStore } from '../stores/socketStores';
 export class Socket {
   socketStore = null;
@@ -20,6 +21,13 @@ export class Socket {
       console.log(error);
     }
   }
+  setOnlineStatus(){
+    this.socket.emit("setOnlineStatus", {  });
+  }
+  setOfflineStatus(){
+    this.socket.emit("setOfflineStatus", {  });
+  }
+
   createChatroom(roomName){
     this.socket.emit("createChatroom", {
       displayName: roomName,
@@ -83,112 +91,119 @@ export class Socket {
     this.socket.emit('getParticipantList', { roomId: roomId });
   }
 
+  leaveChatroom(roomId){
+    this.socket.emit("leaveChatroom", {
+      roomId
+    });
+  }
+
   setParticipantList(participants) {
-    this.socketStore.chatroomList.participants = participants
-    // participants.forEach(participant => {
-    //   console.log("loop user list");
-    //   const participantElement = document.createElement("li");
-    //   let innerHtml = /*html*/ `
-    //       <li class="p-2">
-    //         <div class="d-flex justify-content-between align-items-center border border-1 rounded-2 p-2">
-    //           <p font="noto" class="lh-base ms-4 mb-0">${participant.nickName}</p>
-    //         </li>
-    //         `;
-    //   participantElement.innerHTML = innerHtml;
-    //   participantListElement.append(participantElement);
-    // });
+    this.socketStore.chatroomList.participants = participants;
   }
 
   appendMessage(chatMessage){
     this.socketStore.addChatMessage(chatMessage);
   }
 
+  patchUserList(updatedUser){
+    console.log("updatedUser",updatedUser);
+    const updatedList = this.socketStore.userList.map(user => {
+      if (user._id === updatedUser._id) {
+        return {...user, ...updatedUser};
+      } else {
+        return user;
+      }
+    });
+  
+    return updatedList;
+  }
+
   initSocketMethod() {
     console.log('socket', this.socket);
-    this.socket.on("getChatroomListRequest", data=>{
+    this.socket.on("connect", () => {
+      console.log("connected", this.socket.connected); // true
+      if(!this.socket.connected){
+        socket.close();
+      }
+    });
+
+    this.socket.on("getChatroomListRequest", response=>{
       this.socket.emit("getChatroomList", {});
     });
   
-    this.socket.on("getChatroomListResponse", userInfo => {
-      console.log("getChatroomListResponse", userInfo);
-      console.log(userInfo.conversations);
-      if (userInfo.conversations) {
-        this.socketStore.chatroomList = userInfo.conversations
-        console.log(userInfo.conversations)
-        // TODO 下次實現這裡顯示
-        // userInfo.conversations.forEach((conversation, index) => {
-        //   console.log("loop");
-        //   const li = document.createElement("li");
-        //   let innerHtml = "";
-        //   innerHtml += /*html*/ `
-        //   <div class="border border-1 border-dark rounded-2 p-4 mt-3">
-        //     <div class="row">
-        //       <div class="room-container  d-flex justify-content-between align-content-center ">
-        //         <h5 font="noto" class="d-flex align-content-center mb-0 lh-base">${conversation.displayName}</h5>
-        //         <button class="btn btn-warning" onclick="goChatPage(${index})">進入</button>
-        //       </div>
-        //     </div>
-        //   `;
-        //   innerHtml +=
-        //     /*html*/ `<div class="row"><div class="col-1">` +
-        //     createNameTags(conversation.participants) +
-        //     /*html*/ `</div></div></div>`;
-  
-        //   innerHtml +=`<input type="text" name="CONVERSATION_ID_${index}" value="${conversation._id}" hidden>`;
-        //   li.innerHTML = innerHtml;
-        //   chatroomListEl.appendChild(li);
-        // });
+    this.socket.on("getChatroomListResponse", response => {
+      console.log("getChatroomListResponse", response.data);
+      console.log(response.data.conversations);
+      if (response.data.conversations) {
+        this.socketStore.chatroomList = response.data.conversations
+        console.log(response.data.conversations)
       }
-  
-      // appendMessage(data);
     });
-    this.socket.on('showMessage', (chatMessage) => {
-      console.log('showMessage', chatMessage);
-      this.appendMessage(chatMessage);
+    this.socket.on('chatResponse', (response) => {
+      console.log('chatResponse', response);
+      this.appendMessage(response.data);
       // this.scrollToBottom(messageContainer);
     });
 
-    this.socket.on('getMessagesResponse', (chatMessages) => {
-      console.log('chatMessages', chatMessages);
-      this.socketStore.chatMessages = chatMessages
+    this.socket.on('updateUserStatusResponse', (response) => {
+      console.log('updateUserStatusResponse', response);
+      this.socketStore.userList = this.patchUserList(response.data)
     });
 
-    this.socket.on('getUserListResponse', (userList) => {
-      console.log('getUserListResponse', userList);
-      this.socketStore.userList = userList
+    this.socket.on('getMessagesResponse', (response) => {
+      console.log('chatMessages', response);
+      this.socketStore.chatMessages = response.data
+    });
+
+    this.socket.on('getUserListResponse', (response) => {
+      console.log('getUserListResponse', response);
+      this.socketStore.userList = response.data
       // this.appendUser(userList);
     });
 
-    this.socket.on('joinRoomMessage', (data) => {
-      console.log('joinRoomMessage', data);
+    this.socket.on('joinRoomMessage', (response) => {
+      console.log('joinRoomMessage', response.data);
       this.joinRoomMessage(data);
     });
 
-    this.socket.on('leaveRoomMessage', (data) => {
-      console.log('leaveRoomMessage', data);
-      this.leaveRoomMessage(data);
+    this.socket.on('leaveRoomMessage', (response) => {
+      console.log('leaveRoomMessage', response);
+      this.leaveRoomMessage(response.data);
       this.getUserList();
     });
 
-    this.socket.on('getUserInfoResponse', (userInfo) => {
+    this.socket.on('leaveChatroomResponse', (response) => {
+      console.log('leaveChatroomResponse', response);
+      this.getChatroomList();
+    });
+    this.socket.on('addUserInRoomResponse', (response) => {
+      console.log('addUserInRoomResponse', response);
+      // this.getChatroomList();
+    });
+
+    this.socket.on('getUserInfoResponse', (response) => {
       console.log('getUserInfoResponse');
-      this.userInfo = userInfo;
+      this.userInfo = response.data;
       this.getMessages();
     });
 
-    this.socket.on('getParticipantListResponse', (conversation) => {
-      console.log('getParticipantListResponse', conversation);
-      this.participants = conversation.participants;
-      this.setParticipantList(conversation.participants);
+    this.socket.on('getParticipantListResponse', (response) => {
+      console.log('getParticipantListResponse', response);
+      this.participants = response.data.participants;
+      this.setParticipantList(response.data.participants);
       this.getUserList();
     });
 
-    this.socket.on('joinRoomSuccess',(conversation)=>{
-      console.log("joinRoomSuccess", conversation);
-      this.socketStore.connectedChatroom=conversation
-      this.socket.emit('sendJoinRoomMessage', {roomId:conversation._id});
-      this.getParticipantList(conversation._id);
-      this.getMessages(conversation._id);
+    this.socket.on('joinRoomResponse',(response)=>{
+      console.log("joinRoomResponse", response);
+      this.socketStore.connectedChatroom=response.data
+      this.socket.emit('sendJoinRoomMessage', {roomId:response.data._id});
+      this.getParticipantList(response.data._id);
+      this.getMessages(response.data._id);
+    })
+
+    this.socket.on('error',(response)=>{
+      console.log(response);
     })
   }
 }
@@ -197,7 +212,7 @@ export const socketPlugin = {
   install: (app, options) => {
     const socketStoreInstance = socketStore();
     const socket = new Socket(socketStoreInstance);
-
+    socket.setOnlineStatus();
     app.config.globalProperties.$socket = socket;
   }
 };
