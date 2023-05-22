@@ -98,7 +98,7 @@ export class Socket {
   }
 
   setParticipantList(participants) {
-    this.socketStore.chatroomList.participants = participants;
+    this.socketStore.connectedChatroom.participants = participants;
   }
 
   appendMessage(chatMessage){
