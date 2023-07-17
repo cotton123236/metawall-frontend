@@ -25,6 +25,7 @@ export class ChatRoom {
     new Participant()
   ]
   _id="";
+  unreadCount = 0;
 }
 
 export class Participant {
