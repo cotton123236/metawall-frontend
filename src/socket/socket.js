@@ -146,6 +146,7 @@ export class Socket {
     this.socket.on('chatResponse', (response) => {
       console.log('chatResponse', response);
       this.appendMessage(response.data);
+      this.getChatroomList();
       // this.scrollToBottom(messageContainer);
     });
 
