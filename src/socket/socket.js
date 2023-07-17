@@ -118,6 +118,10 @@ export class Socket {
     return updatedList;
   }
 
+  resetUnreadCount(roomId){
+    this.socket.emit('resetUnreadCount', { roomId: roomId});
+  }
+
   initSocketMethod() {
     console.log('socket', this.socket);
     this.socket.on("connect", () => {
@@ -200,7 +204,21 @@ export class Socket {
       this.socket.emit('sendJoinRoomMessage', {roomId:response.data._id});
       this.getParticipantList(response.data._id);
       this.getMessages(response.data._id);
+      this.resetUnreadCount(response.data._id);
     })
+
+    this.socket.on("updateUnreadCount", (response) => {
+      console.log('updateUnreadCount', response);
+      const chatroom = this.socketStore.chatroomList.find((chatroom)=>{
+        return chatroom._id===response.data.conversation;
+      });
+      console.log("chatroom",chatroom);
+      if(chatroom){
+        chatroom.unreadCount = response.data.unreadCount
+      }
+      
+    })
+
 
     this.socket.on('error',(response)=>{
       console.log(response);
