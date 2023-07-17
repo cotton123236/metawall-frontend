@@ -168,7 +168,7 @@ export class Socket {
 
     this.socket.on('joinRoomMessage', (response) => {
       console.log('joinRoomMessage', response.data);
-      this.joinRoomMessage(data);
+      // this.joinRoomMessage(data);
     });
 
     this.socket.on('leaveRoomMessage', (response) => {
