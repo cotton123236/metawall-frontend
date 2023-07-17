@@ -24,7 +24,7 @@ const openChatSidebar = () =>{
 <template>
   <nav>
     <router-link class="user-wrap" :to="userStore._id">
-      <div class="headshot">
+      <div class="headshot ">
         <img v-if="userStore.image" :src="userStore.image" alt="user-photo">
       </div>
       <div class="user-name">{{ userStore.name }}</div>
@@ -47,10 +47,11 @@ const openChatSidebar = () =>{
         <span>聊天室</span>
       </li>
     </ul>
-  </nav>
-  <div v-if="isShowChartSidebar">
+    <div v-if="isShowChartSidebar">
     <chat-sidebar></chat-sidebar>
   </div>
+  </nav>
+  
 </template>
 
 <style lang="sass">
@@ -59,12 +60,14 @@ const openChatSidebar = () =>{
 
 // nav
 nav
+  overflow-y: auto
+  overflow-x: hidden
   position: sticky
   top: 85px
   right: 0
   +rwdmax(900)
     position: fixed
-    z-index: 9
+    z-index: 900
     top: auto
     bottom: 0
     width: 100%
