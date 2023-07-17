@@ -24,7 +24,7 @@ const addUserToRoom = (userId) => {
 const joinRoom = (chatRoom,index) => {
   selectedChatroomIndex.value = index;
   console.log(selectedChatroomIndex.value);
-  socket.joinRoom(chatRoom)
+  socket.joinRoom(chatRoom);
 }
 
 onMounted(() => {
@@ -34,24 +34,29 @@ onMounted(() => {
 </script>
 
 <template>
-  <div data-aos="clip-left">
-    <ul class="chat-media mb-3">
+  <div data-aos="clip-left" class="mb-4">
+    <div class="chat-media">
       <h3 class="chat-media-header">聊天室
         <ChatRoomHeaderDropDown></ChatRoomHeaderDropDown>
       </h3>
+    <ul class=" mb-3 chatroom">
       <li v-for="(chatroom, index) in mySocketStore.chatroomList" :key="chatroom._id">
         <div :class="{ 'chat-media-item-active': selectedChatroomIndex=== index}" class="chat-media-item justify-between items-center d-flex px-2 py-1 mb-2" @dblclick="joinRoom(chatroom,index)">
           <p class="">{{ chatroom.displayName }}</p>
-          <ChatRoomDropDown
-            :chatroom="chatroom"
-          ></ChatRoomDropDown>
+          <div class="d-flex items-center">
+            <p class="mr-2">{{ chatroom.unreadCount }}</p>
+            <ChatRoomDropDown
+              :chatroom="chatroom"
+            ></ChatRoomDropDown>
+          </div>
         </div>
       </li>
     </ul>
+    </div>
   </div>
   <div class="chat-media"  data-aos="clip-left">
     <h3 class="chat-media-header">用戶</h3>
-    <ul>
+    <ul class="user-list">
       <li v-for="user in mySocketStore.userList" :key="user._id">
         <div class="chat-media-item px-1 py-2">
           <div class="headshot">
@@ -126,6 +131,8 @@ onMounted(() => {
   box-shadow: 0 0 5px rgb(0 0 0 / 10%);
   // height: 320px;
   border-radius: 8px 8px 8px 8px;
+
+  
 }
 
 .chat-media-header {
@@ -196,5 +203,23 @@ onMounted(() => {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   width: 40px;
   height: 40px;
+}
+
+.chatroom {
+  height: 284px;
+
+  overflow-y: auto;
+  overflow-x :hidden;
+}
+
+.user-list {
+  height: 384px;
+
+  overflow-y: auto;
+  overflow-x :hidden;
+}
+
+.mb-4 {
+  margin-bottom: 16px;
 }
 </style>
