@@ -77,6 +77,15 @@ export class Socket {
     // getUserList();
   }
 
+  whenChatroomHasUnreadResetUnreadCount(){
+    const connectedChatroom = this.socketStore.chatroomList.find(
+      (chatroom) => chatroom._id === this.socketStore.connectedChatroom._id
+    )
+    if(connectedChatroom.unreadCount > 0){
+      this.resetUnreadCount(this.socketStore.connectedChatroom._id);
+    }
+  }
+
   sendMessage(userId, roomId, message) {
     console.log(userId, roomId, message);
     const data = {
@@ -146,6 +155,7 @@ export class Socket {
     this.socket.on('chatResponse', (response) => {
       console.log('chatResponse', response);
       this.appendMessage(response.data);
+      this.getChatroomList();
       // this.scrollToBottom(messageContainer);
     });
 
@@ -167,7 +177,7 @@ export class Socket {
 
     this.socket.on('joinRoomMessage', (response) => {
       console.log('joinRoomMessage', response.data);
-      this.joinRoomMessage(data);
+      // this.joinRoomMessage(data);
     });
 
     this.socket.on('leaveRoomMessage', (response) => {
@@ -183,6 +193,7 @@ export class Socket {
     this.socket.on('addUserInRoomResponse', (response) => {
       console.log('addUserInRoomResponse', response);
       // this.getChatroomList();
+      this.getParticipantList(this.socketStore.connectedChatroom._id);
     });
 
     this.socket.on('getUserInfoResponse', (response) => {

@@ -10,6 +10,8 @@ const message = ref('');
 
 const sendMessage = () => {
   socket.sendMessage(userStore._id, mySocketStore.connectedChatroom._id, message.value);
+  socket.whenChatroomHasUnreadResetUnreadCount();
+  socket.resetUnreadCount();
   message.value = '';
 };
 </script>
