@@ -77,6 +77,15 @@ export class Socket {
     // getUserList();
   }
 
+  whenChatroomHasUnreadResetUnreadCount(){
+    const connectedChatroom = this.socketStore.chatroomList.find(
+      (chatroom) => chatroom._id === this.socketStore.connectedChatroom._id
+    )
+    if(connectedChatroom.unreadCount > 0){
+      this.resetUnreadCount(this.socketStore.connectedChatroom._id);
+    }
+  }
+
   sendMessage(userId, roomId, message) {
     console.log(userId, roomId, message);
     const data = {
