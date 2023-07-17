@@ -183,6 +183,7 @@ export class Socket {
     this.socket.on('addUserInRoomResponse', (response) => {
       console.log('addUserInRoomResponse', response);
       // this.getChatroomList();
+      this.getParticipantList(this.socketStore.connectedChatroom._id);
     });
 
     this.socket.on('getUserInfoResponse', (response) => {
