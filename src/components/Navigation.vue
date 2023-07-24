@@ -12,7 +12,8 @@ const modalStore = useModalStore()
 const {
   openModalPost,
   openModalFollows,
-  openModalLikes
+  openModalLikes,
+  openModalChatroomList
 } = modalStore
 
 const openChatSidebar = () =>{
@@ -42,7 +43,11 @@ const openChatSidebar = () =>{
         <i class="icon-like"></i>
         <span>收藏文章</span>
       </li>
-      <li @click="openChatSidebar">
+      <li class="chat-lg-item" @click="openChatSidebar">
+        <i class="icon-commit"></i>
+        <span>聊天室</span>
+      </li>
+      <li class="chat-small-item" @click="openModalChatroomList">
         <i class="icon-commit"></i>
         <span>聊天室</span>
       </li>
@@ -58,6 +63,14 @@ const openChatSidebar = () =>{
 @import ./../assets/sass/base/variables
 @import ./../assets/sass/base/mixin
 
+.chat-lg-item
+  +rwdmax(900)
+    display: none!important
+
+.chat-small-item
+  display: none!important
+  +rwdmax(900)
+      display: flex!important
 // nav
 nav
   overflow-y: auto

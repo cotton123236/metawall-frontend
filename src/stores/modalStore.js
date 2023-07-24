@@ -21,6 +21,7 @@ export const useModalStore = defineStore('modal', {
       useModalDeleteComment: false,
       useModalDeleteCommentId: '',
       useModelCreateChatroom: false,
+      useModelChatroomList: false,
     }
   },
   actions: {
@@ -105,6 +106,12 @@ export const useModalStore = defineStore('modal', {
     },
     closeModalCreateChatroomComment() {
       this.useModelCreateChatroom = false
+    },
+    openModalChatroomList() {
+      this.useModelChatroomList = true
+    },
+    closeModalChatroomList() {
+      this.useModelChatroomList = false
     }
   }
 })
