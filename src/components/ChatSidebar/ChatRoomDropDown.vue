@@ -7,70 +7,60 @@ const props = defineProps({
 </script>
 <template>
   <div class="more">
-        <div class="more-btn">
-          <i class="icon-more"></i>
-        </div>
-        <div class="more-list">
-          <ul>
-            <li>
-              <a href="javascript:;" @click="socket.leaveChatroom(chatroom._id)">離開聊天室</a>
-            </li>
-          </ul>
+        <div class="more-btn" @click="socket.leaveChatroom(chatroom._id)">
+          <i class="icon-cancel"></i>
         </div>
       </div>
 </template>
 <style lang="sass" scoped>
   .more
     position: relative
+
     &:hover
       .more-list
-        z-index: 2
+        z-index: 20
         opacity: 1
-        pointer-events: auto
         transform: translate(-50%, 0)
-    .more-btn
-      display: flex
-      justify-content: center
-      align-items: center
-      width: 30px
-      height: 30px
-      border-radius: 50%
-      cursor: pointer
-      transition: background-color var(--trans-s)
-      &:hover
-        background-color: var(--dark-white)
-      i
-        font-size: 20px
-    .more-list
+        pointer-events: auto
+      
+  .more-btn
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 30px
+    height: 30px
+    border-radius: 50%
+    cursor: pointer
+    transition: background-color var(--trans-s)
+
+    &:hover
+      background-color: var(--dark-white)
+
+    i
+      font-size: 20px
+    
+  ul
+    overflow: hidden
+    padding: 5px 0
+    border-radius: 5px
+    background-color: var(--white)
+
+    &::before
       position: absolute
-      top: calc(100% + 8px)
+      top: -8px
       left: 50%
-      transform: translate(-50%, -10px)
-      width: 120px
-      filter: drop-shadow(3px 3px 5px rgba(0, 0, 0, 0.2))
-      opacity: 0
-      pointer-events: none
-      transition: var(--trans-s)
-    ul
-      background-color: var(--white)
-      overflow: hidden
-      border-radius: 5px
-      padding: 5px 0
-      &::before
-        position: absolute
-        content: ''
-        top: -8px
-        left: 50%
-        transform: translateX(-50%)
-        border-width: 0 8px 8px 8px
-        border-style: solid
-        border-color: transparent transparent #fff transparent
-      a
-        display: block
-        font-size: px(12)
-        line-height: 1.5
-        text-align: center
-        padding: 5px 10px
-        &:hover
-          color: var(--primary-blue)
+      border-width: 0 8px 8px 8px
+      border-style: solid
+      border-color: transparent transparent #fff transparent
+      content: ''
+      transform: translateX(-50%)
+    a
+      display: block
+      padding: 5px 10px
+      text-align: center
+      font-size: px(12)
+      line-height: 1.5
+      &:hover
+        color: var(--primary-blue)
+
 </style>

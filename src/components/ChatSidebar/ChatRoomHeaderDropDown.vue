@@ -10,24 +10,17 @@ const {
 </script>
 <template>
   <div class="more">
-        <div class="more-btn">
-          <i class="icon-more"></i>
-        </div>
-        <div class="more-list">
-          <ul>
-            <li>
-              <a href="javascript:;" @click="openModalCreateChatroomComment">建立聊天室</a>
-            </li>
-          </ul>
-        </div>
-      </div>
+    <div class="more-btn" @click="openModalCreateChatroomComment">
+      <i class="icon-plus"></i>
+    </div>
+  </div>
 </template>
 <style lang="sass" scoped>
   .more
     position: relative
     &:hover
       .more-list
-        z-index: 2
+        z-index: 20
         opacity: 1
         pointer-events: auto
         transform: translate(-50%, 0)
@@ -44,16 +37,6 @@ const {
         background-color: var(--dark-white)
       i
         font-size: 20px
-    .more-list
-      position: absolute
-      top: calc(100% + 8px)
-      left: 50%
-      transform: translate(-50%, -10px)
-      width: 120px
-      filter: drop-shadow(3px 3px 5px rgba(0, 0, 0, 0.2))
-      opacity: 0
-      pointer-events: none
-      transition: var(--trans-s)
     ul
       background-color: var(--white)
       overflow: hidden
