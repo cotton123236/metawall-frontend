@@ -1,5 +1,3 @@
-
-
 import { io } from "socket.io-client";
 const { VITE_API_URL } = import.meta.env
 const URL = VITE_API_URL;
@@ -7,7 +5,7 @@ import { socketStore } from '../stores/socketStores';
 export class Socket {
   socketStore = null;
   socket = null;
-  roomId =""
+  roomId = ""
   token
   constructor(
     socketStore
@@ -86,17 +84,19 @@ export class Socket {
     }
   }
 
-  sendMessage(userId, roomId, message) {
+  sendMessage(userId, roomId, message, picture = '') {
     console.log(userId, roomId, message);
     const data = {
       userId: userId,
       roomId: roomId,
       text: message,
+      image: picture,
     };
     this.socket.emit('chat', data);
   }
 
   getParticipantList(roomId) {
+    console.log('getParticipantList');
     this.socket.emit('getParticipantList', { roomId: roomId });
   }
 
@@ -192,6 +192,7 @@ export class Socket {
     });
     this.socket.on('addUserInRoomResponse', (response) => {
       console.log('addUserInRoomResponse', response);
+      this.getParticipantList(this.socketStore.connectedChatroom._id)
       // this.getChatroomList();
       this.getParticipantList(this.socketStore.connectedChatroom._id);
     });
