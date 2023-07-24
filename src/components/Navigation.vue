@@ -43,7 +43,7 @@ const openChatSidebar = () =>{
         <span>收藏文章</span>
       </li>
       <li @click="openChatSidebar">
-        <i class="icon-like"></i>
+        <i class="icon-commit"></i>
         <span>聊天室</span>
       </li>
     </ul>
