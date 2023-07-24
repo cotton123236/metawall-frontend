@@ -2,59 +2,60 @@
 import { ref } from 'vue-demi';
 import { useUserStore } from './../../stores/userStore';
 import { socketStore } from './../../stores/socketStores';
-import ChatRoomDropDown from "./ChatRoomDropDown.vue";
-import ChatRoomHeaderDropDown from "./ChatRoomHeaderDropDown.vue";
-import { inject,onMounted } from "vue";
+import ChatRoomDropDown from './ChatRoomDropDown.vue';
+import ChatRoomHeaderDropDown from './ChatRoomHeaderDropDown.vue';
+import { inject, onMounted } from 'vue';
 const userStore = useUserStore();
 const mySocketStore = socketStore();
 
-const socket = inject("socket");
+const socket = inject('socket');
 const selectedChatroomIndex = ref(-1);
 const getChatInfo = () => {
   socket.getChatroomList();
   socket.getUserList();
 };
 
-
-const addUserToRoom = (userId) => {
-  console.log("addUserToRoom",userId);
-  socket.addUser(userId,mySocketStore.connectedChatroom._id)
-}
-
-const joinRoom = (chatRoom,index) => {
+const joinRoom = (chatRoom, index) => {
   selectedChatroomIndex.value = index;
   console.log(selectedChatroomIndex.value);
   socket.joinRoom(chatRoom);
-}
+};
 
 onMounted(() => {
-  getChatInfo()
-  
-})
+  getChatInfo();
+});
 </script>
 
 <template>
   <div data-aos="clip-left" class="mb-4">
     <div class="chat-media">
-      <h3 class="chat-media-header">聊天室
+      <h3 class="chat-media-header">
+        聊天室
         <ChatRoomHeaderDropDown></ChatRoomHeaderDropDown>
       </h3>
-    <ul class=" mb-3 chatroom">
-      <li v-for="(chatroom, index) in mySocketStore.chatroomList" :key="chatroom._id">
-        <div :class="{ 'chat-media-item-active': selectedChatroomIndex=== index}" class="chat-media-item justify-between items-center d-flex px-2 py-1 mb-2" @dblclick="joinRoom(chatroom,index)">
-          <p class="">{{ chatroom.displayName }}</p>
-          <div class="d-flex items-center">
-            <p class="mr-2">{{ chatroom.unreadCount }}</p>
-            <ChatRoomDropDown
-              :chatroom="chatroom"
-            ></ChatRoomDropDown>
+      <ul class="mb-3 chatroom">
+        <li
+          v-for="(chatroom, index) in mySocketStore.chatroomList"
+          :key="chatroom._id"
+        >
+          <div
+            :class="{
+              'chat-media-item-active': selectedChatroomIndex === index,
+            }"
+            class="chat-media-item justify-between items-center d-flex px-2 py-1 mb-2"
+            @dblclick="joinRoom(chatroom, index)"
+          >
+            <p class="">{{ chatroom.displayName }}</p>
+            <div class="d-flex items-center">
+              <p class="mr-2">{{ chatroom.unreadCount }}</p>
+              <ChatRoomDropDown :chatroom="chatroom"></ChatRoomDropDown>
+            </div>
           </div>
-        </div>
-      </li>
-    </ul>
+        </li>
+      </ul>
     </div>
   </div>
-  <div class="chat-media"  data-aos="clip-left">
+  <div class="chat-media" data-aos="clip-left">
     <h3 class="chat-media-header">用戶</h3>
     <ul class="user-list">
       <li v-for="user in mySocketStore.userList" :key="user._id">
@@ -63,16 +64,33 @@ onMounted(() => {
             <img v-if="user?.avatar" :src="user.avatar" alt="user-photo" />
           </div>
           <div class="position-relvate">
-            <p :class="{ 'hidden': user.userStatus==='offline' }" class="chat-media-item-content-online">{{ user.nickName }}</p>
-            <p :class="{ 'hidden': user.userStatus==='online' }" class="chat-media-item-content-offline">{{ user.nickName }}</p>
+            <p
+              :class="{ hidden: user.userStatus === 'offline' }"
+              class="chat-media-item-content-online"
+            >
+              {{ user.nickName }}
+            </p>
+            <p
+              :class="{ hidden: user.userStatus === 'online' }"
+              class="chat-media-item-content-offline"
+            >
+              {{ user.nickName }}
+            </p>
           </div>
-          <button class="" @click="addUserToRoom(user._id)">邀請</button>
         </div>
       </li>
     </ul>
   </div>
 </template>
 <style lang="scss" scoped>
+@import '../../assets/sass/base/variables.sass';
+@import '../../assets/sass/base/mixin.sass';
+
+@media only screen and (max-width: 900px) {
+  .chat-media {
+    display: none;
+  }
+}
 
 .hidden {
   display: none;
@@ -131,8 +149,6 @@ onMounted(() => {
   box-shadow: 0 0 5px rgb(0 0 0 / 10%);
   // height: 320px;
   border-radius: 8px 8px 8px 8px;
-
-  
 }
 
 .chat-media-header {
@@ -194,8 +210,6 @@ onMounted(() => {
   transform: translateY(-50%);
 }
 
-
-
 .headshot {
   width: 50px;
   height: 50px;
@@ -209,14 +223,14 @@ onMounted(() => {
   height: 284px;
 
   overflow-y: auto;
-  overflow-x :hidden;
+  overflow-x: hidden;
 }
 
 .user-list {
   height: 384px;
 
   overflow-y: auto;
-  overflow-x :hidden;
+  overflow-x: hidden;
 }
 
 .mb-4 {
