@@ -15,12 +15,6 @@ const getChatInfo = () => {
   socket.getUserList();
 };
 
-
-const addUserToRoom = (userId) => {
-  console.log("addUserToRoom",userId);
-  socket.addUser(userId,mySocketStore.connectedChatroom._id)
-}
-
 const joinRoom = (chatRoom,index) => {
   selectedChatroomIndex.value = index;
   console.log(selectedChatroomIndex.value);
@@ -66,7 +60,6 @@ onMounted(() => {
             <p :class="{ 'hidden': user.userStatus==='offline' }" class="chat-media-item-content-online">{{ user.nickName }}</p>
             <p :class="{ 'hidden': user.userStatus==='online' }" class="chat-media-item-content-offline">{{ user.nickName }}</p>
           </div>
-          <button class="" @click="addUserToRoom(user._id)">邀請</button>
         </div>
       </li>
     </ul>
