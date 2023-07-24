@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from "@vue/runtime-core";
+import { inject, onMounted } from "@vue/runtime-core";
 import { storeToRefs } from "pinia";
 import { useModalStore } from "../stores/modalStore";
 import { getMyProfile } from "./../api/fetch";
@@ -10,6 +10,7 @@ import Header from "./../components/Header.vue";
 import Navigation from "./../components/Navigation.vue";
 import ModalPost from "./../components/ModalPost.vue";
 import ModalCreateChatroom from "./../components/ModalCreateChatroom.vue";
+import ModalChatroomList from "./../components/ModalChatroomList.vue";
 import ModalPay from "./../components/ModalPay.vue";
 import ModalPaid from "./../components/ModalPaid.vue";
 import ModalLoader from "./../components/ModalLoader.vue";
@@ -25,12 +26,22 @@ const route = useRoute();
 const userStore = useUserStore();
 const { patchUser } = userStore;
 
+const socket = inject('socket');
+
 // 若姓名沒資料，則打 api 取得
 onMounted(() => {
   if (!userStore.name) {
     gerProfile();
   }
+  // 取得聊天室資訊
+  getChatInfo();
 });
+
+const getChatInfo = () => {
+  socket.getChatroomList();
+  socket.getUserList();
+};
+
 const gerProfile = async () => {
   const { data } = await getMyProfile();
   if (data.status === "success") {
@@ -56,6 +67,7 @@ const {
   useModalDeletePost,
   useModalDeleteComment,
   useModelCreateChatroom,
+  useModelChatroomList
 } = storeToRefs(modalStore);
 </script>
 
@@ -102,6 +114,9 @@ const {
       </Transition>
       <Transition name="clip">
         <ModalDeleteComment v-if="useModalDeleteComment" />
+      </Transition>
+      <Transition name="clip">
+        <ModalChatroomList v-if="useModelChatroomList" />
       </Transition>
       <Transition name="clip">
         <ModalCreateChatroom v-if="useModelCreateChatroom" />
