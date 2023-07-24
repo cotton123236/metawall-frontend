@@ -17,6 +17,8 @@ import ModalFollows from "./../components/ModalFollows.vue";
 import ModalLikes from "./../components/ModalLikes.vue";
 import ModalDeletePost from "./../components/ModalDeletePost.vue";
 import ModalDeleteComment from "./../components/ModalDeleteComment.vue";
+import ModalInvitation from './../components/ModalInvitation.vue';
+import ModalImage from './../components/ModalImage.vue';
 import Chatroom from "./../components/Chatroom.vue";
 
 const route = useRoute();
@@ -44,6 +46,8 @@ const gerProfile = async () => {
 const modalStore = useModalStore();
 
 const {
+  useModalImage,
+  useModalInvitation,
   useModalPaid,
   useModalPay,
   useModalPost,
@@ -71,7 +75,13 @@ const {
           <router-view :key="route.path"></router-view>
         </div>
       </div>
-      <!-- modal -->
+      <!-- modal -->      
+      <Transition name="clip">
+        <ModalImage v-if="useModalImage" />
+      </Transition>
+      <Transition name="clip">
+        <ModalInvitation v-if="useModalInvitation" />
+      </Transition>
       <Transition name="clip">
         <ModalPaid v-if="useModalPaid" />
       </Transition>
