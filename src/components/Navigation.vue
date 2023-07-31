@@ -143,6 +143,9 @@ nav
       transition: var(--trans-m)
       border: 1px solid transparent
       cursor: pointer
+      padding: 15px 20px
+      +rwdmax(900)
+        padding:0
       &:hover
         i, span
           transform: translateX(8px)
