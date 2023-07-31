@@ -170,7 +170,6 @@ onUnmounted(() => {
   // padding: 4px 16px 4px 16px;
   display: flex;
   align-items: center;
-  cursor: pointer;
 }
 
 .chat-media-item-active {
