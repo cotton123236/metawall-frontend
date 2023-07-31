@@ -132,7 +132,7 @@ nav
     +rwdmax(900)
       display: flex
       width: 100%
-      justify-content: center
+      justify-content: space-around
       align-items: center
       margin-top: 0
     li
@@ -140,7 +140,6 @@ nav
       align-items: center
       color: var(--dark-gray)
       border-radius: 25px
-      padding: 15px 20px
       transition: var(--trans-m)
       border: 1px solid transparent
       cursor: pointer
