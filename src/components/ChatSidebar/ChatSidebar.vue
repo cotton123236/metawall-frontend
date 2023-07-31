@@ -4,7 +4,7 @@ import { useUserStore } from './../../stores/userStore';
 import { socketStore } from './../../stores/socketStores';
 import ChatRoomDropDown from './ChatRoomDropDown.vue';
 import ChatRoomHeaderDropDown from './ChatRoomHeaderDropDown.vue';
-import { inject } from 'vue';
+import { inject, onMounted, onUnmounted } from 'vue';
 const userStore = useUserStore();
 const mySocketStore = socketStore();
 
@@ -17,6 +17,17 @@ const joinRoom = (chatRoom, index) => {
   socket.joinRoom(chatRoom);
 };
 
+let pullingChatroomList = null;
+
+onMounted(() => {
+  pullingChatroomList = setInterval(() => {
+    socket.getChatroomList();
+  }, 5000);
+});
+
+onUnmounted(() => {
+  clearInterval(pullingChatroomList);
+});
 </script>
 
 <template>
