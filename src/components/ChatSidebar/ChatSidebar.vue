@@ -4,6 +4,7 @@ import { useUserStore } from './../../stores/userStore';
 import { socketStore } from './../../stores/socketStores';
 import ChatRoomDropDown from './ChatRoomDropDown.vue';
 import ChatRoomHeaderDropDown from './ChatRoomHeaderDropDown.vue';
+import ToggleButton from '../ToggleButton.vue';
 import { inject, onMounted, onUnmounted } from 'vue';
 const userStore = useUserStore();
 const mySocketStore = socketStore();
@@ -19,6 +20,9 @@ const joinRoom = (chatRoom, index) => {
 
 let pullingChatroomList = null;
 
+const isDisplayChatroomList = ref(true);
+const isDisplayUserList = ref(true);
+
 onMounted(() => {
   pullingChatroomList = setInterval(() => {
     socket.getChatroomList();
@@ -33,11 +37,14 @@ onUnmounted(() => {
 <template>
   <div data-aos="clip-left" class="mb-4">
     <div class="chat-media">
-      <h3 class="chat-media-header">
-        聊天室
+      <h3 class="chat-media-header tw-py-1 tw-px-2 tw-h-10">
+        <div class="tw-flex">
+          <p class="mr-2">聊天室</p>
+          <ToggleButton v-model:is-checked="isDisplayChatroomList"></ToggleButton>
+        </div>
         <ChatRoomHeaderDropDown></ChatRoomHeaderDropDown>
       </h3>
-      <ul class="mb-3 chatroom">
+      <ul class="mb-3 chatroom" v-show="isDisplayChatroomList">
         <li
           v-for="(chatroom, index) in mySocketStore.chatroomList"
           :key="chatroom._id"
@@ -60,8 +67,13 @@ onUnmounted(() => {
     </div>
   </div>
   <div class="chat-media" data-aos="clip-left">
-    <h3 class="chat-media-header">用戶</h3>
-    <ul class="user-list">
+    <h3 class="chat-media-header tw-py-2 tw-px-2 tw-h-10">
+      <div class="tw-flex">
+        <p class="mr-2">用戶</p>
+        <ToggleButton v-model:is-checked="isDisplayUserList"></ToggleButton>
+      </div>
+    </h3>
+    <ul class="user-list" v-show="isDisplayUserList">
       <li v-for="user in mySocketStore.userList" :key="user._id">
         <div class="chat-media-item px-1 py-2">
           <div class="headshot">
@@ -160,7 +172,6 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   background-color: var(--dark-white);
-  padding: 8px 8px 8px 8px;
   margin-bottom: 4px;
   border-radius: 4px 4px 0px 0px;
 }
