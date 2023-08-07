@@ -14,7 +14,6 @@ const selectedChatroomIndex = ref(-1);
 
 const joinRoom = (chatRoom, index) => {
   selectedChatroomIndex.value = index;
-  console.log(selectedChatroomIndex.value);
   socket.joinRoom(chatRoom);
 };
 

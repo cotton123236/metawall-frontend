@@ -58,8 +58,6 @@ const submitPay = async () => {
     return
   }
 
-  console.log(orderInfoResult)
-
   const requestBody = {
     MerchantID: 'MS140625957',
     TradeSha: orderInfoResult.data.data.shaEncrypt,
