@@ -71,7 +71,7 @@ const submitPay = async () => {
 
   const form = document.createElement("form");
   form.method = "post";
-  form.action = "https://ccore.spgateway.com/MPG/mpg_gateway";
+  form.action = "https://ccore.newebpay.com/MPG/mpg_gateway";
   // form.target = "_blank";
 
   for(const key in requestBody){
