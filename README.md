@@ -137,8 +137,8 @@ npm run format
 
 ### 貢獻 Contributors
 
-<a href="https://github.com/larrylinr5/posts_final/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=larrylinr5/posts_final" />
+<a href="https://github.com/cotton123236/metawall-frontend/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=cotton123236/metawall-frontend" />
 </a>
 
 Made with [contrib.rocks](https://contrib.rocks).
