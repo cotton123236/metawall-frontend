@@ -104,7 +104,6 @@ export function getPostsByRoute(route, page = 1) {
       else sendUrl += `&${key}=${query[key]}`
     })
   }
-  console.log(sendUrl);
   return request({
     url: sendUrl,
     method: 'get'
@@ -131,7 +130,6 @@ export function getPostsByIdAndRoute(id, route, page = 1) {
       else sendUrl += `&${key}=${query[key]}`
     })
   }
-  console.log(sendUrl);
   return request({
     url: sendUrl,
     method: 'get'

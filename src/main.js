@@ -9,11 +9,11 @@ import 'aos/dist/aos.css'
 // App
 import App from './App.vue'
 // FontAwesomeIcon
-
+import { socketPlugin } from './socket/socket'
 const app = createApp(App)
 const aos = AOS.init({
   duration: 600,
-  once: true
+  once: true,
 })
 
 app
@@ -21,6 +21,8 @@ app
   .use(createPinia())
   .use(VueAxios, axios)
   .use(router)
+  .use(socketPlugin)
+  .provide('socket', app.config.globalProperties.$socket)
   .provide('axios', app.config.globalProperties.axios)
   .provide('aos', aos)
 

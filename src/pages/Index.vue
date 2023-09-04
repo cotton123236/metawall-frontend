@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from "@vue/runtime-core";
+import { inject, onMounted } from "@vue/runtime-core";
 import { storeToRefs } from "pinia";
 import { useModalStore } from "../stores/modalStore";
 import { getMyProfile } from "./../api/fetch";
@@ -9,6 +9,8 @@ import { useRoute } from "vue-router";
 import Header from "./../components/Header.vue";
 import Navigation from "./../components/Navigation.vue";
 import ModalPost from "./../components/ModalPost.vue";
+import ModalCreateChatroom from "./../components/ModalCreateChatroom.vue";
+import ModalChatroomList from "./../components/ModalChatroomList.vue";
 import ModalPay from "./../components/ModalPay.vue";
 import ModalPaid from "./../components/ModalPaid.vue";
 import ModalLoader from "./../components/ModalLoader.vue";
@@ -16,17 +18,30 @@ import ModalFollows from "./../components/ModalFollows.vue";
 import ModalLikes from "./../components/ModalLikes.vue";
 import ModalDeletePost from "./../components/ModalDeletePost.vue";
 import ModalDeleteComment from "./../components/ModalDeleteComment.vue";
+import ModalInvitation from './../components/ModalInvitation.vue';
+import ModalImage from './../components/ModalImage.vue';
+import Chatroom from "./../components/Chatroom.vue";
 
 const route = useRoute();
 const userStore = useUserStore();
 const { patchUser } = userStore;
+
+const socket = inject('socket');
 
 // 若姓名沒資料，則打 api 取得
 onMounted(() => {
   if (!userStore.name) {
     gerProfile();
   }
+  // 取得聊天室資訊
+  getChatInfo();
 });
+
+const getChatInfo = () => {
+  socket.getChatroomList();
+  socket.getUserList();
+};
+
 const gerProfile = async () => {
   const { data } = await getMyProfile();
   if (data.status === "success") {
@@ -42,15 +57,18 @@ const gerProfile = async () => {
 const modalStore = useModalStore();
 
 const {
+  useModalImage,
+  useModalInvitation,
   useModalPaid,
   useModalPay,
   useModalPost,
   useModalFollows,
   useModalLikes,
   useModalDeletePost,
-  useModalDeleteComment
+  useModalDeleteComment,
+  useModelCreateChatroom,
+  useModelChatroomList
 } = storeToRefs(modalStore);
-
 </script>
 
 <template>
@@ -69,7 +87,13 @@ const {
           <router-view :key="route.path"></router-view>
         </div>
       </div>
-      <!-- modal -->
+      <!-- modal -->      
+      <Transition name="clip">
+        <ModalImage v-if="useModalImage" />
+      </Transition>
+      <Transition name="clip">
+        <ModalInvitation v-if="useModalInvitation" />
+      </Transition>
       <Transition name="clip">
         <ModalPaid v-if="useModalPaid" />
       </Transition>
@@ -91,8 +115,15 @@ const {
       <Transition name="clip">
         <ModalDeleteComment v-if="useModalDeleteComment" />
       </Transition>
+      <Transition name="clip">
+        <ModalChatroomList v-if="useModelChatroomList" />
+      </Transition>
+      <Transition name="clip">
+        <ModalCreateChatroom v-if="useModelCreateChatroom" />
+      </Transition>
     </main>
   </div>
+  <Chatroom />
 </template>
 
 <style lang="sass">
@@ -119,5 +150,4 @@ main
     +rwdmax(900)
       width: 0
     //   display: none
-
 </style>

@@ -210,8 +210,8 @@ onBeforeUnmount(() => {
         <div class="created">{{ useDateFormat(profileUser.createdAt) }} 加入元宇宙</div>
         <div class="detail">
           <span>{{ profilePosts.length }} 則貼文</span>
-          <span>{{ FollowNum }} 人追蹤中</span>
-          <span>已獲得 {{ profileUser.donatedAmount }} 元贊助</span>
+          <span class="max-sm:tw-mr-[50px]">{{ FollowNum }} 人追蹤中</span>
+          <span class="max-sm:tw-whitespace-nowrap max-sm:tw-ml-0">已獲得 {{ profileUser.donatedAmount }} 元贊助</span>
         </div>
       </div>
     </div>

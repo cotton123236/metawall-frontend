@@ -35,8 +35,6 @@ const deleteFollow = async (id) => {
 
 getFollow()
 
-console.log(userStore.follows);
-
 </script>
 
 <template>
