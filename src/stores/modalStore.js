@@ -3,6 +3,12 @@ import { defineStore } from 'pinia'
 export const useModalStore = defineStore('modal', {
   state: () => {
     return {
+      useModalUrl: '',
+      useModalImage: false,
+      useModalInvitation: false,
+      useModalPaid: false,
+      useModalPay: false,
+      useModalPayPostId:'',
       useModalPost: false,
       useModalLoader: false,
       useModalLoaderText: '',
@@ -13,10 +19,38 @@ export const useModalStore = defineStore('modal', {
       useModalDeletePost: false,
       useModalDeletePostId: '',
       useModalDeleteComment: false,
-      useModalDeleteCommentId: ''
+      useModalDeleteCommentId: '',
+      useModelCreateChatroom: false,
+      useModelChatroomList: false,
     }
   },
   actions: {
+    openModalImage(imageUrl) {
+      this.useModalImage = true;
+      this.useModalUrl = imageUrl;
+    },
+    closeModalImage() {
+      this.useModalImage = false;
+    },
+    openModalInvitation() {
+      this.useModalInvitation = true;
+    },
+    closeModalInvitation() {
+      this.useModalInvitation = false;
+    },
+    openModalPaid() {
+      this.useModalPaid = true
+    },
+    closeModalPaid() {
+      this.useModalPaid = false
+    },
+    openModalPay(id) {
+      this.useModalPay = true
+      this.useModalPayPostId = id
+    },
+    closeModalPay() {
+      this.useModalPay = false
+    },
     openModalPost() {
       this.useModalPost = true
     },
@@ -66,6 +100,18 @@ export const useModalStore = defineStore('modal', {
     closeModalDeleteComment() {
       this.useModalDeleteComment = false
       this.useModalDeleteCommentId = ''
+    },
+    openModalCreateChatroomComment() {
+      this.useModelCreateChatroom = true
+    },
+    closeModalCreateChatroomComment() {
+      this.useModelCreateChatroom = false
+    },
+    openModalChatroomList() {
+      this.useModelChatroomList = true
+    },
+    closeModalChatroomList() {
+      this.useModelChatroomList = false
     }
   }
 })

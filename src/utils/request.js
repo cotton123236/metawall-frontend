@@ -7,20 +7,20 @@ const { useModalAlert, useModalAlertText } = storeToRefs(modalStore);
 
 // 判斷環境
 const isDev = import.meta.env.VITE_ENV === 'dev'
-
+const apiUrl = import.meta.env.VITE_API_URL
 const server = axios.create({
-  baseURL: 'http://127.0.0.1:3005'
+  baseURL: apiUrl
 })
 
 /*
   [請求超時設置]
 */
 // timeout 請求時限
-axios.defaults.timeout = 1000
+axios.defaults.timeout = 5000
 // retry 請求次數
-axios.defaults.retry = 4
+// axios.defaults.retry = 4
 // retryDelay 請求間隙
-axios.defaults.retryDelay = 1000
+// axios.defaults.retryDelay = 1000
 
 server.interceptors.request.use(
   config => {

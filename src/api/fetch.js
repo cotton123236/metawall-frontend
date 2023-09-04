@@ -65,6 +65,33 @@ export function updatePassword(data) {
   })
 }
 
+// 忘記密碼
+export function forgetPassword(data) {
+  return request({
+    url: `${url.user}/forgetPassword`,
+    method: 'post',
+    data
+  })
+}
+
+// 修改密碼
+export function verification(data) {
+  return request({
+    url: `${url.user}/verification`,
+    method: 'post',
+    data: data.data
+  })
+}
+
+// 忘記密碼
+export function changePassword(data) {
+  return request({
+    url: `${url.user}/changePassword`,
+    method: 'patch',
+    data
+  })
+}
+
 // 取得所有貼文 by route query
 export function getPostsByRoute(route, page = 1) {
   let sendUrl = url.post
@@ -77,7 +104,6 @@ export function getPostsByRoute(route, page = 1) {
       else sendUrl += `&${key}=${query[key]}`
     })
   }
-  console.log(sendUrl);
   return request({
     url: sendUrl,
     method: 'get'
@@ -104,7 +130,6 @@ export function getPostsByIdAndRoute(id, route, page = 1) {
       else sendUrl += `&${key}=${query[key]}`
     })
   }
-  console.log(sendUrl);
   return request({
     url: sendUrl,
     method: 'get'
@@ -240,5 +265,43 @@ export function deleteComment(potIdAndCommentId) {
   return request({
     url: `${url.post}/comment/${potIdAndCommentId}`,
     method: 'delete'
+  })
+}
+
+
+/**
+ * 建立訂單 POST
+ * @export
+ * @param {String} postId 貼文ID
+ * @param {Number} amt 金額
+ * @param {String} description 商品說明
+ * @return {Object} - HTTP request post
+ */
+export function postCreateOrder({
+  postId,
+  amt,
+  description
+}) {
+  return request({
+    url: `${url.payment}/createOrder`,
+    method: 'post',
+    data: {
+      postId,
+      amt,
+      description
+    }
+  })
+}
+
+/**
+ * 取得訂單資訊 GET
+ * @export
+ * @param {String} orderId 訂單ID
+ * @return {Object} - HTTP request get
+ */
+export function getOrderInfo(orderId) {
+  return request({
+    url: `${url.payment}/getOrderInfo/${orderId}`,
+    method: 'get',
   })
 }

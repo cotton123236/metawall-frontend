@@ -1,7 +1,10 @@
 <script setup>
+import { ref } from 'vue-demi';
+import ChatSidebar from "./../components/ChatSidebar/ChatSidebar.vue";
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from './../stores/modalStore'
 
+const isShowChartSidebar = ref(false)
 
 const userStore = useUserStore()
 const modalStore = useModalStore()
@@ -9,15 +12,20 @@ const modalStore = useModalStore()
 const {
   openModalPost,
   openModalFollows,
-  openModalLikes
+  openModalLikes,
+  openModalChatroomList
 } = modalStore
+
+const openChatSidebar = () =>{
+  isShowChartSidebar.value = true
+}
 
 </script>
 
 <template>
   <nav>
     <router-link class="user-wrap" :to="userStore._id">
-      <div class="headshot">
+      <div class="headshot ">
         <img v-if="userStore.image" :src="userStore.image" alt="user-photo">
       </div>
       <div class="user-name">{{ userStore.name }}</div>
@@ -35,22 +43,44 @@ const {
         <i class="icon-like"></i>
         <span>收藏文章</span>
       </li>
+      <li class="chat-lg-item" @click="openChatSidebar">
+        <i class="icon-commit"></i>
+        <span>聊天室</span>
+      </li>
+      <li class="chat-small-item" @click="openModalChatroomList">
+        <i class="icon-commit"></i>
+        <span>聊天室</span>
+      </li>
     </ul>
+    <div v-if="isShowChartSidebar">
+    <chat-sidebar></chat-sidebar>
+  </div>
   </nav>
+  
 </template>
 
 <style lang="sass">
 @import ./../assets/sass/base/variables
 @import ./../assets/sass/base/mixin
 
+.chat-lg-item
+  +rwdmax(900)
+    display: none!important
+
+.chat-small-item
+  display: none!important
+  +rwdmax(900)
+      display: flex!important
 // nav
 nav
+  overflow-y: auto
+  overflow-x: hidden
   position: sticky
   top: 85px
   right: 0
   +rwdmax(900)
     position: fixed
-    z-index: 9
+    z-index: 900
     top: auto
     bottom: 0
     width: 100%
@@ -102,7 +132,7 @@ nav
     +rwdmax(900)
       display: flex
       width: 100%
-      justify-content: center
+      justify-content: space-around
       align-items: center
       margin-top: 0
     li
@@ -110,10 +140,12 @@ nav
       align-items: center
       color: var(--dark-gray)
       border-radius: 25px
-      padding: 15px 20px
       transition: var(--trans-m)
       border: 1px solid transparent
       cursor: pointer
+      padding: 15px 20px
+      +rwdmax(900)
+        padding:0
       &:hover
         i, span
           transform: translateX(8px)
