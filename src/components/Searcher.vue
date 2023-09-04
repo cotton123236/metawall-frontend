@@ -2,28 +2,43 @@
 import { ref } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
 import { appendQuery } from '../utils/utils'
-import { getPostByRoute } from './../api/fetch'
+import { getPostsByRoute, getPostsByIdAndRoute } from './../api/fetch'
 import { usePostStore } from '../stores/postStore'
+import { useModalStore } from '../stores/modalStore'
+import { storeToRefs } from 'pinia'
 
 
 const route = useRoute()
 const postStore = usePostStore()
-const { patchPosts } = postStore
+const modalStore = useModalStore()
+const { currentPage, hasNext } = storeToRefs(postStore)
+const { patchPosts, patchProfilePosts } = postStore
+const { openModalAlert } = modalStore
 
 // search content handler
-const { content } = route.query || ''
-const searchValue = ref(content)
+const { q } = route.query || ''
+const searchValue = ref(q)
 
 const searchPosts = async () => {
+  const { id } = route.params
+  const isProfile = id ? true : false
+  currentPage.value = 1
+  hasNext.value = false
   // push query
   const queries = {
-    content: searchValue.value
+    q: searchValue.value
   }
   await appendQuery(route, queries)
   // then get data
-  const { data } = await getPostByRoute(route)
+  const { data } = isProfile ? await getPostsByIdAndRoute(id, route, currentPage.value) : await getPostsByRoute(route, currentPage.value)
   // patch data
-  patchPosts(data)
+  if (data.status === 'success') {
+    isProfile ? patchProfilePosts(data.data.list) : patchPosts(data.data.list)
+    hasNext.value = data.data.page.has_next
+  }
+  else {
+    openModalAlert(data.message)
+  }
 }
 
 const clearInput = () => {
@@ -51,7 +66,7 @@ const clearInput = () => {
   align-items: center
   height: 30px
   width: 200px
-  background-color: var(--background)
+  background-color: #f5f5f5
   padding: 10px 20px
   margin-right: 10px
   border-radius: 15px

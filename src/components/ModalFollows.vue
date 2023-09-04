@@ -1,13 +1,39 @@
 <script setup>
+import { ref } from '@vue/runtime-core'
 import { useUserStore } from './../stores/userStore'
 import { useModalStore } from '../stores/modalStore'
 import { useDateFormat } from './../utils/utils'
-
+import { getFollowList, deleteFollowByperson } from '../api/fetch'
+// components
+import Loader from './../components/Loader.vue'
 
 const userStore = useUserStore()
 const modalStore = useModalStore()
 
 const { closeModalFollows } = modalStore
+const { patchUser } = userStore;
+
+const isLoading = ref(true)
+
+// 取得追蹤列表
+const getFollow = async () => {
+  isLoading.value = true
+  const { data } =  await getFollowList(userStore._id);
+  if (data.status !== 'success') return;
+  isLoading.value = false
+  patchUser({
+    follows: data.data.list
+  })
+}
+
+// 取消追蹤
+const deleteFollow = async (id) => {
+  const { data } = await deleteFollowByperson(id);
+  if (data.status !== 'success') return;
+  getFollow()
+}
+
+getFollow()
 
 </script>
 
@@ -21,23 +47,40 @@ const { closeModalFollows } = modalStore
           <span>追蹤名單</span>
         </div>
         <div class="modal-body">
-          <ul>
+          <div class="is-loading" v-if="isLoading">
+            <Loader />
+          </div>
+          <ul v-else-if="userStore.follows?.length">
             <li
               v-for="follow in userStore.follows"
               :key="follow._id"
             >
-              <div class="info">
-                <div class="headshot">
-                  <img :src="follow.image" alt="user-photo">
+              <template v-if="follow?.following">
+                <div class="info"
+                 v-for="following in follow.following"
+                 :key="following._id"
+                 >
+                  <router-link
+                    class="link"
+                    :to="following._id"
+                    @click="closeModalFollows"
+                  >
+                    <div class="headshot">
+                      <img v-if="following.avatar" :src="following.avatar" alt="user-photo">
+                    </div>
+                    <div class="detail">
+                      <div class="name">{{ following?.nickName }}</div>
+                      <div class="date">追蹤於 - {{ useDateFormat(follow.createdAt) }}</div>
+                    </div>
+                  </router-link>
+                  <div class="unfollow-btn" @click="deleteFollow(following._id)">取消追蹤</div>
                 </div>
-                <div class="detail">
-                  <div class="name">{{ follow.name }}</div>
-                  <div class="date">追蹤於 - {{ useDateFormat('2022-05-10T09:23:26.413Z') }}</div>
-                </div>
-                <div class="unfollow-btn">取消追蹤</div>
-              </div>
+              </template>
             </li>
           </ul>
+          <div class="no-post" v-else>
+            目前尚未有追蹤名單！
+          </div>
         </div>
       </div>
     </div>
@@ -55,8 +98,8 @@ const { closeModalFollows } = modalStore
   position: relative
   width: 90%
   max-width: 500px
-  // border-radius: 8px
-  background-color: #fff
+  border-radius: 10px
+  background-color: var(--white)
   margin: auto
   pointer-events: auto
   .close-btn
@@ -87,6 +130,16 @@ const { closeModalFollows } = modalStore
   .modal-body
     max-height: calc(80vh - 61px)
     overflow: auto
+    &::-webkit-scrollbar-track
+      border-radius: 10px
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .2)
+    &::-webkit-scrollbar
+      width: 6px
+      +rwdmax(768)
+        display: none
+    &::-webkit-scrollbar-thumb
+      border-radius: 10px
+      background-color: #ccc
     ul
       padding: 20px
     .info
@@ -94,30 +147,45 @@ const { closeModalFollows } = modalStore
       display: flex
       align-items: center
       padding: 10px 20px
+    .link
+      display: flex
+      align-items: center
+      pointer-events: none
+      &:hover
+        img
+          transform: scale(1.1)
+        .name
+          color: var(--primary-pink)
     .headshot
       width: 50px
       height: 50px
       margin-right: 15px
+      pointer-events: auto
       img
-        +fit
+        transition: transform var(--trans-m)
     .detail
       flex: 1
       font-family: $code-font
       .name
+        display: inline-block
         font-size: px(16)
         line-height: 1.5
+        transition: color var(--trans-s)
+        pointer-events: auto
       .date
         font-size: px(12)
         color: #ccc
         line-height: 1.5
         margin-top: 2px
     .unfollow-btn
-      font-size: px(14)
+      flex-shrink: 0
+      font-size: px(12)
       color: var(--light-gray)
       padding: 5px
       cursor: pointer
       transition: color var(--trans-s)
+      margin-left: auto
       &:hover
-        color: var(--gray)
+        color: var(--primary-pink)
 
 </style>

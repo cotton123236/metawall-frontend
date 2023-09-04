@@ -1,30 +1,47 @@
 <script setup>
-import { ref, onMounted } from '@vue/runtime-core'
-import { useUserStore } from './../stores/userStore'
+import { ref, onMounted } from "@vue/runtime-core";
+import { useRouter } from 'vue-router'
+// 引入第三方登入
+import { execThirdPartyLogout } from "../utils/auth-third-party";
+import { useUserStore } from "./../stores/userStore";
 
-
-const userStore = useUserStore()
+const router = useRouter()
+const userStore = useUserStore();
 
 // open and close control
-const userToolsActive = ref(false)
+const userToolsActive = ref(false);
 
 const activeControl = () => {
-  userToolsActive.value = !userToolsActive.value
-}
+  userToolsActive.value = !userToolsActive.value;
+};
 
 onMounted(() => {
-  document.body.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('user-tools') && !e.target.closest('.user-tools')) {
-      userToolsActive.value = false
+  document.body.addEventListener("click", (e) => {
+    if (
+      !e.target.classList.contains("user-tools") &&
+      !e.target.closest(".user-tools")
+    ) {
+      userToolsActive.value = false;
     }
-  })
-})
+  });
+});
+
+const logout = async () => {
+  localStorage.removeItem("token");
+  execThirdPartyLogout();
+  userStore.$reset();
+  router.push({ path: "/login" });
+};
 </script>
 
 <template>
-  <div class="user-tools" :class="{ active: userToolsActive }" @click="activeControl">
-    <div class="user-photo">
-      <img :src="userStore.image" alt="user-photo">
+  <div
+    class="user-tools"
+    :class="{ active: userToolsActive }"
+    @click="activeControl"
+  >
+    <div class="headshot">
+      <img v-if="userStore.image" :src="userStore.image" alt="user-photo" />
     </div>
     <div class="user-dropdown">
       <ul>
@@ -32,9 +49,9 @@ onMounted(() => {
           <router-link :to="userStore._id">查看個人檔案</router-link>
         </li>
         <li>
-          <router-link to="/">設定與資料</router-link>
+          <router-link to="/settings">設定與資料</router-link>
         </li>
-        <li>
+        <li @click="logout">
           <router-link to="/login">登出</router-link>
         </li>
       </ul>
@@ -53,15 +70,11 @@ onMounted(() => {
       transform: translate(-50%, 0)
       pointer-events: auto
 
-  .user-photo
+  .headshot
     width: 30px
     height: 30px
-    border-radius: 50%
-    overflow: hidden
     cursor: pointer
-    img
-      +fit
-    
+
   .user-dropdown
     position: absolute
     z-index: 2
@@ -73,6 +86,9 @@ onMounted(() => {
     pointer-events: none
     transition: opacity var(--trans-m), transform var(--trans-m), box-shadow var(--trans-m)
     filter: drop-shadow(5px 5px 8px rgba(0, 0, 0, .2))
+    +rwdmax(767)
+      left: -20%
+      width: 100px
     &::before
       position: absolute
       content: ''
@@ -82,6 +98,10 @@ onMounted(() => {
       border-width: 0 10px 10px 10px
       border-style: solid
       border-color: transparent transparent #fff transparent
+      +rwdmax(767)
+        left: 70%
+        top: -8px
+        border-width: 0 8px 8px 8px
     ul
       padding: 5px 0
       border-top: none
@@ -89,15 +109,19 @@ onMounted(() => {
       background-color: #fff
       overflow: hidden
     li
-      font-size: px(14)
-      font-weight: 300
-      letter-spacing: .02em
-      color: var(--dark-gray)
-      padding: 12px 20px
-      cursor: pointer
-      transition: background-color var(--trans-m)
-      &:hover
-        background-color: var(--dark-white)
       &.active
         background-color: var(--dark-white)
+      a
+        font-size: px(14)
+        font-weight: 300
+        letter-spacing: .02em
+        color: var(--dark-gray)
+        display: block
+        padding: 12px 20px
+        transition: background-color var(--trans-m)
+        +rwdmax(767)
+          font-size: px(13)
+          padding: 10px
+        &:hover
+          background-color: var(--dark-white)
 </style>
