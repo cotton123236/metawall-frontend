@@ -1,63 +1,73 @@
 <script setup>
-import { ref } from "vue-demi";
-import { useUserStore } from "./../stores/userStore";
-import { socketStore } from "./../stores/socketStores";
-import { inject, onMounted, computed, watch, nextTick } from "vue";
+import { ref } from 'vue-demi'
+import { useUserStore } from './../stores/userStore'
+import { socketStore } from './../stores/socketStores'
+import { inject, onMounted, computed, watch, nextTick } from 'vue'
 import { useModalStore } from './../stores/modalStore'
 import { uploadPostImage } from './../api/fetch'
 
-const modalStore = useModalStore();
-const userStore = useUserStore();
-const mySocketStore = socketStore();
-const socket = inject("socket");
-const message = ref("");
-const zoomOut = ref(false);
-const chatroomContentRef = ref(null);
+const modalStore = useModalStore()
+const userStore = useUserStore()
+const mySocketStore = socketStore()
+const socket = inject('socket')
+const message = ref('')
+const zoomOut = ref(false)
+const chatroomContentRef = ref(null)
 
-const { openModalInvitation, openModalImage, openModalLoader, closeModalLoader, } = modalStore;
+const {
+  openModalInvitation,
+  openModalImage,
+  openModalLoader,
+  closeModalLoader,
+} = modalStore
 
-const imageFile = ref(null);
+const imageFile = ref(null)
 async function addImage() {
-  openModalLoader('上傳中');
-  const uploadedFile = imageFile.value.files[0];
-  console.dir(uploadedFile);
+  openModalLoader('上傳中')
+  const uploadedFile = imageFile.value.files[0]
+  console.dir(uploadedFile)
 
-  const formData = new FormData();
-  formData.append("file-to-upload", uploadedFile);
+  const formData = new FormData()
+  formData.append('file-to-upload', uploadedFile)
 
-  const { data } = await uploadPostImage(formData);
-  if (data.status === "success") {
-    sendMessage(data.data.upload);
+  const { data } = await uploadPostImage(formData)
+  if (data.status === 'success') {
+    sendMessage(data.data.upload)
   }
   closeModalLoader()
 }
 
 function sendMessage(picture = '') {
   if (picture === '' && message.value === '') return
-  socket.sendMessage(userStore._id, mySocketStore.connectedChatroom._id, message.value, picture);
-  socket.whenChatroomHasUnreadResetUnreadCount();
-  message.value = "";
+  socket.sendMessage(
+    userStore._id,
+    mySocketStore.connectedChatroom._id,
+    message.value,
+    picture
+  )
+  socket.whenChatroomHasUnreadResetUnreadCount()
+  message.value = ''
 }
 
 const roomNameFirstWordUpperCase = computed(() => {
-  return mySocketStore.connectedChatroom.displayName.charAt(0).toUpperCase();
-});
+  return mySocketStore.connectedChatroom.displayName.charAt(0).toUpperCase()
+})
 
 function closeChatroom() {
-  mySocketStore.connectedChatroom._id = "";
+  mySocketStore.connectedChatroom._id = ''
 }
 
 function openChatroom() {
-  zoomOut.value = false;
+  zoomOut.value = false
 }
 
 function zoomOutChatroom() {
-  zoomOut.value = true;
+  zoomOut.value = true
 }
 
 // scroll to bottom
 function scrollToBottom() {
-  chatroomContentRef.value.scrollTop = chatroomContentRef.value.scrollHeight;
+  chatroomContentRef.value.scrollTop = chatroomContentRef.value.scrollHeight
 }
 
 watch(
@@ -65,7 +75,7 @@ watch(
   value => {
     if (value !== null && value !== undefined && value.length > 0) {
       nextTick(() => {
-        scrollToBottom();
+        scrollToBottom()
       })
     }
   },
@@ -73,9 +83,8 @@ watch(
 )
 
 onMounted(() => {
-  socket.getParticipantList(mySocketStore.connectedChatroom._id);
-});
-
+  socket.getParticipantList(mySocketStore.connectedChatroom._id)
+})
 </script>
 <template>
   <div
@@ -84,7 +93,12 @@ onMounted(() => {
   >
     <div class="chatroom">
       <div class="chat-media-header">
-        <button class="tw-top-4 tw-left-4 tw-bg-transparent tw-border-none tw-font-bold tw-text-gray-200 tw-cursor-pointer hover:tw-text-white tw-text-sm tw-p-0 text" @click="openModalInvitation">邀請</button>
+        <button
+          class="tw-top-4 tw-left-4 tw-bg-transparent tw-border-none tw-font-bold tw-text-gray-200 tw-cursor-pointer hover:tw-text-white tw-text-sm tw-p-0 text"
+          @click="openModalInvitation"
+        >
+          邀請
+        </button>
         <h3>{{ mySocketStore.connectedChatroom.displayName }}</h3>
         <div class="chatroom-control-wrapper">
           <div class="zoom-out" @click="zoomOutChatroom">&#x2014;</div>
@@ -93,13 +107,19 @@ onMounted(() => {
       </div>
       <div class="chatroom-users">
         <ul class="chatroom-users-avatar">
-          <li v-for="participant of mySocketStore.connectedChatroom.participants">
+          <li
+            v-for="participant of mySocketStore.connectedChatroom.participants"
+          >
             <img :src="participant.avatar" alt="" />
           </li>
         </ul>
       </div>
       <ul class="chatroom-content" ref="chatroomContentRef">
-        <li class="mb-4" v-for="message in mySocketStore.chatMessages" :key="message._id">
+        <li
+          class="mb-4"
+          v-for="message in mySocketStore.chatMessages"
+          :key="message._id"
+        >
           <div
             v-if="message.sender._id !== userStore._id"
             class="chat-media-item px-1 py-2 tw-flex tw-items-start tw-mb-4 tw-w-full"
@@ -119,8 +139,12 @@ onMounted(() => {
                 {{ message.sender.nickName }}
               </div>
               <div class="message balloon">
-                <div class="chat-image" v-if="message.image" @click="openModalImage(message.image)">
-                  <img :src="message.image" alt="image">
+                <div
+                  class="chat-image"
+                  v-if="message.image"
+                  @click="openModalImage(message.image)"
+                >
+                  <img :src="message.image" alt="image" />
                 </div>
                 {{ message.text }}
               </div>
@@ -138,7 +162,7 @@ onMounted(() => {
                   :src="message.sender.avatar"
                   alt="user-photo"
                 />
-              </div>              
+              </div>
             </div>
 
             <div class="tw-flex tw-flex-col tw-items-end tw-w-[85%]">
@@ -146,8 +170,12 @@ onMounted(() => {
                 {{ message.sender.nickName }}
               </div>
               <div class="message balloon-owner">
-                <div class="chat-image" v-if="message.image" @click="openModalImage(message.image)">
-                  <img :src="message.image" alt="image">
+                <div
+                  class="chat-image"
+                  v-if="message.image"
+                  @click="openModalImage(message.image)"
+                >
+                  <img :src="message.image" alt="image" />
                 </div>
                 {{ message.text }}
               </div>
@@ -158,11 +186,25 @@ onMounted(() => {
       <div class="d-flex chatroom-footer">
         <label class="editor-btn">
           <i class="icon-picture"></i>
-          <input type="file" @change="addImage" accept="image/*" ref="imageFile">
+          <input
+            type="file"
+            @change="addImage"
+            accept="image/*"
+            ref="imageFile"
+          />
         </label>
-        <input class="send-message-input" type="text" v-model="message" />
+        <input
+          class="send-message-input"
+          type="text"
+          v-model="message"
+          @keyup.enter="sendMessage()"
+        />
         <button class="send-message-button" @click="sendMessage()">
-          <img class="tw-w-[20px]" src="../assets/icons/svg/submit.svg" alt="submit-icon">
+          <img
+            class="tw-w-[20px]"
+            src="../assets/icons/svg/submit.svg"
+            alt="submit-icon"
+          />
         </button>
       </div>
     </div>
@@ -239,7 +281,7 @@ onMounted(() => {
 
   &::-webkit-scrollbar-track {
     border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   }
   &::-webkit-scrollbar {
     height: 6px;
@@ -247,7 +289,7 @@ onMounted(() => {
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-color: rgba(108, 110, 113, 1);
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);   
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -269,7 +311,7 @@ onMounted(() => {
   /* padding: 4px; */
   background: #fff;
   box-shadow: 0 0 5px rgb(0 0 0 / 10%);
-  
+
   @media screen and (max-width: 900px) {
     width: 100%;
   }
@@ -286,7 +328,7 @@ onMounted(() => {
 
   &::-webkit-scrollbar-track {
     border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   }
   &::-webkit-scrollbar {
     width: 6px;
@@ -294,9 +336,9 @@ onMounted(() => {
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-color: rgba(108, 110, 113, 1);
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   }
-  
+
   @media screen and (max-width: 900px) {
     height: calc(100vh - 270px);
   }
@@ -315,7 +357,7 @@ onMounted(() => {
   border-radius: 5px;
 }
 
-input[type="file"] {
+input[type='file'] {
   display: none;
 }
 
@@ -329,10 +371,6 @@ input[type="file"] {
   font-size: 0.75rem;
   margin-top: 4px;
 }
-
-/* .message:has(.chat-image) {
-  width: 50%;
-} */
 
 .chat-image {
   width: 50%;
@@ -366,7 +404,7 @@ input[type="file"] {
 }
 
 .send-message-button:hover > img {
-  filter: brightness(100)
+  filter: brightness(100);
 }
 
 /* 吹き出し本体 */
@@ -394,8 +432,8 @@ input[type="file"] {
   width: 50px;
   height: 50px;
   position: fixed;
-  right: 60px;
-  bottom: 60px;
+  right: 40px;
+  bottom: 100px;
   border-radius: 50%;
   background-color: #587de0;
   display: flex;

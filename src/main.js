@@ -9,11 +9,11 @@ import 'aos/dist/aos.css'
 // App
 import App from './App.vue'
 // FontAwesomeIcon
-import {socketPlugin} from './socket/socket';
+import { socketPlugin } from './socket/socket'
 const app = createApp(App)
 const aos = AOS.init({
   duration: 600,
-  once: true
+  once: true,
 })
 
 app
