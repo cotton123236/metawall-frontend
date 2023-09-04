@@ -33,7 +33,7 @@ export class Socket {
   }
 
   getChatroomList() {
-    console.log("do getChatroomList");
+    // console.log("do getChatroomList");
     this.socket.emit("getChatroomList", {});
   }
 
@@ -43,12 +43,12 @@ export class Socket {
     });
   }
   addUser(userId,roomId) {
-    console.log("addUser");
+    // console.log("addUser");
     this.socket.emit('addUserInRoom', { roomId: roomId, userId: userId});
   }
 
   connectSocketServer(userToken) {
-    console.log('token', userToken);
+    // console.log('token', userToken);
     let socket = io(URL, {
       reconnectionDelayMax: 10000,
       query: {
@@ -59,17 +59,17 @@ export class Socket {
   }
 
   getUserList() {
-    console.log('getUserList');
+    // console.log('getUserList');
     this.socket.emit('getUserList', {});
   }
 
   joinRoom(chatroom) {
-    console.log("chatroom",chatroom);
+    // console.log("chatroom",chatroom);
     const data = {
       roomId: chatroom._id,
     };
     // this.socket.emit('getUserInfo', { token: this.token });
-    console.log('getUserInfo');
+    // console.log('getUserInfo');
     this.socket.emit('joinRoom', data);
 
     // getUserList();
@@ -85,7 +85,7 @@ export class Socket {
   }
 
   sendMessage(userId, roomId, message, picture = '') {
-    console.log(userId, roomId, message);
+    // console.log(userId, roomId, message);
     const data = {
       userId: userId,
       roomId: roomId,
@@ -96,7 +96,7 @@ export class Socket {
   }
 
   getParticipantList(roomId) {
-    console.log('getParticipantList');
+    // console.log('getParticipantList');
     this.socket.emit('getParticipantList', { roomId: roomId });
   }
 
@@ -115,7 +115,7 @@ export class Socket {
   }
 
   patchUserList(updatedUser){
-    console.log("updatedUser",updatedUser);
+    // console.log("updatedUser",updatedUser);
     const updatedList = this.socketStore.userList.map(user => {
       if (user._id === updatedUser._id) {
         return {...user, ...updatedUser};
@@ -132,9 +132,9 @@ export class Socket {
   }
 
   initSocketMethod() {
-    console.log('socket', this.socket);
+    // console.log('socket', this.socket);
     this.socket.on("connect", () => {
-      console.log("connected", this.socket.connected); // true
+      // console.log("connected", this.socket.connected); // true
       if(!this.socket.connected){
         socket.close();
       }
@@ -145,73 +145,73 @@ export class Socket {
     });
   
     this.socket.on("getChatroomListResponse", response => {
-      console.log("getChatroomListResponse", response.data);
-      console.log(response.data.conversations);
+      // console.log("getChatroomListResponse", response.data);
+      // console.log(response.data.conversations);
       if (response.data.conversations) {
         this.socketStore.chatroomList = response.data.conversations
-        console.log(response.data.conversations)
+        // console.log(response.data.conversations)
       }
     });
     this.socket.on('chatResponse', (response) => {
-      console.log('chatResponse', response);
+      // console.log('chatResponse', response);
       this.appendMessage(response.data);
       this.getChatroomList();
       // this.scrollToBottom(messageContainer);
     });
 
     this.socket.on('updateUserStatusResponse', (response) => {
-      console.log('updateUserStatusResponse', response);
+      // console.log('updateUserStatusResponse', response);
       this.socketStore.userList = this.patchUserList(response.data)
     });
 
     this.socket.on('getMessagesResponse', (response) => {
-      console.log('chatMessages', response);
+      // console.log('chatMessages', response);
       this.socketStore.chatMessages = response.data
     });
 
     this.socket.on('getUserListResponse', (response) => {
-      console.log('getUserListResponse', response);
+      // console.log('getUserListResponse', response);
       this.socketStore.userList = response.data
       // this.appendUser(userList);
     });
 
     this.socket.on('joinRoomMessage', (response) => {
-      console.log('joinRoomMessage', response.data);
+      // console.log('joinRoomMessage', response.data);
       // this.joinRoomMessage(data);
     });
 
     this.socket.on('leaveRoomMessage', (response) => {
-      console.log('leaveRoomMessage', response);
+      // console.log('leaveRoomMessage', response);
       this.leaveRoomMessage(response.data);
       this.getUserList();
     });
 
     this.socket.on('leaveChatroomResponse', (response) => {
-      console.log('leaveChatroomResponse', response);
+      // console.log('leaveChatroomResponse', response);
       this.getChatroomList();
     });
     this.socket.on('addUserInRoomResponse', (response) => {
-      console.log('addUserInRoomResponse', response);
+      // console.log('addUserInRoomResponse', response);
       this.getParticipantList(this.socketStore.connectedChatroom._id)
       // this.getChatroomList();
       this.getParticipantList(this.socketStore.connectedChatroom._id);
     });
 
     this.socket.on('getUserInfoResponse', (response) => {
-      console.log('getUserInfoResponse');
+      // console.log('getUserInfoResponse');
       this.userInfo = response.data;
       this.getMessages();
     });
 
     this.socket.on('getParticipantListResponse', (response) => {
-      console.log('getParticipantListResponse', response);
+      // console.log('getParticipantListResponse', response);
       this.participants = response.data.participants;
       this.setParticipantList(response.data.participants);
       this.getUserList();
     });
 
     this.socket.on('joinRoomResponse',(response)=>{
-      console.log("joinRoomResponse", response);
+      // console.log("joinRoomResponse", response);
       this.socketStore.connectedChatroom=response.data
       this.socket.emit('sendJoinRoomMessage', {roomId:response.data._id});
       this.getParticipantList(response.data._id);
@@ -220,11 +220,11 @@ export class Socket {
     })
 
     this.socket.on("updateUnreadCount", (response) => {
-      console.log('updateUnreadCount', response);
+      // console.log('updateUnreadCount', response);
       const chatroom = this.socketStore.chatroomList.find((chatroom)=>{
         return chatroom._id===response.data.conversation;
       });
-      console.log("chatroom",chatroom);
+      // console.log("chatroom",chatroom);
       if(chatroom){
         chatroom.unreadCount = response.data.unreadCount
       }
@@ -233,7 +233,7 @@ export class Socket {
 
 
     this.socket.on('error',(response)=>{
-      console.log(response);
+      // console.log(response);
     })
   }
 }

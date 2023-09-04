@@ -23,7 +23,6 @@ const getLike = async () => {
     userStore.likes = []
     const { data } = await getLikeList();
     if (data.status !== 'success') return;
-    console.log(data)
     isLoading.value = false
     patchUser(cloneDeep({
       likes: data.data.list
