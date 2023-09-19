@@ -1,10 +1,10 @@
 # Meta Wall
 
 
-![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/larrylinr5/posts_final?style=for-the-badge)
-![GitHub Repo stars](https://img.shields.io/github/stars/larrylinr5/posts_final?style=for-the-badge)
-![GitHub contributors](https://img.shields.io/github/contributors/larrylinr5/posts_final?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/larrylinr5/posts_final?style=for-the-badge)
+![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/cotton123236/metawall-frontend?style=for-the-badge)
+![GitHub Repo stars](https://img.shields.io/github/stars/cotton123236/metawall-frontend?style=for-the-badge)
+![GitHub contributors](https://img.shields.io/github/contributors/cotton123236/metawall-frontend?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/cotton123236/metawall-frontend?style=for-the-badge)
 
 ---
 ![Image](https://i.imgur.com/h7XdEPc.png)
@@ -15,7 +15,7 @@ Metawall 是一個旨在將社交體驗推向更高層次的平台，將 Instagr
 
 - [link to MetaWall](https://www.universewalls.com/)
 - [frontend repo](https://github.com/cotton123236/metawall-frontend)
-- [backend repo](https://github.com/cotton123236/metawall-frontend)
+- [backend repo](https://github.com/larrylinr5/posts_final)
 
 ### Built With
 
